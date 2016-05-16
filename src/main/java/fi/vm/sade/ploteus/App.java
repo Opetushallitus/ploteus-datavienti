@@ -15,14 +15,17 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
+import fi.vm.sade.controller.IndexController;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.OrganisaatioV1RDTO;
 
 @SpringBootApplication
 @Configuration
 @ImportResource({"classpath*:applicationContext.xml"})
+@ComponentScan("fi.vm.sade")
 public class App {
 	private static String wsURI = "https://testi.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/1.2.246.562.17.99021282233";
 
