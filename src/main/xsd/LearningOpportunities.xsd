@@ -1,0 +1,871 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://ec.europa.eu/LearningOpportunities/v0_5_10" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ec.europa.eu/LearningOpportunities/v0_5_10" elementFormDefault="qualified">
+  <element name="LearningOpportunities">
+    <complexType>
+      <sequence>
+        <element ref="tns:LearningOpportunity" minOccurs="1" maxOccurs="unbounded"/>
+      </sequence>
+      <attribute name="Key" type="xsd:string" use="required"/>
+      <attribute name="XsdVersion" type="tns:XsdVersionType" use="required"/>
+      <attribute name="XsdType" type="tns:XsdTypeType" use="required"/>
+      <attribute name="DatasourceComment" type="xsd:string" use="optional"/>
+      <attribute name="Incremental" type="tns:BooleanType" use="optional" default="false"/>
+    </complexType>
+  </element>
+  <simpleType name="XsdVersionType">
+    <restriction base="xsd:string">
+      <enumeration value="0.5.10"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="XsdTypeType">
+    <restriction base="xsd:string">
+      <enumeration value="Learning Opportunity"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="NormalString">
+    <restriction base="xsd:string"/>
+  </simpleType>
+  <simpleType name="NonEmptyString">
+    <restriction base="xsd:string">
+      <minLength value="1"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="BooleanType">
+    <restriction base="xsd:string">
+      <enumeration value="true"/>
+      <enumeration value="false"/>
+      <enumeration value="0"/>
+      <enumeration value="1"/>
+      <enumeration value="null"/>
+    </restriction>
+  </simpleType>
+  <complexType name="i18nNonEmptyString">
+    <simpleContent>
+      <extension base="tns:NonEmptyString">
+        <attribute name="language" type="tns:LanguageCode" use="optional" default="en"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="i18nString">
+    <simpleContent>
+      <extension base="tns:NormalString">
+        <attribute name="language" type="tns:LanguageCode" use="optional" default="en"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="i18nUrl">
+    <simpleContent>
+      <extension base="tns:customUrl">
+        <attribute name="language" type="tns:LanguageCode" use="optional" default="en"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <element name="LearningOpportunity">
+    <complexType>
+      <sequence>
+        <element ref="tns:LearningOpportunityId" minOccurs="1" maxOccurs="1"/>
+        <element ref="tns:CountryCode" minOccurs="1" maxOccurs="1"/>
+        <element ref="tns:Title" minOccurs="1" maxOccurs="unbounded"/>
+        <element ref="tns:NonPreferredTerm" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:MoreInfo" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:Description" minOccurs="1" maxOccurs="unbounded"/>
+        <element ref="tns:Url" minOccurs="1" maxOccurs="unbounded"/>
+        <element ref="tns:EducationLevel" minOccurs="1" maxOccurs="1"/>
+        <element ref="tns:ThematicAreas" minOccurs="1" maxOccurs="unbounded"/>
+        <element ref="tns:InformationLanguage" minOccurs="1" maxOccurs="1"/>
+        <element ref="tns:EqfLevel" minOccurs="0" maxOccurs="1"/>
+        <element ref="tns:NqfLevel" minOccurs="0" maxOccurs="1"/>
+        <element ref="tns:SpecialTargetGroup" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:TeachingLanguage" minOccurs="1" maxOccurs="unbounded"/>
+        <element ref="tns:StudyType" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:DurationCode" minOccurs="0" maxOccurs="1"/>
+        <element ref="tns:DurationInformation" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:StartDate" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:Qualifications" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:AccessRequirements" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:AdmissionProcedure" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:Costs" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:Grants" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:Credits" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:ProviderName" minOccurs="1" maxOccurs="unbounded"/>
+        <element ref="tns:ProviderContactInfo" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:ProviderType" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:CourseLocation" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+    <unique name="UniqueTitle">
+      <selector xpath="tns:Title"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueNonPreferredTerm">
+      <selector xpath="tns:NonPreferredTerm"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueMoreInfo">
+      <selector xpath="tns:MoreInfo"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueDescription">
+      <selector xpath="tns:Description"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueDuration">
+      <selector xpath="tns:DurationInformation"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueStartDate">
+      <selector xpath="tns:StartDate"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueAccessRequirements">
+      <selector xpath="tns:AccessRequirements"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueAdmissionProcedure">
+      <selector xpath="tns:AdmissionProcedure"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueCosts">
+      <selector xpath="tns:Costs"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueGrants">
+      <selector xpath="tns:Grants"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueCredits">
+      <selector xpath="tns:Credits"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueUrl">
+      <selector xpath="tns:Url"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueProviderName">
+      <selector xpath="tns:ProviderName"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueProviderContactInfo">
+      <selector xpath="tns:ProviderContactInfo"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueProviderType">
+      <selector xpath="tns:ProviderType"/>
+      <field xpath="@language"/>
+    </unique>
+  </element>
+  <element name="LearningOpportunityId" type="tns:NonEmptyString"/>
+  <element name="Title" type="tns:i18nNonEmptyString"/>
+  <element name="NonPreferredTerm" type="tns:i18nNonEmptyString"/>
+  <element name="MoreInfo" type="tns:i18nNonEmptyString"/>
+  <element name="Description" type="tns:i18nNonEmptyString"/>
+  <element name="ProviderName" type="tns:i18nNonEmptyString"/>
+  <element name="ProviderContactInfo" type="tns:i18nString"/>
+  <element name="ProviderType" type="tns:i18nString"/>
+  <element name="ThematicAreas">
+    <complexType>
+      <choice minOccurs="1" maxOccurs="unbounded">
+        <element name="ThematicAreas1997" type="tns:ThematicAreasType1997"/>
+        <element name="ThematicAreas2013" type="tns:ThematicAreasType2013"/>
+      </choice>
+    </complexType>
+  </element>
+  <simpleType name="ThematicAreasType1997">
+    <restriction base="xsd:string">
+      <xsd:enumeration value="01"/>
+      <xsd:enumeration value="0101"/>
+      <xsd:enumeration value="08"/>
+      <xsd:enumeration value="080"/>
+      <xsd:enumeration value="09"/>
+      <xsd:enumeration value="090"/>
+      <xsd:enumeration value="14"/>
+      <xsd:enumeration value="142"/>
+      <xsd:enumeration value="143"/>
+      <xsd:enumeration value="144"/>
+      <xsd:enumeration value="145"/>
+      <xsd:enumeration value="146"/>
+      <xsd:enumeration value="21"/>
+      <xsd:enumeration value="213"/>
+      <xsd:enumeration value="214"/>
+      <xsd:enumeration value="211"/>
+      <xsd:enumeration value="215"/>
+      <xsd:enumeration value="212"/>
+      <xsd:enumeration value="22"/>
+      <xsd:enumeration value="221"/>
+      <xsd:enumeration value="225"/>
+      <xsd:enumeration value="226"/>
+      <xsd:enumeration value="222"/>
+      <xsd:enumeration value="227"/>
+      <xsd:enumeration value="223"/>
+      <xsd:enumeration value="31"/>
+      <xsd:enumeration value="314"/>
+      <xsd:enumeration value="313"/>
+      <xsd:enumeration value="311"/>
+      <xsd:enumeration value="312"/>
+      <xsd:enumeration value="32"/>
+      <xsd:enumeration value="321"/>
+      <xsd:enumeration value="322"/>
+      <xsd:enumeration value="34"/>
+      <xsd:enumeration value="344"/>
+      <xsd:enumeration value="343"/>
+      <xsd:enumeration value="345"/>
+      <xsd:enumeration value="342"/>
+      <xsd:enumeration value="346"/>
+      <xsd:enumeration value="341"/>
+      <xsd:enumeration value="347"/>
+      <xsd:enumeration value="38"/>
+      <xsd:enumeration value="380"/>
+      <xsd:enumeration value="42"/>
+      <xsd:enumeration value="421"/>
+      <xsd:enumeration value="422"/>
+      <xsd:enumeration value="852"/>
+      <xsd:enumeration value="44"/>
+      <xsd:enumeration value="442"/>
+      <xsd:enumeration value="443"/>
+      <xsd:enumeration value="441"/>
+      <xsd:enumeration value="46"/>
+      <xsd:enumeration value="461"/>
+      <xsd:enumeration value="462"/>
+      <xsd:enumeration value="48"/>
+      <xsd:enumeration value="482"/>
+      <xsd:enumeration value="481"/>
+      <xsd:enumeration value="52"/>
+      <xsd:enumeration value="524"/>
+      <xsd:enumeration value="85"/>
+      <xsd:enumeration value="851"/>
+      <xsd:enumeration value="522"/>
+      <xsd:enumeration value="523"/>
+      <xsd:enumeration value="521"/>
+      <xsd:enumeration value="525"/>
+      <xsd:enumeration value="54"/>
+      <xsd:enumeration value="541"/>
+      <xsd:enumeration value="543"/>
+      <xsd:enumeration value="542"/>
+      <xsd:enumeration value="544"/>
+      <xsd:enumeration value="58"/>
+      <xsd:enumeration value="581"/>
+      <xsd:enumeration value="582"/>
+      <xsd:enumeration value="62"/>
+      <xsd:enumeration value="621"/>
+      <xsd:enumeration value="622"/>
+      <xsd:enumeration value="623"/>
+      <xsd:enumeration value="624"/>
+      <xsd:enumeration value="64"/>
+      <xsd:enumeration value="641"/>
+      <xsd:enumeration value="72"/>
+      <xsd:enumeration value="724"/>
+      <xsd:enumeration value="721"/>
+      <xsd:enumeration value="723"/>
+      <xsd:enumeration value="725"/>
+      <xsd:enumeration value="726"/>
+      <xsd:enumeration value="727"/>
+      <xsd:enumeration value="76"/>
+      <xsd:enumeration value="761"/>
+      <xsd:enumeration value="762"/>
+      <xsd:enumeration value="81"/>
+      <xsd:enumeration value="814"/>
+      <xsd:enumeration value="815"/>
+      <xsd:enumeration value="811"/>
+      <xsd:enumeration value="813"/>
+      <xsd:enumeration value="812"/>
+      <xsd:enumeration value="853"/>
+      <xsd:enumeration value="862"/>
+      <xsd:enumeration value="86"/>
+      <xsd:enumeration value="863"/>
+      <xsd:enumeration value="861"/>
+      <xsd:enumeration value="84"/>
+      <xsd:enumeration value="840"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="ThematicAreasType2013">
+    <restriction base="xsd:string">
+      <xsd:enumeration value="001"/>
+      <xsd:enumeration value="0011"/>
+      <xsd:enumeration value="002"/>
+      <xsd:enumeration value="0021"/>
+      <xsd:enumeration value="003"/>
+      <xsd:enumeration value="0031"/>
+      <xsd:enumeration value="011"/>
+      <xsd:enumeration value="0111"/>
+      <xsd:enumeration value="0112"/>
+      <xsd:enumeration value="0113"/>
+      <xsd:enumeration value="0114"/>
+      <xsd:enumeration value="021"/>
+      <xsd:enumeration value="0211"/>
+      <xsd:enumeration value="0212"/>
+      <xsd:enumeration value="0213"/>
+      <xsd:enumeration value="0214"/>
+      <xsd:enumeration value="0215"/>
+      <xsd:enumeration value="022"/>
+      <xsd:enumeration value="0221"/>
+      <xsd:enumeration value="0222"/>
+      <xsd:enumeration value="0223"/>
+      <xsd:enumeration value="023"/>
+      <xsd:enumeration value="0231"/>
+      <xsd:enumeration value="0232"/>
+      <xsd:enumeration value="031"/>
+      <xsd:enumeration value="0311"/>
+      <xsd:enumeration value="0312"/>
+      <xsd:enumeration value="0313"/>
+      <xsd:enumeration value="0314"/>
+      <xsd:enumeration value="032"/>
+      <xsd:enumeration value="0321"/>
+      <xsd:enumeration value="0322"/>
+      <xsd:enumeration value="041"/>
+      <xsd:enumeration value="0411"/>
+      <xsd:enumeration value="0412"/>
+      <xsd:enumeration value="0413"/>
+      <xsd:enumeration value="0414"/>
+      <xsd:enumeration value="0415"/>
+      <xsd:enumeration value="0416"/>
+      <xsd:enumeration value="0417"/>
+      <xsd:enumeration value="042"/>
+      <xsd:enumeration value="0421"/>
+      <xsd:enumeration value="051"/>
+      <xsd:enumeration value="0511"/>
+      <xsd:enumeration value="0512"/>
+      <xsd:enumeration value="052"/>
+      <xsd:enumeration value="0521"/>
+      <xsd:enumeration value="0522"/>
+      <xsd:enumeration value="053"/>
+      <xsd:enumeration value="0531"/>
+      <xsd:enumeration value="0532"/>
+      <xsd:enumeration value="0533"/>
+      <xsd:enumeration value="054"/>
+      <xsd:enumeration value="0541"/>
+      <xsd:enumeration value="0542"/>
+      <xsd:enumeration value="061"/>
+      <xsd:enumeration value="0611"/>
+      <xsd:enumeration value="0612"/>
+      <xsd:enumeration value="0613"/>
+      <xsd:enumeration value="071"/>
+      <xsd:enumeration value="0711"/>
+      <xsd:enumeration value="0712"/>
+      <xsd:enumeration value="0713"/>
+      <xsd:enumeration value="0714"/>
+      <xsd:enumeration value="0715"/>
+      <xsd:enumeration value="0716"/>
+      <xsd:enumeration value="072"/>
+      <xsd:enumeration value="0721"/>
+      <xsd:enumeration value="0722"/>
+      <xsd:enumeration value="0723"/>
+      <xsd:enumeration value="0724"/>
+      <xsd:enumeration value="073"/>
+      <xsd:enumeration value="0731"/>
+      <xsd:enumeration value="0732"/>
+      <xsd:enumeration value="081"/>
+      <xsd:enumeration value="0811"/>
+      <xsd:enumeration value="0812"/>
+      <xsd:enumeration value="082"/>
+      <xsd:enumeration value="0821"/>
+      <xsd:enumeration value="083"/>
+      <xsd:enumeration value="0831"/>
+      <xsd:enumeration value="084"/>
+      <xsd:enumeration value="0841"/>
+      <xsd:enumeration value="091"/>
+      <xsd:enumeration value="0911"/>
+      <xsd:enumeration value="0912"/>
+      <xsd:enumeration value="0913"/>
+      <xsd:enumeration value="0914"/>
+      <xsd:enumeration value="0915"/>
+      <xsd:enumeration value="0916"/>
+      <xsd:enumeration value="0917"/>
+      <xsd:enumeration value="092"/>
+      <xsd:enumeration value="0921"/>
+      <xsd:enumeration value="0922"/>
+      <xsd:enumeration value="0923"/>
+      <xsd:enumeration value="101"/>
+      <xsd:enumeration value="1011"/>
+      <xsd:enumeration value="1012"/>
+      <xsd:enumeration value="1013"/>
+      <xsd:enumeration value="1014"/>
+      <xsd:enumeration value="1015"/>
+      <xsd:enumeration value="102"/>
+      <xsd:enumeration value="1021"/>
+      <xsd:enumeration value="1022"/>
+      <xsd:enumeration value="103"/>
+      <xsd:enumeration value="1031"/>
+      <xsd:enumeration value="1032"/>
+      <xsd:enumeration value="104"/>
+      <xsd:enumeration value="1041"/>
+    </restriction>
+  </simpleType>
+  <element name="EducationLevel" type="tns:EducationLevelType"/>
+  <simpleType name="EducationLevelType">
+    <restriction base="xsd:string">
+      <enumeration value="1"/>
+      <enumeration value="24"/>
+      <enumeration value="25"/>
+      <enumeration value="44"/>
+      <enumeration value="45"/>
+      <enumeration value="5"/>
+      <enumeration value="6"/>
+      <enumeration value="7"/>
+      <enumeration value="8"/>
+      <enumeration value="9"/>
+    </restriction>
+  </simpleType>
+  <element name="DurationCode" type="tns:DurationCodeType"/>
+  <simpleType name="DurationCodeType">
+    <restriction base="xsd:string">
+      <enumeration value="3M"/>
+      <enumeration value="6M"/>
+      <enumeration value="1Y"/>
+      <enumeration value="MY"/>
+    </restriction>
+  </simpleType>
+  <element name="Qualifications">
+    <complexType>
+      <sequence>
+        <element ref="tns:QualificationAwarded" minOccurs="1" maxOccurs="unbounded"/>
+        <element ref="tns:OtherQualificationAwardedTerm" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:QualificationAwardedURL" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:QualificationAwardedDescription" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:AwardingBody" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:AwardingBodyContactInfo" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:AwardingBodyUrl" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+    <unique name="QualificationAwarded">
+      <selector xpath="tns:QualificationAwarded"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="OtherQualificationAwardedTerm">
+      <selector xpath="tns:OtherQualificationAwardedTerm"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="QualificationAwardedURL">
+      <selector xpath="tns:QualificationAwardedURL"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="QualificationAwardedDescription">
+      <selector xpath="tns:QualificationAwardedDescription"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="AwardingBody">
+      <selector xpath="tns:AwardingBody"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="AwardingBodyContactInfo">
+      <selector xpath="tns:AwardingBodyContactInfo"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="AwardingBodyUrl">
+      <selector xpath="tns:AwardingBodyUrl"/>
+      <field xpath="@language"/>
+    </unique>
+  </element>
+  <element name="QualificationAwarded" type="tns:i18nString"/>
+  <element name="OtherQualificationAwardedTerm" type="tns:i18nString"/>
+  <element name="QualificationAwardedURL" type="tns:i18nUrl"/>
+  <element name="QualificationAwardedDescription" type="tns:i18nString"/>
+  <element name="AwardingBody" type="tns:i18nString"/>
+  <element name="AwardingBodyContactInfo" type="tns:i18nString"/>
+  <element name="AwardingBodyUrl" type="tns:i18nUrl"/>
+  <element name="DurationInformation" type="tns:i18nString"/>
+  <element name="StartDate" type="tns:i18nString"/>
+  <element name="CourseLocation">
+    <complexType>
+      <sequence>
+        <element ref="tns:CourseLocationInfo" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="tns:CourseAddress" minOccurs="1" maxOccurs="unbounded"/>
+        <element ref="tns:SpecialArrangements" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+    <unique name="CourseLocationInfo">
+      <selector xpath="tns:CourseLocationInfo"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueCourseAddress">
+      <selector xpath="tns:CourseAddress"/>
+      <field xpath="@language"/>
+    </unique>
+    <unique name="UniqueSpecialArrangements">
+      <selector xpath="tns:SpecialArrangements"/>
+      <field xpath="@language"/>
+    </unique>
+  </element>
+  <element name="CourseLocationInfo" type="tns:i18nString"/>
+  <element name="CourseAddress" type="tns:i18nString"/>
+  <element name="SpecialArrangements" type="tns:i18nString"/>
+  <element name="InformationLanguage" type="tns:LanguageCode"/>
+  <simpleType name="LanguageCode">
+    <restriction base="xsd:string">
+      <enumeration value="eu"/>
+      <enumeration value="bg"/>
+      <enumeration value="ca"/>
+      <enumeration value="hr"/>
+      <enumeration value="cs"/>
+      <enumeration value="da"/>
+      <enumeration value="nl"/>
+      <enumeration value="en"/>
+      <enumeration value="et"/>
+      <enumeration value="fi"/>
+      <enumeration value="fr"/>
+      <enumeration value="gl"/>
+      <enumeration value="de"/>
+      <enumeration value="el"/>
+      <enumeration value="hu"/>
+      <enumeration value="is"/>
+      <enumeration value="ga"/>
+      <enumeration value="it"/>
+      <enumeration value="lv"/>
+      <enumeration value="lt"/>
+      <enumeration value="mt"/>
+      <enumeration value="no"/>
+      <enumeration value="pl"/>
+      <enumeration value="pt"/>
+      <enumeration value="ro"/>
+      <enumeration value="ru"/>
+      <enumeration value="gd"/>
+      <enumeration value="sk"/>
+      <enumeration value="sl"/>
+      <enumeration value="es"/>
+      <enumeration value="sv"/>
+      <enumeration value="tr"/>
+      <enumeration value="cy"/>
+      <enumeration value="sr"/>
+    </restriction>
+  </simpleType>
+  <element name="TeachingLanguage" type="tns:LanguageCode"/>
+  <element name="NqfLevel" type="xsd:string"/>
+  <element name="EqfLevel" type="tns:EqfLevelType"/>
+  <simpleType name="EqfLevelType">
+    <restriction base="xsd:integer">
+      <enumeration value="1"/>
+      <enumeration value="2"/>
+      <enumeration value="3"/>
+      <enumeration value="4"/>
+      <enumeration value="5"/>
+      <enumeration value="6"/>
+      <enumeration value="7"/>
+      <enumeration value="8"/>
+    </restriction>
+  </simpleType>
+  <element name="StudyType" type="tns:StudyTypeType"/>
+  <simpleType name="StudyTypeType">
+    <restriction base="xsd:string">
+      <enumeration value="FT"/>
+      <enumeration value="PT"/>
+      <enumeration value="FF"/>
+      <enumeration value="DL"/>
+      <enumeration value="ON"/>
+      <enumeration value="BL"/>
+      <enumeration value="WK"/>
+      <enumeration value="AP"/>
+      <enumeration value="TR"/>
+    </restriction>
+  </simpleType>
+  <element name="SpecialTargetGroup" type="tns:SpecialTargetGroupType"/>
+  <simpleType name="SpecialTargetGroupType">
+    <restriction base="xsd:string">
+      <enumeration value="AE"/>
+      <enumeration value="SN"/>
+      <enumeration value="IP"/>
+      <enumeration value="LC"/>
+    </restriction>
+  </simpleType>
+  <element name="AccessRequirements" type="tns:i18nString"/>
+  <element name="AdmissionProcedure" type="tns:i18nString"/>
+  <element name="Costs" type="tns:i18nString"/>
+  <element name="Grants" type="tns:i18nString"/>
+  <element name="Credits" type="tns:i18nString"/>
+  <element name="Url" type="tns:i18nUrl"/>
+  <element name="CountryCode" type="tns:CountryCode"/>
+  <simpleType name="CountryCode">
+    <restriction base="xsd:string">
+      <xsd:enumeration value="AT"/>
+      <xsd:enumeration value="AT11"/>
+      <xsd:enumeration value="AT12"/>
+      <xsd:enumeration value="AT13"/>
+      <xsd:enumeration value="AT21"/>
+      <xsd:enumeration value="AT22"/>
+      <xsd:enumeration value="AT31"/>
+      <xsd:enumeration value="AT32"/>
+      <xsd:enumeration value="AT33"/>
+      <xsd:enumeration value="AT34"/>
+      <xsd:enumeration value="BE"/>
+      <xsd:enumeration value="BE10"/>
+      <xsd:enumeration value="BE21"/>
+      <xsd:enumeration value="BE22"/>
+      <xsd:enumeration value="BE23"/>
+      <xsd:enumeration value="BE24"/>
+      <xsd:enumeration value="BE25"/>
+      <xsd:enumeration value="BE31"/>
+      <xsd:enumeration value="BE32"/>
+      <xsd:enumeration value="BE33"/>
+      <xsd:enumeration value="BE34"/>
+      <xsd:enumeration value="BE35"/>
+      <xsd:enumeration value="BG"/>
+      <xsd:enumeration value="BG31"/>
+      <xsd:enumeration value="BG32"/>
+      <xsd:enumeration value="BG33"/>
+      <xsd:enumeration value="BG34"/>
+      <xsd:enumeration value="BG41"/>
+      <xsd:enumeration value="BG42"/>
+      <xsd:enumeration value="CH"/>
+      <xsd:enumeration value="CH01"/>
+      <xsd:enumeration value="CH02"/>
+      <xsd:enumeration value="CH03"/>
+      <xsd:enumeration value="CH04"/>
+      <xsd:enumeration value="CH05"/>
+      <xsd:enumeration value="CH06"/>
+      <xsd:enumeration value="CH07"/>
+      <xsd:enumeration value="CY"/>
+      <xsd:enumeration value="CZ"/>
+      <xsd:enumeration value="CZ01"/>
+      <xsd:enumeration value="CZ02"/>
+      <xsd:enumeration value="CZ03"/>
+      <xsd:enumeration value="CZ04"/>
+      <xsd:enumeration value="CZ05"/>
+      <xsd:enumeration value="CZ06"/>
+      <xsd:enumeration value="CZ07"/>
+      <xsd:enumeration value="CZ08"/>
+      <xsd:enumeration value="DE"/>
+      <xsd:enumeration value="DE1"/>
+      <xsd:enumeration value="DE2"/>
+      <xsd:enumeration value="DE3"/>
+      <xsd:enumeration value="DE4"/>
+      <xsd:enumeration value="DE5"/>
+      <xsd:enumeration value="DE6"/>
+      <xsd:enumeration value="DE7"/>
+      <xsd:enumeration value="DE8"/>
+      <xsd:enumeration value="DE9"/>
+      <xsd:enumeration value="DEA"/>
+      <xsd:enumeration value="DEB"/>
+      <xsd:enumeration value="DEC"/>
+      <xsd:enumeration value="DED"/>
+      <xsd:enumeration value="DEE"/>
+      <xsd:enumeration value="DEF"/>
+      <xsd:enumeration value="DEG"/>
+      <xsd:enumeration value="DK"/>
+      <xsd:enumeration value="DK01"/>
+      <xsd:enumeration value="DK02"/>
+      <xsd:enumeration value="DK03"/>
+      <xsd:enumeration value="DK04"/>
+      <xsd:enumeration value="DK05"/>
+      <xsd:enumeration value="EE"/>
+      <xsd:enumeration value="ES"/>
+      <xsd:enumeration value="ES11"/>
+      <xsd:enumeration value="ES12"/>
+      <xsd:enumeration value="ES13"/>
+      <xsd:enumeration value="ES21"/>
+      <xsd:enumeration value="ES22"/>
+      <xsd:enumeration value="ES23"/>
+      <xsd:enumeration value="ES24"/>
+      <xsd:enumeration value="ES30"/>
+      <xsd:enumeration value="ES41"/>
+      <xsd:enumeration value="ES42"/>
+      <xsd:enumeration value="ES43"/>
+      <xsd:enumeration value="ES51"/>
+      <xsd:enumeration value="ES52"/>
+      <xsd:enumeration value="ES53"/>
+      <xsd:enumeration value="ES61"/>
+      <xsd:enumeration value="ES62"/>
+      <xsd:enumeration value="ES63"/>
+      <xsd:enumeration value="ES64"/>
+      <xsd:enumeration value="ES70"/>
+      <xsd:enumeration value="FI"/>
+      <xsd:enumeration value="FI13"/>
+      <xsd:enumeration value="FI18"/>
+      <xsd:enumeration value="FI19"/>
+      <xsd:enumeration value="FI1A"/>
+      <xsd:enumeration value="FI20"/>
+      <xsd:enumeration value="FR"/>
+      <xsd:enumeration value="FR10"/>
+      <xsd:enumeration value="FR21"/>
+      <xsd:enumeration value="FR22"/>
+      <xsd:enumeration value="FR23"/>
+      <xsd:enumeration value="FR24"/>
+      <xsd:enumeration value="FR25"/>
+      <xsd:enumeration value="FR26"/>
+      <xsd:enumeration value="FR30"/>
+      <xsd:enumeration value="FR41"/>
+      <xsd:enumeration value="FR42"/>
+      <xsd:enumeration value="FR43"/>
+      <xsd:enumeration value="FR51"/>
+      <xsd:enumeration value="FR52"/>
+      <xsd:enumeration value="FR53"/>
+      <xsd:enumeration value="FR61"/>
+      <xsd:enumeration value="FR62"/>
+      <xsd:enumeration value="FR63"/>
+      <xsd:enumeration value="FR71"/>
+      <xsd:enumeration value="FR72"/>
+      <xsd:enumeration value="FR81"/>
+      <xsd:enumeration value="FR82"/>
+      <xsd:enumeration value="FR83"/>
+      <xsd:enumeration value="FR91"/>
+      <xsd:enumeration value="FR92"/>
+      <xsd:enumeration value="FR93"/>
+      <xsd:enumeration value="FR94"/>
+      <xsd:enumeration value="FRZZ"/>
+      <xsd:enumeration value="EL"/>
+      <xsd:enumeration value="EL11"/>
+      <xsd:enumeration value="EL12"/>
+      <xsd:enumeration value="EL13"/>
+      <xsd:enumeration value="EL14"/>
+      <xsd:enumeration value="EL21"/>
+      <xsd:enumeration value="EL22"/>
+      <xsd:enumeration value="EL23"/>
+      <xsd:enumeration value="EL24"/>
+      <xsd:enumeration value="EL25"/>
+      <xsd:enumeration value="EL30"/>
+      <xsd:enumeration value="EL41"/>
+      <xsd:enumeration value="EL42"/>
+      <xsd:enumeration value="EL43"/>
+      <xsd:enumeration value="HU"/>
+      <xsd:enumeration value="HU10"/>
+      <xsd:enumeration value="HU21"/>
+      <xsd:enumeration value="HU22"/>
+      <xsd:enumeration value="HU23"/>
+      <xsd:enumeration value="HU31"/>
+      <xsd:enumeration value="HU32"/>
+      <xsd:enumeration value="HU33"/>
+      <xsd:enumeration value="IE"/>
+      <xsd:enumeration value="IE01"/>
+      <xsd:enumeration value="IE02"/>
+      <xsd:enumeration value="IT"/>
+      <xsd:enumeration value="ITC1"/>
+      <xsd:enumeration value="ITC2"/>
+      <xsd:enumeration value="ITC3"/>
+      <xsd:enumeration value="ITC4"/>
+      <xsd:enumeration value="ITD1"/>
+      <xsd:enumeration value="ITD2"/>
+      <xsd:enumeration value="ITD3"/>
+      <xsd:enumeration value="ITD4"/>
+      <xsd:enumeration value="ITD5"/>
+      <xsd:enumeration value="ITE1"/>
+      <xsd:enumeration value="ITE2"/>
+      <xsd:enumeration value="ITE3"/>
+      <xsd:enumeration value="ITE4"/>
+      <xsd:enumeration value="ITF1"/>
+      <xsd:enumeration value="ITF2"/>
+      <xsd:enumeration value="ITF3"/>
+      <xsd:enumeration value="ITF4"/>
+      <xsd:enumeration value="ITF5"/>
+      <xsd:enumeration value="ITF6"/>
+      <xsd:enumeration value="ITG1"/>
+      <xsd:enumeration value="ITG2"/>
+      <xsd:enumeration value="LT"/>
+      <xsd:enumeration value="LU"/>
+      <xsd:enumeration value="LV"/>
+      <xsd:enumeration value="MT"/>
+      <xsd:enumeration value="NL"/>
+      <xsd:enumeration value="NL11"/>
+      <xsd:enumeration value="NL12"/>
+      <xsd:enumeration value="NL13"/>
+      <xsd:enumeration value="NL21"/>
+      <xsd:enumeration value="NL22"/>
+      <xsd:enumeration value="NL23"/>
+      <xsd:enumeration value="NL31"/>
+      <xsd:enumeration value="NL32"/>
+      <xsd:enumeration value="NL33"/>
+      <xsd:enumeration value="NL34"/>
+      <xsd:enumeration value="NL41"/>
+      <xsd:enumeration value="NL42"/>
+      <xsd:enumeration value="PL"/>
+      <xsd:enumeration value="PL11"/>
+      <xsd:enumeration value="PL12"/>
+      <xsd:enumeration value="PL21"/>
+      <xsd:enumeration value="PL22"/>
+      <xsd:enumeration value="PL31"/>
+      <xsd:enumeration value="PL32"/>
+      <xsd:enumeration value="PL33"/>
+      <xsd:enumeration value="PL34"/>
+      <xsd:enumeration value="PL41"/>
+      <xsd:enumeration value="PL42"/>
+      <xsd:enumeration value="PL43"/>
+      <xsd:enumeration value="PL51"/>
+      <xsd:enumeration value="PL52"/>
+      <xsd:enumeration value="PL61"/>
+      <xsd:enumeration value="PL62"/>
+      <xsd:enumeration value="PL63"/>
+      <xsd:enumeration value="PT"/>
+      <xsd:enumeration value="PT11"/>
+      <xsd:enumeration value="PT15"/>
+      <xsd:enumeration value="PT16"/>
+      <xsd:enumeration value="PT17"/>
+      <xsd:enumeration value="PT18"/>
+      <xsd:enumeration value="PT20"/>
+      <xsd:enumeration value="PT30"/>
+      <xsd:enumeration value="RO"/>
+      <xsd:enumeration value="RO11"/>
+      <xsd:enumeration value="RO12"/>
+      <xsd:enumeration value="RO21"/>
+      <xsd:enumeration value="RO22"/>
+      <xsd:enumeration value="RO31"/>
+      <xsd:enumeration value="RO32"/>
+      <xsd:enumeration value="RO41"/>
+      <xsd:enumeration value="RO42"/>
+			<xsd:enumeration value="RS"/>
+			<xsd:enumeration value="RS1"/>
+			<xsd:enumeration value="RS2"/>
+			<xsd:enumeration value="RS3"/>
+			<xsd:enumeration value="RS4"/>
+			<xsd:enumeration value="RS5"/>      
+      <xsd:enumeration value="SE"/>
+      <xsd:enumeration value="SE11"/>
+      <xsd:enumeration value="SE12"/>
+      <xsd:enumeration value="SE21"/>
+      <xsd:enumeration value="SE22"/>
+      <xsd:enumeration value="SE23"/>
+      <xsd:enumeration value="SE31"/>
+      <xsd:enumeration value="SE32"/>
+      <xsd:enumeration value="SE33"/>
+      <xsd:enumeration value="SI"/>
+      <xsd:enumeration value="SI01"/>
+      <xsd:enumeration value="SI02"/>
+      <xsd:enumeration value="SK"/>
+      <xsd:enumeration value="SK01"/>
+      <xsd:enumeration value="SK02"/>
+      <xsd:enumeration value="SK03"/>
+      <xsd:enumeration value="SK04"/>
+      <xsd:enumeration value="UK"/>
+      <xsd:enumeration value="UKC"/>
+      <xsd:enumeration value="UKD"/>
+      <xsd:enumeration value="UKE"/>
+      <xsd:enumeration value="UKF"/>
+      <xsd:enumeration value="UKG"/>
+      <xsd:enumeration value="UKH"/>
+      <xsd:enumeration value="UKI"/>
+      <xsd:enumeration value="UKJ"/>
+      <xsd:enumeration value="UKK"/>
+      <xsd:enumeration value="UKL"/>
+      <xsd:enumeration value="UKM"/>
+      <xsd:enumeration value="UKN"/>
+      <xsd:enumeration value="HR"/>
+      <xsd:enumeration value="HR01"/>
+      <xsd:enumeration value="HR02"/>
+      <xsd:enumeration value="HR03"/>
+      <xsd:enumeration value="TR"/>
+      <xsd:enumeration value="TR1"/>
+      <xsd:enumeration value="TR2"/>
+      <xsd:enumeration value="TR3"/>
+      <xsd:enumeration value="TR4"/>
+      <xsd:enumeration value="TR5"/>
+      <xsd:enumeration value="TR6"/>
+      <xsd:enumeration value="TR7"/>
+      <xsd:enumeration value="TR8"/>
+      <xsd:enumeration value="TR9"/>
+      <xsd:enumeration value="TRA"/>
+      <xsd:enumeration value="TRB"/>
+      <xsd:enumeration value="TRC"/>
+      <xsd:enumeration value="IS"/>
+      <xsd:enumeration value="LI"/>
+      <xsd:enumeration value="NO"/>
+      <xsd:enumeration value="NO01"/>
+      <xsd:enumeration value="NO02"/>
+      <xsd:enumeration value="NO03"/>
+      <xsd:enumeration value="NO04"/>
+      <xsd:enumeration value="NO05"/>
+      <xsd:enumeration value="NO06"/>
+      <xsd:enumeration value="NO07"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="customUrl">
+    <restriction base="xsd:anyURI">
+      <pattern value="http://.*"/>
+      <pattern value="https://.*"/>
+    </restriction>
+  </simpleType>
+</schema>
