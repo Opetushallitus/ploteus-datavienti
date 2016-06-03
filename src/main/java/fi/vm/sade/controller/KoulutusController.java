@@ -28,9 +28,12 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
+import fi.vm.sade.organisaatio.api.search.OrganisaatioHakutulos;
+import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakukohdeHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakutuloksetV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.OrganisaatioV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.TarjoajaHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusV1RDTO;
@@ -41,7 +44,7 @@ public class KoulutusController {
 	private static String organisaatioURI = "https://testi.virkailija.opintopolku.fi/organisaatio-service/rest/";
 	private static final String JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=UTF-8";
 	private ArrayList<KoulutusHakutulosV1RDTO> haetutKoulutukset;
-	private ArrayList<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> haetutOrganisaatiot;
+	private ArrayList<OrganisaatioRDTO> haetutOrganisaatiot;
 	private WebResource v1KoulutusResource;
 	private WebResource v1OrganisaatioResource;
 
@@ -49,7 +52,7 @@ public class KoulutusController {
 	public String getKoulutukset() throws IOException {
 
 		haetutKoulutukset = new ArrayList<KoulutusHakutulosV1RDTO>();
-		haetutOrganisaatiot = new ArrayList<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>>();
+		haetutOrganisaatiot = new ArrayList<OrganisaatioRDTO>();
 		ObjectMapper mapper = new ObjectMapper();
 		JacksonJsonProvider jacksProv = new JacksonJsonProvider(mapper);
 		ClientConfig cc = new DefaultClientConfig();
@@ -82,14 +85,14 @@ public class KoulutusController {
 		Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = organisaationHakutulos.getTulokset().iterator();
 		while(iter.hasNext()){
 			TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData = iter.next();
-			ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> organisaatio = null;
-			//try {
-			//organisaatio = searchOrganisation(organisaatioData.getOid());
-			//} catch (Exception e) {
-			// TODO Auto-generated catch block
-			//	e.printStackTrace();
-			//}
-			//haetutOrganisaatiot.add(organisaatio.getResult().getTulokset().get(0).getTulokset().get(0));
+			OrganisaatioRDTO organisaatio = null;
+			try {
+				organisaatio = searchOrganisation(organisaatioData.getOid());
+			} catch (Exception e) {
+			 // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			haetutOrganisaatiot.add(organisaatio);
 			Iterator<KoulutusHakutulosV1RDTO> iter2 = organisaatioData.getTulokset().iterator();
 			while(iter2.hasNext()){
 				KoulutusHakutulosV1RDTO koulutusData = iter2.next();
@@ -173,11 +176,10 @@ public class KoulutusController {
 				});
 	}
 	
-	@SuppressWarnings("unchecked")
-	public ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> searchOrganisation(String oid) throws Exception {
-		return (ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>) getWithRetries(
+	public OrganisaatioRDTO searchOrganisation(String oid) throws Exception {
+		return (OrganisaatioRDTO ) getWithRetries(
 				v1OrganisaatioResource.path(oid),
-				new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>() {
+				new GenericType<OrganisaatioRDTO>() {
 				});
 	}
 

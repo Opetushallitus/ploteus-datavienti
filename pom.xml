@@ -19,6 +19,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tarjonta.version>2016-07-SNAPSHOT</tarjonta.version>
+		<organisaatio.version>2015-13</organisaatio.version>
 	</properties>
 
 	<repositories>
@@ -80,6 +81,13 @@
 			<artifactId>tarjonta-api</artifactId>
 			<version>${tarjonta.version}</version>
 		</dependency>
+		
+		<dependency>
+            <groupId>fi.vm.sade.organisaatio</groupId>
+            <artifactId>organisaatio-api</artifactId>
+            <version>${organisaatio.version}</version>
+        </dependency>
+		
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-core</artifactId>
