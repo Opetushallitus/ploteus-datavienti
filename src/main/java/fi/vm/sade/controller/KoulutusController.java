@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
 import eu.europa.ec.learningopportunities.v0_5_10.LanguageCode;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
+import fi.vm.sade.model.Koulutus;
 import fi.vm.sade.organisaatio.api.search.OrganisaatioHakutulos;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakukohdeHakutulosV1RDTO;
@@ -39,7 +41,14 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.OrganisaatioV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.TarjoajaHakutulosV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ErikoisammattitutkintoV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KorkeakouluOpintoV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatillinenPerustutkintoV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakouluV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
 
 @RestController
 public class KoulutusController {
@@ -82,9 +91,9 @@ public class KoulutusController {
 		organisaatioResult = searchOrganisationsEducations(""); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
 		
 
-		HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> organisaationHakutulos = organisaatioResult.getResult(); //poistetaan result container
+		HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = organisaatioResult.getResult(); //poistetaan result container
 
-		Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = organisaationHakutulos.getTulokset().iterator();
+		Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = hakutulokset.getTulokset().iterator();
 		while(iter.hasNext()){	//iteroidaan kaikki organisaatiot lapi tuloksesta
 			TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData = iter.next();
 			OrganisaatioRDTO organisaatio = null;
@@ -97,17 +106,99 @@ public class KoulutusController {
 				if(koulutusData != null){
 					haetutKoulutukset.add(koulutusData);	//lisataan koulutus
 					status = haetutKoulutukset.size() / 25000.00; //337.00;
-					System.out.println(status);
+					//System.out.println(status);
 					status = (Math.ceil(status * 100.0) / 100.0);
-					System.out.println(status);
+					//System.out.println(status);
 				}
 			}
 		}
 		Iterator<KoulutusHakutulosV1RDTO> iter3 = haetutKoulutukset.iterator();
+		ArrayList<String> myList = new ArrayList<String>();
+		myList.add("");
 		while(iter3.hasNext()){	//iteroidaan koulutukset ja luodaan niista LearningOpportunityja
 			KoulutusHakutulosV1RDTO kh = iter3.next();
-			LearningOpportunity lo = of.createLearningOpportunity();
+			//System.out.println(kh.getToteutustyyppiEnum().name());
+			if(kh.getToteutustyyppiEnum().name() == "AMMATILLINEN_PERUSTUTKINTO"){
+				ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> koulutusResult = searchAmmatillinenPerustutkinto(kh.getOid());
+				KoulutusAmmatillinenPerustutkintoV1RDTO koulutus = koulutusResult.getResult();
+				//KoulutusV1RDTO koulutus = koulutusResult.getResult();
+				System.out.println(koulutus.getKuvausKomoto());
+			}
+			else if(kh.getToteutustyyppiEnum().name() == "AMMATTITUTKINTO"){
+				ResultV1RDTO<AmmattitutkintoV1RDTO> koulutusResult = searchAmmattitutkinto(kh.getOid());
+				AmmattitutkintoV1RDTO koulutus = koulutusResult.getResult();
+				System.out.println(koulutus.getKuvausKomoto());
+			}
+			else if(kh.getToteutustyyppiEnum().name() == "ERIKOISAMMATTITUTKINTO"){
+				ResultV1RDTO<ErikoisammattitutkintoV1RDTO> koulutusResult = searchErikoisammattitutkinto(kh.getOid());
+				ErikoisammattitutkintoV1RDTO koulutus = koulutusResult.getResult();
+				System.out.println(koulutus.getKuvausKomoto());
+			}
+			else if(kh.getToteutustyyppiEnum().name() == "KORKEAKOULUTUS"){
+				ResultV1RDTO<KoulutusKorkeakouluV1RDTO> koulutusResult = searchKoulutusKorkeakoulu(kh.getOid());
+				KoulutusKorkeakouluV1RDTO koulutus = koulutusResult.getResult();
+				System.out.println(koulutus.getKuvausKomoto());
+			}
+			else if(kh.getToteutustyyppiEnum().name() == "AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS"){
+				ResultV1RDTO<ValmistavaKoulutusV1RDTO> koulutusResult = searchValmistavaKoulutus(kh.getOid());
+				ValmistavaKoulutusV1RDTO koulutus = koulutusResult.getResult();
+				System.out.println(koulutus.getKuvausKomoto());
+			}
+			else if(kh.getToteutustyyppiEnum().name() == "LUKIOKOULUTUS"){
+				ResultV1RDTO<KoulutusLukioV1RDTO> koulutusResult = searchKoulutusLukio(kh.getOid());
+				KoulutusLukioV1RDTO koulutus = koulutusResult.getResult();
+				System.out.println(koulutus.getKuvausKomoto());
+			}
+			else{
+				//System.out.println("SKIPPING");
+			}
 			
+			String search = kh.getKoulutusasteTyyppi().name();
+			if(!myList.contains(search)){
+			    myList.add(search);
+			}
+					
+			/* 
+			 * getToteutustyyppiEnum()
+			 * ----------------------
+			 * AMMATILLINEN_PERUSTUTKINTO
+			 * AMMATILLINEN_PERUSTUTKINTO_NAYTTOTUTKINTONA
+			 * AMMATTITUTKINTO
+			 * ERIKOISAMMATTITUTKINTO
+			 * KORKEAKOULUTUS
+			 * KORKEAKOULUOPINTO
+			 * AMMATILLISEEN_PERUSKOULUTUKSEEN_OHJAAVA_JA_VALMISTAVA_KOULUTUS
+			 * LUKIOKOULUTUS
+			 * MAAHANMUUTTAJIEN_AMMATILLISEEN_PERUSKOULUTUKSEEN_VALMISTAVA_KOULUTUS
+			 * AMMATILLISEEN_PERUSKOULUTUKSEEN_VALMENTAVA
+			 * VALMENTAVA_JA_KUNTOUTTAVA_OPETUS_JA_OHJAUS
+			 * AMMATILLINEN_PERUSKOULUTUS_ERITYISOPETUKSENA
+			 * AMMATILLISEEN_PERUSKOULUTUKSEEN_VALMENTAVA_ER
+			 * VAPAAN_SIVISTYSTYON_KOULUTUS
+			 * PERUSOPETUKSEN_LISAOPETUS
+			 * MAAHANMUUTTAJIEN_JA_VIERASKIELISTEN_LUKIOKOULUTUKSEEN_VALMISTAVA_KOULUTUS
+			 * LUKIOKOULUTUS_AIKUISTEN_OPPIMAARA
+			 * AIKUISTEN_PERUSOPETUS
+			 * EB_RP_ISH
+			 * 
+			 * getKoulutusasteTyyppi()
+			 * -----------------------
+			 * AMMATILLINEN_PERUSKOULUTUS
+			 * AMMATTITUTKINTO
+			 * ERIKOISAMMATTITUTKINTO
+			 * KORKEAKOULUTUS
+			 * AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS
+			 * LUKIOKOULUTUS
+			 * MAAHANM_AMM_VALMISTAVA_KOULUTUS
+			 * TUNTEMATON
+			 * VALMENTAVA_JA_KUNTOUTTAVA_OPETUS
+			 * VAPAAN_SIVISTYSTYON_KOULUTUS
+			 * PERUSOPETUKSEN_LISAOPETUS
+			 * MAAHANM_LUKIO_VALMISTAVA_KOULUTUS
+			 */
+			
+			LearningOpportunity lo = of.createLearningOpportunity();
+			//System.out.println("komoto: " + kh.getKoulutuksenTarjoajaKomoto());
 			lo.setLearningOpportunityId(kh.getOid());
 			lo.setCountryCode("FI");
 			I18NNonEmptyString i18NonEmptyString = of.createI18NNonEmptyString();
@@ -118,15 +209,57 @@ public class KoulutusController {
 			
 			LearningOpportunitys.add(lo);
 		}
+		for(String elem : myList){
+			System.out.println(elem);
+		}
 		status = 1.0;
 		return "";
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	public ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> searchEducation(String oid) throws Exception {
-		return (ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>) getWithRetries(
-				v1KoulutusResource.path("search").queryParam("koulutusOid", oid).queryParam("tila", "KAIKKI"),
-				new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>() {
+	public ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> searchAmmatillinenPerustutkinto(String oid) throws Exception {
+		return (ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>) getWithRetries(
+				v1KoulutusResource.path(oid),
+				new GenericType<ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>>() {
+				});
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ResultV1RDTO<AmmattitutkintoV1RDTO> searchAmmattitutkinto(String oid) throws Exception {
+		return (ResultV1RDTO<AmmattitutkintoV1RDTO>) getWithRetries(
+				v1KoulutusResource.path(oid),
+				new GenericType<ResultV1RDTO<AmmattitutkintoV1RDTO>>() {
+				});
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ResultV1RDTO<ErikoisammattitutkintoV1RDTO> searchErikoisammattitutkinto(String oid) throws Exception {
+		return (ResultV1RDTO<ErikoisammattitutkintoV1RDTO>) getWithRetries(
+				v1KoulutusResource.path(oid),
+				new GenericType<ResultV1RDTO<ErikoisammattitutkintoV1RDTO>>() {
+				});
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ResultV1RDTO<KoulutusKorkeakouluV1RDTO> searchKoulutusKorkeakoulu(String oid) throws Exception {
+		return (ResultV1RDTO<KoulutusKorkeakouluV1RDTO>) getWithRetries(
+				v1KoulutusResource.path(oid),
+				new GenericType<ResultV1RDTO<KoulutusKorkeakouluV1RDTO>>() {
+				});
+	}
+	@SuppressWarnings("unchecked")
+	public ResultV1RDTO<ValmistavaKoulutusV1RDTO> searchValmistavaKoulutus(String oid) throws Exception {
+		return (ResultV1RDTO<ValmistavaKoulutusV1RDTO>) getWithRetries(
+				v1KoulutusResource.path(oid),
+				new GenericType<ResultV1RDTO<ValmistavaKoulutusV1RDTO>>() {
+				});
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ResultV1RDTO<KoulutusLukioV1RDTO> searchKoulutusLukio(String oid) throws Exception {
+		return (ResultV1RDTO<KoulutusLukioV1RDTO>) getWithRetries(
+				v1KoulutusResource.path(oid),
+				new GenericType<ResultV1RDTO<KoulutusLukioV1RDTO>>() {
 				});
 	}
 	
@@ -141,11 +274,11 @@ public class KoulutusController {
 	public ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> searchOrganisationsEducations(String OrganisationOid) throws Exception {
 		if (OrganisationOid == "") {
 			return (ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>) getWithRetries(v1KoulutusResource
-					.path("search").queryParam("tila", "JULKAISTU"),
+					.path("search").queryParam("tila", "JULKAISTU").queryParam("meta", "true").queryParam("img", "false"),
 					new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>(){});
 		} else {
 			return (ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>) getWithRetries(v1KoulutusResource
-					.path("search").queryParam("organisationOid", OrganisationOid).queryParam("tila", "JULKAISTU"),
+					.path("search").queryParam("organisationOid", OrganisationOid).queryParam("tila", "JULKAISTU").queryParam("meta", "true").queryParam("img", "false"),
 					new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>(){});
 		}
 	}
