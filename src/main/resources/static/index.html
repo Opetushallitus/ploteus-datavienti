@@ -72,7 +72,6 @@ var interval;
 $("#infoDiv").hide();
 
 function start(){
-	setTimeout(interval = setInterval("checkStatus()", 600), 1000);
 	$.ajax({
 		type : "GET",
 		url : "/koulutus/",
@@ -81,7 +80,8 @@ function start(){
 		success : function(data) {
 			console.log("data: " + data);
 		}
-	});	
+	});
+	interval = setInterval("checkStatus()", 600);
 }
 function checkStatus(){
 	$.ajax({
@@ -94,7 +94,7 @@ function checkStatus(){
 			$("#progressbar").css("width", data * 100 + "%");
 			$("#progressbar").attr('aria-valuenow', data * 100);
 			$("#progressbar").html(data * 100 + "%");
-			if(data => 1.0){
+			if(data >= 1.0){
 				clearInterval(interval);
 				$("#infoDiv").show();
 			}

@@ -61,7 +61,7 @@ public class KoulutusController {
 	}
 	@RequestMapping("/koulutus/")
 	public String getKoulutukset() throws Exception {
-		status = 0.0;
+		status = 0.01;
 		haetutKoulutukset = new ArrayList<KoulutusHakutulosV1RDTO>();
 		haetutOrganisaatiot = new ArrayList<OrganisaatioRDTO>();
 		LearningOpportunitys = new ArrayList<LearningOpportunity>();
