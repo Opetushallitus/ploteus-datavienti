@@ -1,0 +1,26 @@
+#mainContent {
+	border: 0.1em solid grey;
+	width: 80%;
+	min-height: 100%;
+	margin-top: 5em;
+	margin-left: 5em;
+}
+
+.progress {
+	display: inline-block;
+	width: 75%;
+	height: 100%;
+	margin-bottom: 0px;
+	}
+
+#startDiv {
+	margin: 15px;
+	width: 5%;
+	display: inline-block;
+}
+
+#infoDiv {
+	margin: 15px;
+	width: 10%;
+	display: inline-block;
+}

@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-<title>Luukku.com</title>
+<title>Eu-tiedonsiirto</title>
 
 <!-- Bootstrap -->
 
@@ -22,6 +22,7 @@
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
 	integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
 	crossorigin="anonymous">
+
 <!-- Optional theme -->
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
@@ -33,7 +34,7 @@
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script src="./bower_components/jquery/dist/jquery.min.js"
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"
 	type="text/javascript"></script>
 
 <!-- Latest compiled and minified JavaScript -->
@@ -43,3 +44,63 @@
 	crossorigin="anonymous"></script>
 <link rel="stylesheet" href="./custom.css">
 
+
+<body>
+	<section id="mainContent">
+	<h2 style="margin-left: 15px;">Eu-tiedonsiirto</h2>
+		<div id="startDiv">
+			<button type="button" onClick="start()" class="btn btn-default" aria-label="Left Align">
+				<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+				Aloita
+			</button>
+		</div>
+		<div class="progress">
+			<div id="progressbar" class="progress-bar progress-bar-striped active"
+				role="progressbar" aria-valuenow="0" aria-valuemin="0"
+				aria-valuemax="100" style="width: 0%">
+				<span class="sr-only">0% Complete</span> 
+				0%
+			</div>
+		</div>
+		<div id="infoDiv">
+			Valmis
+		</div>
+	</section>
+</body>
+<script type='text/javascript'>
+var interval;
+$("#infoDiv").hide();
+
+function start(){
+	setTimeout(interval = setInterval("checkStatus()", 600), 1000);
+	$.ajax({
+		type : "GET",
+		url : "/koulutus/",
+		contentType : "application/json; charset=utf-8",
+		dataType : "json",
+		success : function(data) {
+			console.log("data: " + data);
+		}
+	});	
+}
+function checkStatus(){
+	$.ajax({
+		type : "GET",
+		url : "/koulutus/status",
+		contentType : "application/json; charset=utf-8",
+		dataType : "json",
+		success : function(data) {
+			console.log("data: " + data);
+			$("#progressbar").css("width", data * 100 + "%");
+			$("#progressbar").attr('aria-valuenow', data * 100);
+			$("#progressbar").html(data * 100 + "%");
+			if(data => 1.0){
+				clearInterval(interval);
+				$("#infoDiv").show();
+			}
+		}
+	});
+}
+</script>
+</head>
+</html>

@@ -54,9 +54,14 @@ public class KoulutusController {
 	private WebResource v1KoulutusResource;
 	private WebResource v1OrganisaatioResource;
 
+	private double status;
+	@RequestMapping("koulutus/status")
+	public String getStatus(){
+		return String.valueOf(status);
+	}
 	@RequestMapping("/koulutus/")
 	public String getKoulutukset() throws Exception {
-
+		status = 0.0;
 		haetutKoulutukset = new ArrayList<KoulutusHakutulosV1RDTO>();
 		haetutOrganisaatiot = new ArrayList<OrganisaatioRDTO>();
 		LearningOpportunitys = new ArrayList<LearningOpportunity>();
@@ -74,7 +79,7 @@ public class KoulutusController {
 		
 		ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> organisaatioResult = null;
 		
-		organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.53642770753"); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
+		organisaatioResult = searchOrganisationsEducations(""); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
 		
 
 		HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> organisaationHakutulos = organisaatioResult.getResult(); //poistetaan result container
@@ -91,6 +96,10 @@ public class KoulutusController {
 				KoulutusHakutulosV1RDTO koulutusData = iter2.next();
 				if(koulutusData != null){
 					haetutKoulutukset.add(koulutusData);	//lisataan koulutus
+					status = haetutKoulutukset.size() / 25000.00; //337.00;
+					System.out.println(status);
+					status = (Math.ceil(status * 100.0) / 100.0);
+					System.out.println(status);
 				}
 			}
 		}
@@ -109,6 +118,7 @@ public class KoulutusController {
 			
 			LearningOpportunitys.add(lo);
 		}
+		status = 1.0;
 		return "";
 	}
 
