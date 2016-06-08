@@ -33,6 +33,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.LanguageCode;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import fi.vm.sade.model.Koulutus;
+import fi.vm.sade.model.KoulutusAsteTyyppi;
 import fi.vm.sade.organisaatio.api.search.OrganisaatioHakutulos;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakukohdeHakutulosV1RDTO;
@@ -49,6 +50,7 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakoulu
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
+import fi.vm.sade.tarjonta.service.types.KoulutusTyyppi;
 
 @RestController
 public class KoulutusController {
@@ -117,24 +119,28 @@ public class KoulutusController {
 		myList.add("");
 		while(iter3.hasNext()){	//iteroidaan koulutukset ja luodaan niista LearningOpportunityja
 			KoulutusHakutulosV1RDTO kh = iter3.next();
+			
+			switch(kh.getToteutustyyppiEnum().name()) {
+			case KoulutusAsteTyyppi.TUNTEMATON:
+			}
 			//System.out.println(kh.getToteutustyyppiEnum().name());
-			if(kh.getToteutustyyppiEnum().name() == "AMMATILLINEN_PERUSTUTKINTO"){
+			if(kh.getToteutustyyppiEnum().name().equals(KoulutusAsteTyyppi.TUNTEMATON)){
 				ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> koulutusResult = searchAmmatillinenPerustutkinto(kh.getOid());
 				KoulutusAmmatillinenPerustutkintoV1RDTO koulutus = koulutusResult.getResult();
 				//KoulutusV1RDTO koulutus = koulutusResult.getResult();
 				System.out.println(koulutus.getKuvausKomoto());
 			}
-			else if(kh.getToteutustyyppiEnum().name() == "AMMATTITUTKINTO"){
+			else if(kh.getToteutustyyppiEnum().name().equals(KoulutusAsteTyyppi.AMMATTITUTKINTO)){
 				ResultV1RDTO<AmmattitutkintoV1RDTO> koulutusResult = searchAmmattitutkinto(kh.getOid());
 				AmmattitutkintoV1RDTO koulutus = koulutusResult.getResult();
 				System.out.println(koulutus.getKuvausKomoto());
 			}
-			else if(kh.getToteutustyyppiEnum().name() == "ERIKOISAMMATTITUTKINTO"){
+			else if(kh.getToteutustyyppiEnum().name().equals(KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO)){
 				ResultV1RDTO<ErikoisammattitutkintoV1RDTO> koulutusResult = searchErikoisammattitutkinto(kh.getOid());
 				ErikoisammattitutkintoV1RDTO koulutus = koulutusResult.getResult();
 				System.out.println(koulutus.getKuvausKomoto());
 			}
-			else if(kh.getToteutustyyppiEnum().name() == "KORKEAKOULUTUS"){
+			else if(kh.getToteutustyyppiEnum().name().equals(KoulutusAsteTyyppi.KORKEAKOULUTUS)){
 				ResultV1RDTO<KoulutusKorkeakouluV1RDTO> koulutusResult = searchKoulutusKorkeakoulu(kh.getOid());
 				KoulutusKorkeakouluV1RDTO koulutus = koulutusResult.getResult();
 				System.out.println(koulutus.getKuvausKomoto());
