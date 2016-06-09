@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-<title>Eu-tiedonsiirto</title>
+<title>Koulutustarjonta Ploteukseen -tiedonsiirto</title>
 
 <!-- Bootstrap -->
 
@@ -18,19 +18,12 @@
     <![endif]-->
 
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
 	integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
 	crossorigin="anonymous">
 
-<!-- Optional theme -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
-	integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
-	crossorigin="anonymous">
 <!--  new theme -->
-<link rel="stylesheet"
-	href="https://bootswatch.com/readable/bootstrap.min.css">
+<link rel="stylesheet" href="https://bootswatch.com/readable/bootstrap.min.css">
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -43,9 +36,11 @@
 	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
 	crossorigin="anonymous"></script>
 <link rel="stylesheet" href="./custom.css">
+
+</head>
 <body>
 	<section id="mainContent">
-		<h2 style="margin-left: 15px;">Eu-tiedonsiirto</h2>
+		<h2 style="margin-left: 15px;">Koulutustarjonta Ploteukseen -tiedonsiirto</h2>
 		<div>
 			<div id="startDiv">
 				<button type="button" onClick="start()" class="btn btn-default"
@@ -62,8 +57,8 @@
 					<span class="sr-only">0% Complete</span> 0%
 				</div>
 			</div>
-			<div id="infoDiv"><i>Valmis</i></div>
 		</div>
+		<div>
 		<div id="downloadButtonDiv">
 			<button id="downloadButton" type="button" onClick="downloadXMLFile()" class="btn btn-default"
 				aria-label="Left Align">
@@ -71,16 +66,16 @@
 				Lataa Tiedosto
 			</button>
 		</div>
+		<div id="infoDiv"></div>
+		<div id="infoTimeDiv"></div>
+		</div>
 	</section>
-</body>
-<script type='text/javascript'>
+	<script type='text/javascript'>
 	var interval;
-	$("#infoDiv").hide();
 	$("#downloadButton").prop("disabled",true);
 
 	function start() {
 		$("#downloadButton").prop("disabled",true);
-		$("#infoDiv").hide();
 		$.ajax({
 			type : "GET",
 			url : "/koulutus/",
@@ -90,7 +85,7 @@
 				console.log("data: " + data);
 			}
 		});
-		interval = setInterval("checkStatus()", 600);
+		interval = setInterval("checkStatus()", 1000);
 	}
 	function checkStatus() {
 		$.ajax({
@@ -99,13 +94,14 @@
 			contentType : "application/json; charset=utf-8",
 			dataType : "json",
 			success : function(data) {
-				console.log("data: " + data);
-				$("#progressbar").css("width", data * 100 + "%");
-				$("#progressbar").attr('aria-valuenow', data * 100);
-				$("#progressbar").html(data * 100 + "%");
-				if (data >= 1.0) {
+				console.log("data: " + data.status);
+				$("#progressbar").css("width", Math.round(data.status * 100) + "%");
+				$("#progressbar").attr('aria-valuenow', Math.round(data.status * 100));
+				$("#progressbar").html(Math.round(data.status * 100) + "%");
+				$("#infoDiv").html("<i>" + data.statusText + "</i>");
+				$("#infoTimeDiv").html("<i>Atvioitu kesto: " + Math.round(data.durationEstimate * 100) / 100 + " minuuttia</i>");
+				if (data.status >= 1.0) {
 					clearInterval(interval);
-					$("#infoDiv").show();
 					$("#downloadButton").prop("disabled",false);
 				}
 			}
@@ -115,5 +111,6 @@
 		window.location='/download';
 	}
 </script>
-</head>
+</body>
+
 </html>

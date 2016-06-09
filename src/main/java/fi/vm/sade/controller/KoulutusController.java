@@ -15,7 +15,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.helpers.IOUtils;
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +33,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.LanguageCode;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import fi.vm.sade.model.KoulutusAsteTyyppi;
+import fi.vm.sade.model.StatusObject;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakutuloksetV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
@@ -59,9 +62,13 @@ public class KoulutusController {
 	private static final String FILE_PATH = "pom.xml";
 	
 	private double status;
+	private StatusObject statusObject;
+	
 	@RequestMapping("koulutus/status")
-	public String getStatus(){
-		return String.valueOf(status);
+	public String getStatus() throws JsonGenerationException, JsonMappingException, IOException{
+		ObjectMapper mapper = new ObjectMapper();
+		String JsonStatus = mapper.writeValueAsString(statusObject);
+		return JsonStatus;
 	}
 	
 	@GET
@@ -87,6 +94,10 @@ public class KoulutusController {
 	@RequestMapping("/koulutus/")
 	public String getKoulutukset() throws Exception {
 		status = 0.01;
+		statusObject = new StatusObject();
+		statusObject.setDurationEstimate(0.0);
+		statusObject.setStatus(status);
+		statusObject.setStatusText("Alustetaan...");
 		haetutKoulutukset = new ArrayList<KoulutusHakutulosV1RDTO>();
 		haetutOrganisaatiot = new ArrayList<OrganisaatioRDTO>();
 		LearningOpportunitys = new ArrayList<LearningOpportunity>();
@@ -97,40 +108,45 @@ public class KoulutusController {
 		cc.getSingletons().add(jacksProv);
 		Client clientWithJacksonSerializer = Client.create(cc);
 		
+		
 		v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI + "v1/koulutus"); //tarjonnan koulutus url
 		v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI + "organisaatio"); //organisaatio palvelun url
 		
 		ObjectFactory of = new ObjectFactory();
 		
 		ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> organisaatioResult = null;
-		
+		statusObject.setStatusText("Haetaan Organisaatio dataa...");
 		organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.53642770753"); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
-		
-
 		HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = organisaatioResult.getResult(); //poistetaan result container
-
 		Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = hakutulokset.getTulokset().iterator();
+		double numberOfOrganisations = hakutulokset.getTulokset().size();
+		double numberOfCurrentOrganisation = 0.0;
 		while(iter.hasNext()){	//iteroidaan kaikki organisaatiot lapi tuloksesta
 			TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData = iter.next();
 			OrganisaatioRDTO organisaatio = null;
 			organisaatio = searchOrganisation(organisaatioData.getOid());
 			haetutOrganisaatiot.add(organisaatio);	//lisataan organisaatio
+			numberOfCurrentOrganisation++;
 			
 			Iterator<KoulutusHakutulosV1RDTO> iter2 = organisaatioData.getTulokset().iterator();
 			while(iter2.hasNext()){	//iteroidaan kaikki koulukset lapi organisaatiolta
 				KoulutusHakutulosV1RDTO koulutusData = iter2.next();
 				if(koulutusData != null){
 					haetutKoulutukset.add(koulutusData);	//lisataan koulutus
-					status = haetutKoulutukset.size() / 25000.00; //337.00;
+					status = numberOfCurrentOrganisation / numberOfOrganisations  * 0.30;
 					//System.out.println(status);
 					status = (Math.ceil(status * 100.0) / 100.0);
+					statusObject.setStatus(status);
 					//System.out.println(status);
 				}
 			}
 		}
+		statusObject.setDurationEstimate(haetutKoulutukset.size() / 800);	//noin 800 koulutusta minuutissa
+		statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
 		Iterator<KoulutusHakutulosV1RDTO> iter3 = haetutKoulutukset.iterator();
 		ArrayList<String> myList = new ArrayList<String>();
 		myList.add("");
+		double i = 0.0;
 		while(iter3.hasNext()){	//iteroidaan koulutukset ja luodaan niista LearningOpportunityja
 			KoulutusHakutulosV1RDTO kh = iter3.next();
 			
@@ -227,12 +243,20 @@ public class KoulutusController {
 			i18NonEmptyString.setLanguage(l);
 			lo.getTitle().add(i18NonEmptyString);
 			
+			i++;
+			status =  0.3 + (i / (double) haetutKoulutukset.size() * 0.66); //337.00;
+			System.out.println(status);
+			status = (Math.ceil(status * 100.0) / 100.0);
+			statusObject.setStatus(status);
+			statusObject.setDurationEstimate((haetutKoulutukset.size() - i) / 800);	//noin 800 koulutusta minuutissa
 			LearningOpportunitys.add(lo);
 		}
 		for(String elem : myList){
 			System.out.println(elem);
 		}
 		status = 1.0;
+		statusObject.setStatus(status);
+		statusObject.setStatusText("Valmis");
 		return "";
 	}
 	
