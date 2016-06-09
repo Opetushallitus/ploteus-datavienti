@@ -1,27 +1,25 @@
 package fi.vm.sade.controller;
 
-import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import org.apache.cxf.helpers.IOUtils;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
@@ -32,30 +30,23 @@ import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
 import eu.europa.ec.learningopportunities.v0_5_10.LanguageCode;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
-import fi.vm.sade.model.Koulutus;
 import fi.vm.sade.model.KoulutusAsteTyyppi;
-import fi.vm.sade.organisaatio.api.search.OrganisaatioHakutulos;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.HakukohdeHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakutuloksetV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.OrganisaatioV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.TarjoajaHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ErikoisammattitutkintoV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KorkeakouluOpintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatillinenPerustutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakouluV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
-import fi.vm.sade.tarjonta.service.types.KoulutusTyyppi;
 
 @RestController
 public class KoulutusController {
 	private static String tarjontaURI = 	"https://testi.virkailija.opintopolku.fi/tarjonta-service/rest/";
-	private static String organisaatioURI = "https://testi.virkailija.opintopolku.fi/organisaatio-service/rest/";
+	private static String organisaatioURI = "https://virkailija.opintopolku.fi/organisaatio-service/rest/";
 	private static final String JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=UTF-8";
 	
 	private ArrayList<KoulutusHakutulosV1RDTO> haetutKoulutukset;
@@ -65,10 +56,33 @@ public class KoulutusController {
 	private WebResource v1KoulutusResource;
 	private WebResource v1OrganisaatioResource;
 
+	private static final String FILE_PATH = "pom.xml";
+	
 	private double status;
 	@RequestMapping("koulutus/status")
 	public String getStatus(){
 		return String.valueOf(status);
+	}
+	
+	@GET
+	@RequestMapping("/download")
+	public void download(HttpServletResponse response) throws IOException{
+	    File file = new File(FILE_PATH);
+	    InputStream myStream = new FileInputStream(file);
+	 // Set the content type and attachment header.
+		response.addHeader("Content-disposition", "attachment;filename=" + file.getName());
+		response.setContentType("txt/plain");
+
+		// Copy the stream to the response's output stream.
+		IOUtils.copy(myStream, response.getOutputStream());
+		response.flushBuffer();
+	    /*System.out.println(file.getAbsolutePath());
+	    System.out.println(file.isFile());
+	    System.out.println(file.getName());
+	    Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
+	      .header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"" ) //optional
+	      .build();*/
+	    
 	}
 	@RequestMapping("/koulutus/")
 	public String getKoulutukset() throws Exception {
@@ -90,7 +104,7 @@ public class KoulutusController {
 		
 		ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> organisaatioResult = null;
 		
-		organisaatioResult = searchOrganisationsEducations(""); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
+		organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.53642770753"); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
 		
 
 		HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = organisaatioResult.getResult(); //poistetaan result container

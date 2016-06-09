@@ -24,3 +24,8 @@
 	width: 10%;
 	display: inline-block;
 }
+
+#downloadButtonDiv{
+	min-height: 70px;
+	margin: 15px;
+}

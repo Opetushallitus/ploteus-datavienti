@@ -43,66 +43,77 @@
 	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
 	crossorigin="anonymous"></script>
 <link rel="stylesheet" href="./custom.css">
-
-
 <body>
 	<section id="mainContent">
-	<h2 style="margin-left: 15px;">Eu-tiedonsiirto</h2>
-	<div>
-		<div id="startDiv">
-			<button type="button" onClick="start()" class="btn btn-default" aria-label="Left Align">
-				<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-				Aloita
+		<h2 style="margin-left: 15px;">Eu-tiedonsiirto</h2>
+		<div>
+			<div id="startDiv">
+				<button type="button" onClick="start()" class="btn btn-default"
+					aria-label="Left Align">
+					<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+					Aloita
+				</button>
+			</div>
+			<div class="progress">
+				<div id="progressbar"
+					class="progress-bar progress-bar-striped active" role="progressbar"
+					aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+					style="width: 0%">
+					<span class="sr-only">0% Complete</span> 0%
+				</div>
+			</div>
+			<div id="infoDiv"><i>Valmis</i></div>
+		</div>
+		<div id="downloadButtonDiv">
+			<button id="downloadButton" type="button" onClick="downloadXMLFile()" class="btn btn-default"
+				aria-label="Left Align">
+				<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+				Lataa Tiedosto
 			</button>
 		</div>
-		<div class="progress">
-			<div id="progressbar" class="progress-bar progress-bar-striped active"
-				role="progressbar" aria-valuenow="0" aria-valuemin="0"
-				aria-valuemax="100" style="width: 0%">
-				<span class="sr-only">0% Complete</span> 
-				0%
-			</div>
-		</div>
-		<div id="infoDiv">
-			Valmis
-		</div>
-	</div>
 	</section>
 </body>
 <script type='text/javascript'>
-var interval;
-$("#infoDiv").hide();
+	var interval;
+	$("#infoDiv").hide();
+	$("#downloadButton").prop("disabled",true);
 
-function start(){
-	$.ajax({
-		type : "GET",
-		url : "/koulutus/",
-		contentType : "application/json; charset=utf-8",
-		dataType : "json",
-		success : function(data) {
-			console.log("data: " + data);
-		}
-	});
-	interval = setInterval("checkStatus()", 600);
-}
-function checkStatus(){
-	$.ajax({
-		type : "GET",
-		url : "/koulutus/status",
-		contentType : "application/json; charset=utf-8",
-		dataType : "json",
-		success : function(data) {
-			console.log("data: " + data);
-			$("#progressbar").css("width", data * 100 + "%");
-			$("#progressbar").attr('aria-valuenow', data * 100);
-			$("#progressbar").html(data * 100 + "%");
-			if(data >= 1.0){
-				clearInterval(interval);
-				$("#infoDiv").show();
+	function start() {
+		$("#downloadButton").prop("disabled",true);
+		$("#infoDiv").hide();
+		$.ajax({
+			type : "GET",
+			url : "/koulutus/",
+			contentType : "application/json; charset=utf-8",
+			dataType : "json",
+			success : function(data) {
+				console.log("data: " + data);
 			}
-		}
-	});
-}
+		});
+		interval = setInterval("checkStatus()", 600);
+	}
+	function checkStatus() {
+		$.ajax({
+			type : "GET",
+			url : "/koulutus/status",
+			contentType : "application/json; charset=utf-8",
+			dataType : "json",
+			success : function(data) {
+				console.log("data: " + data);
+				$("#progressbar").css("width", data * 100 + "%");
+				$("#progressbar").attr('aria-valuenow', data * 100);
+				$("#progressbar").html(data * 100 + "%");
+				if (data >= 1.0) {
+					clearInterval(interval);
+					$("#infoDiv").show();
+					$("#downloadButton").prop("disabled",false);
+				}
+			}
+		});
+	}
+	function downloadXMLFile(){
+		window.location='/download';
+	}
 </script>
 </head>
 </html>
