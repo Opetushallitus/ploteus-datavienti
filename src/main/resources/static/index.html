@@ -99,7 +99,7 @@
 				$("#progressbar").attr('aria-valuenow', Math.round(data.status * 100));
 				$("#progressbar").html(Math.round(data.status * 100) + "%");
 				$("#infoDiv").html("<i>" + data.statusText + "</i>");
-				$("#infoTimeDiv").html("<i>Atvioitu kesto: " + Math.round(data.durationEstimate * 100) / 100 + " minuuttia</i>");
+				$("#infoTimeDiv").html("<i>Atvioitu kesto: " + Math.round(data.durationEstimate) + " minuuttia</i>");
 				if (data.status >= 1.0) {
 					clearInterval(interval);
 					$("#downloadButton").prop("disabled",false);

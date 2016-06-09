@@ -116,7 +116,7 @@ public class KoulutusController {
 		
 		ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> organisaatioResult = null;
 		statusObject.setStatusText("Haetaan Organisaatio dataa...");
-		organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.53642770753"); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
+		organisaatioResult = searchOrganisationsEducations(""); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
 		HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = organisaatioResult.getResult(); //poistetaan result container
 		Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = hakutulokset.getTulokset().iterator();
 		double numberOfOrganisations = hakutulokset.getTulokset().size();
@@ -141,7 +141,7 @@ public class KoulutusController {
 				}
 			}
 		}
-		statusObject.setDurationEstimate(haetutKoulutukset.size() / 800);	//noin 800 koulutusta minuutissa
+		statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);	//noin 1200 koulutusta minuutissa
 		statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
 		Iterator<KoulutusHakutulosV1RDTO> iter3 = haetutKoulutukset.iterator();
 		ArrayList<String> myList = new ArrayList<String>();
@@ -248,7 +248,7 @@ public class KoulutusController {
 			System.out.println(status);
 			status = (Math.ceil(status * 100.0) / 100.0);
 			statusObject.setStatus(status);
-			statusObject.setDurationEstimate((haetutKoulutukset.size() - i) / 800);	//noin 800 koulutusta minuutissa
+			statusObject.setDurationEstimate((haetutKoulutukset.size() - i) / 1200);	//noin 1200 koulutusta minuutissa
 			LearningOpportunitys.add(lo);
 		}
 		for(String elem : myList){
