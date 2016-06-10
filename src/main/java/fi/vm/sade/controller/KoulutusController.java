@@ -49,8 +49,12 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatilline
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakouluV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KuvausV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.NimiV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
 import fi.vm.sade.tarjonta.service.types.KoulutusTyyppi;
+import fi.vm.sade.tarjonta.shared.types.KomoTeksti;
+import fi.vm.sade.tarjonta.shared.types.KomotoTeksti;
 
 @RestController
 public class KoulutusController {
@@ -89,10 +93,7 @@ public class KoulutusController {
 		ObjectFactory of = new ObjectFactory();
 		
 		ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> organisaatioResult = null;
-		
-		organisaatioResult = searchOrganisationsEducations(""); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
-		
-
+		organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.53642770753"); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
 		HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = organisaatioResult.getResult(); //poistetaan result container
 
 		Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = hakutulokset.getTulokset().iterator();
@@ -114,56 +115,68 @@ public class KoulutusController {
 				}
 			}
 		}
+		
 		Iterator<KoulutusHakutulosV1RDTO> iter3 = haetutKoulutukset.iterator();
 		ArrayList<String> myList = new ArrayList<String>();
 		myList.add("");
 		while(iter3.hasNext()){	//iteroidaan koulutukset ja luodaan niista LearningOpportunityja
 			KoulutusHakutulosV1RDTO kh = iter3.next();
+			KuvausV1RDTO<KomoTeksti> kuvaus = null;
 			
 			switch(kh.getToteutustyyppiEnum().name()) {
-			case KoulutusAsteTyyppi.TUNTEMATON:
+				case KoulutusAsteTyyppi.TUNTEMATON:
+					ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> tuntematonResult = searchAmmatillinenPerustutkinto(kh.getOid());
+					KoulutusAmmatillinenPerustutkintoV1RDTO tuntematonKoulutus = tuntematonResult.getResult();
+					kuvaus = tuntematonKoulutus.getKuvausKomo();
+					break;
+					
+				case KoulutusAsteTyyppi.AMMATTITUTKINTO:
+					ResultV1RDTO<AmmattitutkintoV1RDTO> ammattiResult = searchAmmattitutkinto(kh.getOid());
+					AmmattitutkintoV1RDTO ammattiKoulutus = ammattiResult.getResult();
+					
+					//System.out.println("PLSISISISDI" + kuvaus.get(KomoTeksti.TAVOITTEET).getTekstis().get("kieli_sv"));
+					
+					//for(NimiV1RDTO s : ammattiKoulutus.getKuvausKomo().values()){
+						//
+					//System.out.println(s.toString());
+					//}
+					
+					break;
+					
+				case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
+					ResultV1RDTO<ErikoisammattitutkintoV1RDTO> erikoisResult = searchErikoisammattitutkinto(kh.getOid());
+					ErikoisammattitutkintoV1RDTO erikoisKoulutus = erikoisResult.getResult();
+					kuvaus = erikoisKoulutus.getKuvausKomo();
+
+					break;
+					
+				case KoulutusAsteTyyppi.KORKEAKOULUTUS:
+					ResultV1RDTO<KoulutusKorkeakouluV1RDTO> koulutusResult = searchKoulutusKorkeakoulu(kh.getOid());
+					KoulutusKorkeakouluV1RDTO koulutus = koulutusResult.getResult();
+					kuvaus = koulutus.getKuvausKomo();
+					break;
+					
+				case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
+					ResultV1RDTO<ValmistavaKoulutusV1RDTO> ammValmistavaResult = searchValmistavaKoulutus(kh.getOid());
+					ValmistavaKoulutusV1RDTO ammValmistavaKoulutus = ammValmistavaResult.getResult();
+					kuvaus = ammValmistavaKoulutus.getKuvausKomo();
+					break;
+					
+				case KoulutusAsteTyyppi.LUKIOKOULUTUS:
+					ResultV1RDTO<KoulutusLukioV1RDTO> lukioResult = searchKoulutusLukio(kh.getOid());
+					KoulutusLukioV1RDTO lukioKoulutus = lukioResult.getResult();
+					kuvaus = lukioKoulutus.getKuvausKomo();
+					break;
 			}
-			//System.out.println(kh.getToteutustyyppiEnum().name());
-			if(kh.getToteutustyyppiEnum().name().equals(KoulutusAsteTyyppi.TUNTEMATON)){
-				ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> koulutusResult = searchAmmatillinenPerustutkinto(kh.getOid());
-				KoulutusAmmatillinenPerustutkintoV1RDTO koulutus = koulutusResult.getResult();
-				//KoulutusV1RDTO koulutus = koulutusResult.getResult();
-				System.out.println(koulutus.getKuvausKomoto());
-			}
-			else if(kh.getToteutustyyppiEnum().name().equals(KoulutusAsteTyyppi.AMMATTITUTKINTO)){
-				ResultV1RDTO<AmmattitutkintoV1RDTO> koulutusResult = searchAmmattitutkinto(kh.getOid());
-				AmmattitutkintoV1RDTO koulutus = koulutusResult.getResult();
-				System.out.println(koulutus.getKuvausKomoto());
-			}
-			else if(kh.getToteutustyyppiEnum().name().equals(KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO)){
-				ResultV1RDTO<ErikoisammattitutkintoV1RDTO> koulutusResult = searchErikoisammattitutkinto(kh.getOid());
-				ErikoisammattitutkintoV1RDTO koulutus = koulutusResult.getResult();
-				System.out.println(koulutus.getKuvausKomoto());
-			}
-			else if(kh.getToteutustyyppiEnum().name().equals(KoulutusAsteTyyppi.KORKEAKOULUTUS)){
-				ResultV1RDTO<KoulutusKorkeakouluV1RDTO> koulutusResult = searchKoulutusKorkeakoulu(kh.getOid());
-				KoulutusKorkeakouluV1RDTO koulutus = koulutusResult.getResult();
-				System.out.println(koulutus.getKuvausKomoto());
-			}
-			else if(kh.getToteutustyyppiEnum().name() == "AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS"){
-				ResultV1RDTO<ValmistavaKoulutusV1RDTO> koulutusResult = searchValmistavaKoulutus(kh.getOid());
-				ValmistavaKoulutusV1RDTO koulutus = koulutusResult.getResult();
-				System.out.println(koulutus.getKuvausKomoto());
-			}
-			else if(kh.getToteutustyyppiEnum().name() == "LUKIOKOULUTUS"){
-				ResultV1RDTO<KoulutusLukioV1RDTO> koulutusResult = searchKoulutusLukio(kh.getOid());
-				KoulutusLukioV1RDTO koulutus = koulutusResult.getResult();
-				System.out.println(koulutus.getKuvausKomoto());
-			}
-			else{
-				//System.out.println("SKIPPING");
-			}
+			if(kuvaus != null)
+				System.out.println("LOLNUB:" + kuvaus.get("SV"));
 			
 			String search = kh.getKoulutusasteTyyppi().name();
 			if(!myList.contains(search)){
 			    myList.add(search);
 			}
-					
+			
+			
 			/* 
 			 * getToteutustyyppiEnum()
 			 * ----------------------
