@@ -1,6 +1,7 @@
 package fi.vm.sade.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
@@ -74,8 +75,25 @@ public class KoulutusWrapper {
 		
 		// DurationInformation
 		I18NString durationInfo = new I18NString();
-		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-		lo.getDurationInformation().add(durationInfo);
+		if(k.getSuunniteltuKestoArvo() != null){
+			System.out.println("Ammatillinen perustutkinto: " + k.getSuunniteltuKestoArvo());
+			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+			lo.getDurationInformation().add(durationInfo);
+		} else {
+			System.out.println("Ammatillinen perustutkinto oli null");
+		}
+		
+		// Dates
+		List<I18NString> dates = new ArrayList<>();
+		I18NString dateString = new I18NString();
+		
+		// StartDate
+		for(Date d : k.getKoulutuksenAlkamisPvms()){
+			dateString.setValue(d.toString());
+			dates.add(dateString);
+		}
+		
+		lo.getStartDate().addAll(dates);
 		
 		LearningOpportunitys.add(lo);
 		
@@ -101,8 +119,25 @@ public class KoulutusWrapper {
 		
 		// DurationInformation
 		I18NString durationInfo = new I18NString();
-		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-		lo.getDurationInformation().add(durationInfo);
+		if(k.getSuunniteltuKestoArvo() != null){
+			System.out.println("Ammattitutkinto: " + k.getSuunniteltuKestoArvo());
+			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+			lo.getDurationInformation().add(durationInfo);
+		}else {
+			System.out.println("Ammattitutkinto oli null");
+		}
+		
+		// Dates
+		List<I18NString> dates = new ArrayList<>();
+		I18NString dateString = new I18NString();
+				
+		// StartDate
+		for(Date d : k.getKoulutuksenAlkamisPvms()){
+			dateString.setValue(d.toString());
+			dates.add(dateString);
+		}
+				
+		lo.getStartDate().addAll(dates);
 		
 		LearningOpportunitys.add(lo);
 	}
@@ -127,8 +162,25 @@ public class KoulutusWrapper {
 		
 		// DurationInformation
 		I18NString durationInfo = new I18NString();
-		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-		lo.getDurationInformation().add(durationInfo);
+		if(k.getSuunniteltuKestoArvo() != null){
+			System.out.println("Erikoisammattitutkinto: " + k.getSuunniteltuKestoArvo());
+			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+			lo.getDurationInformation().add(durationInfo);
+		} else {
+			System.out.println("Erikoisammattitutkinto oli null");
+		}
+		
+		// Dates
+		List<I18NString> dates = new ArrayList<>();
+		I18NString dateString = new I18NString();
+				
+		// StartDate
+		for(Date d : k.getKoulutuksenAlkamisPvms()){
+			dateString.setValue(d.toString());
+			dates.add(dateString);
+		}
+				
+		lo.getStartDate().addAll(dates);
 		
 		LearningOpportunitys.add(lo);
 	}
@@ -153,8 +205,26 @@ public class KoulutusWrapper {
 		
 		// DurationInformation
 		I18NString durationInfo = new I18NString();
-		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-		lo.getDurationInformation().add(durationInfo);
+		if(k.getSuunniteltuKestoArvo() != null){
+			
+			System.out.println("KoulutusKorkeakoulu: " + k.getSuunniteltuKestoArvo());
+			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+			lo.getDurationInformation().add(durationInfo);
+		}else {
+			System.out.println("KoulutusKorkeaKoulu oli null");
+		}
+		
+		// Dates
+		List<I18NString> dates = new ArrayList<>();
+		I18NString dateString = new I18NString();
+				
+		// StartDate
+		for(Date d : k.getKoulutuksenAlkamisPvms()){
+			dateString.setValue(d.toString());
+			dates.add(dateString);
+		}
+				
+		lo.getStartDate().addAll(dates);
 		
 		LearningOpportunitys.add(lo);
 	}
@@ -179,8 +249,25 @@ public class KoulutusWrapper {
 		
 		// DurationInformation
 		I18NString durationInfo = new I18NString();
-		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-		lo.getDurationInformation().add(durationInfo);
+		if(k.getSuunniteltuKestoArvo() != null){
+			System.out.println("ValmistavaKoulutus " + k.getSuunniteltuKestoArvo()); 
+			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+			lo.getDurationInformation().add(durationInfo);
+		}else {
+			System.out.println("ValmistavaKoulutus oli null" );
+		}
+		
+		// Dates
+		List<I18NString> dates = new ArrayList<>();
+		I18NString dateString = new I18NString();
+				
+		// StartDate
+		for(Date d : k.getKoulutuksenAlkamisPvms()){
+			dateString.setValue(d.toString());
+			dates.add(dateString);
+		}
+				
+		lo.getStartDate().addAll(dates);
 		
 		LearningOpportunitys.add(lo);
 	}
@@ -205,8 +292,25 @@ public class KoulutusWrapper {
 		
 		// DurationInformation
 		I18NString durationInfo = new I18NString();
-		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-		lo.getDurationInformation().add(durationInfo);
+		if(k.getSuunniteltuKestoArvo() != null){
+			System.out.println("KouolutusLukio: " + k.getSuunniteltuKestoArvo());
+			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+			lo.getDurationInformation().add(durationInfo);
+		}else {
+			System.out.println("KoulutusLukio oli null");
+		}
+		
+		// Dates
+		List<I18NString> dates = new ArrayList<>();
+		I18NString dateString = new I18NString();
+				
+		// StartDate
+		for(Date d : k.getKoulutuksenAlkamisPvms()){
+			dateString.setValue(d.toString());
+			dates.add(dateString);
+		}
+				
+		lo.getStartDate().addAll(dates);
 		
 		LearningOpportunitys.add(lo);
 	}
