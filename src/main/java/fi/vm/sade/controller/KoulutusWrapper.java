@@ -114,6 +114,15 @@ public class KoulutusWrapper {
 		
 		lo.getQualifications().add(qualifications);
 		
+		/*I18NString temp = of.createI18NString();
+		temp.setValue(k.getHintaString());
+		lo.getCosts().add(temp);*/
+		
+		I18NString temp = of.createI18NString();
+		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		lo.getCredits().add(temp);
+		
 		LearningOpportunitys.add(lo);
 		
 	}
@@ -174,6 +183,15 @@ public class KoulutusWrapper {
 				
 		lo.getQualifications().add(qualifications);
 		
+		/*I18NString temp = of.createI18NString();
+		temp.setValue(k.getHintaString());
+		lo.getCosts().add(temp);*/
+		
+		I18NString temp = of.createI18NString();
+		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		lo.getCredits().add(temp);
+		
 		LearningOpportunitys.add(lo);
 	}
 
@@ -232,6 +250,15 @@ public class KoulutusWrapper {
 		}
 				
 		lo.getQualifications().add(qualifications);
+		
+		/*I18NString temp = of.createI18NString();
+		temp.setValue(k.getHintaString());
+		lo.getCosts().add(temp);*/
+		
+		I18NString temp = of.createI18NString();
+		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		lo.getCredits().add(temp);
 		
 		LearningOpportunitys.add(lo);
 	}
@@ -293,6 +320,15 @@ public class KoulutusWrapper {
 				
 		lo.getQualifications().add(qualifications);
 		
+		/*I18NString temp = of.createI18NString();
+		temp.setValue(k.getHintaString());
+		lo.getCosts().add(temp);*/
+		
+		I18NString temp = of.createI18NString();
+		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		lo.getCredits().add(temp);
+		
 		LearningOpportunitys.add(lo);
 	}
 
@@ -352,6 +388,15 @@ public class KoulutusWrapper {
 				
 		lo.getQualifications().add(qualifications);
 		
+		/*I18NString temp = of.createI18NString();
+		temp.setValue(k.getHintaString());
+		lo.getCosts().add(temp);*/
+		
+		I18NString temp = of.createI18NString();
+		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		lo.getCredits().add(temp);
+		
 		LearningOpportunitys.add(lo);
 	}
 
@@ -410,6 +455,15 @@ public class KoulutusWrapper {
 		}
 				
 		lo.getQualifications().add(qualifications);
+		
+		/*I18NString temp = of.createI18NString();
+		temp.setValue(k.getHintaString());
+		lo.getCosts().add(temp);*/
+		
+		I18NString temp = of.createI18NString();
+		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+		lo.getCredits().add(temp);
 		
 		LearningOpportunitys.add(lo);
 	}
