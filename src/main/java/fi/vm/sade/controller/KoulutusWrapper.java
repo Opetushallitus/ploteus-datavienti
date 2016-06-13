@@ -22,7 +22,6 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakoulu
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
 import fi.vm.sade.tarjonta.shared.types.KomoTeksti;
-import fi.vm.sade.tarjonta.shared.types.KomotoTeksti;
 
 public class KoulutusWrapper {
 	public static String COUNTRY_CODE = "FI";
@@ -122,10 +121,11 @@ public class KoulutusWrapper {
 		lo.getCosts().add(temp);*/
 		
 		I18NString temp = of.createI18NString();
-		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		lo.getCredits().add(temp);
-
+		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko() != null){
+			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			lo.getCredits().add(temp);
+		}
 
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -191,9 +191,11 @@ public class KoulutusWrapper {
 		lo.getCosts().add(temp);*/
 		
 		I18NString temp = of.createI18NString();
-		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		lo.getCredits().add(temp);
+		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko() != null){
+			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			lo.getCredits().add(temp);
+		}
 
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -259,9 +261,11 @@ public class KoulutusWrapper {
 		lo.getCosts().add(temp);*/
 		
 		I18NString temp = of.createI18NString();
-		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		lo.getCredits().add(temp);
+		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko() != null){
+			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			lo.getCredits().add(temp);
+		}
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -327,10 +331,12 @@ public class KoulutusWrapper {
 		lo.getCosts().add(temp);*/
 		
 		I18NString temp = of.createI18NString();
-		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		lo.getCredits().add(temp);
-
+		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko() != null){
+			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			lo.getCredits().add(temp);
+		}
+		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
 
@@ -395,9 +401,11 @@ public class KoulutusWrapper {
 		lo.getCosts().add(temp);*/
 		
 		I18NString temp = of.createI18NString();
-		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		lo.getCredits().add(temp);
+		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko() != null){
+			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			lo.getCredits().add(temp);
+		}
 
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -462,9 +470,11 @@ public class KoulutusWrapper {
 		lo.getCosts().add(temp);*/
 		
 		I18NString temp = of.createI18NString();
-		temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-		lo.getCredits().add(temp);
+		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko() != null){
+			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
+			lo.getCredits().add(temp);
+		}
 
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
