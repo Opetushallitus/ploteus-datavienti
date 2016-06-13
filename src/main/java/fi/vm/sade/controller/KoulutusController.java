@@ -122,8 +122,8 @@ public class KoulutusController {
 		ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> organisaatioResult = null;
 
 		statusObject.setStatusText("Haetaan Organisaatio dataa...");
-
-		organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.53642770753"); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
+		//Aalto yliopisto 1.2.246.562.10.72985435253
+		organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.72985435253"); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
 		HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = organisaatioResult.getResult(); //poistetaan result container
 		Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = hakutulokset.getTulokset().iterator();
 		double numberOfOrganisations = hakutulokset.getTulokset().size();

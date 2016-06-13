@@ -1,9 +1,10 @@
 package fi.vm.sade.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
+import eu.europa.ec.learningopportunities.v0_5_10.I18NString;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NUrl;
 import eu.europa.ec.learningopportunities.v0_5_10.LanguageCode;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
@@ -11,6 +12,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ErikoisammattitutkintoV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoodiV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatillinenPerustutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakouluV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
@@ -38,14 +40,17 @@ public class KoulutusWrapper {
 	public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
 
+		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
 
+		// Title
 		i18Non.setValue(kh.getNimi().get(TITLE_LANG_CODE));
 		i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE));
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
 		
+		// Description
 		for (String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().keySet()) {
 			if (s != null && !s.isEmpty()) {
 				i18Non.setValue( k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().get(s));
@@ -59,7 +64,21 @@ public class KoulutusWrapper {
 		lo.getUrl().add(i18NUrl);
 		i18NUrl = of.createI18NUrl();
 		
+		// Teaching Language
+		List<LanguageCode> langCodes = new ArrayList<>();
+		
+		for(KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()){
+			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
+		}
+		lo.getTeachingLanguage().addAll(langCodes);
+		
+		// DurationInformation
+		I18NString durationInfo = new I18NString();
+		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+		lo.getDurationInformation().add(durationInfo);
+		
 		LearningOpportunitys.add(lo);
+		
 	}
 
 	public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k) {
@@ -72,6 +91,18 @@ public class KoulutusWrapper {
 		i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE));
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
+		
+		List<LanguageCode> langCodes = new ArrayList<>();
+		
+		for(KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()){
+			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
+		}
+		lo.getTeachingLanguage().addAll(langCodes);
+		
+		// DurationInformation
+		I18NString durationInfo = new I18NString();
+		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+		lo.getDurationInformation().add(durationInfo);
 		
 		LearningOpportunitys.add(lo);
 	}
@@ -87,6 +118,18 @@ public class KoulutusWrapper {
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
 
+		List<LanguageCode> langCodes = new ArrayList<>();
+		
+		for(KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()){
+			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
+		}
+		lo.getTeachingLanguage().addAll(langCodes);
+		
+		// DurationInformation
+		I18NString durationInfo = new I18NString();
+		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+		lo.getDurationInformation().add(durationInfo);
+		
 		LearningOpportunitys.add(lo);
 	}
 
@@ -101,6 +144,18 @@ public class KoulutusWrapper {
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
 
+		List<LanguageCode> langCodes = new ArrayList<>();
+		
+		for(KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()){
+			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
+		}
+		lo.getTeachingLanguage().addAll(langCodes);
+		
+		// DurationInformation
+		I18NString durationInfo = new I18NString();
+		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+		lo.getDurationInformation().add(durationInfo);
+		
 		LearningOpportunitys.add(lo);
 	}
 
@@ -115,6 +170,18 @@ public class KoulutusWrapper {
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
 
+		List<LanguageCode> langCodes = new ArrayList<>();
+		
+		for(KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()){
+			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
+		}
+		lo.getTeachingLanguage().addAll(langCodes);
+		
+		// DurationInformation
+		I18NString durationInfo = new I18NString();
+		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+		lo.getDurationInformation().add(durationInfo);
+		
 		LearningOpportunitys.add(lo);
 	}
 
@@ -129,6 +196,18 @@ public class KoulutusWrapper {
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
 
+		List<LanguageCode> langCodes = new ArrayList<>();
+		
+		for(KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()){
+			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
+		}
+		lo.getTeachingLanguage().addAll(langCodes);
+		
+		// DurationInformation
+		I18NString durationInfo = new I18NString();
+		durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
+		lo.getDurationInformation().add(durationInfo);
+		
 		LearningOpportunitys.add(lo);
 	}
 
