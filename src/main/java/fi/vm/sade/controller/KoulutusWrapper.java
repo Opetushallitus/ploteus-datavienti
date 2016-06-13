@@ -160,11 +160,11 @@ public class KoulutusWrapper {
 		
 		// Qualifications
 		Qualifications qualifications = of.createQualifications();
-		for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
+		/*for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
 			I18NString temp = of.createI18NString();
 			temp.setValue(s.getNimi());
 			qualifications.getQualificationAwarded().add(temp);
-		}
+		}*/
 				
 		for(String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()){
 			I18NString temp = of.createI18NString();
@@ -219,11 +219,11 @@ public class KoulutusWrapper {
 		
 		// Qualifications
 		Qualifications qualifications = of.createQualifications();
-		for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
+		/*for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
 			I18NString temp = of.createI18NString();
 			temp.setValue(s.getNimi());
 			qualifications.getQualificationAwarded().add(temp);
-		}
+		}*/
 				
 		for(String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()){
 			I18NString temp = of.createI18NString();
@@ -338,11 +338,11 @@ public class KoulutusWrapper {
 		
 		// Qualifications
 		Qualifications qualifications = of.createQualifications();
-		for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
+		/*for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
 			I18NString temp = of.createI18NString();
 			temp.setValue(s.getNimi());
 			qualifications.getQualificationAwarded().add(temp);
-		}
+		}*/
 				
 		for(String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()){
 			I18NString temp = of.createI18NString();
@@ -397,11 +397,11 @@ public class KoulutusWrapper {
 		
 		// Qualifications
 		Qualifications qualifications = of.createQualifications();
-		for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
+		/*for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
 			I18NString temp = of.createI18NString();
 			temp.setValue(s.getNimi());
 			qualifications.getQualificationAwarded().add(temp);
-		}
+		}*/
 				
 		for(String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()){
 			I18NString temp = of.createI18NString();
