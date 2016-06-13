@@ -6,6 +6,7 @@ import java.util.HashMap;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NUrl;
 import eu.europa.ec.learningopportunities.v0_5_10.LanguageCode;
+import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunities;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
@@ -21,18 +22,20 @@ public class KoulutusWrapper {
 	public static String COUNTRY_CODE = "FI";
 	public static String TITLE_LANG_CODE = "en";
 
-	private ArrayList<LearningOpportunity> LearningOpportunitys;
+	private LearningOpportunities learningOpportunities;
 
 	private ObjectFactory of;
 	private I18NNonEmptyString i18Non;
 	private KoulutusHakutulosV1RDTO kh;
 	private I18NUrl i18NUrl;
+	private JAXBParser JAXBParser;
 
 	public KoulutusWrapper() {
 		of = new ObjectFactory();
 		i18Non = of.createI18NNonEmptyString();
 		i18NUrl = of.createI18NUrl();
-		LearningOpportunitys = new ArrayList<LearningOpportunity>();
+		learningOpportunities = of.createLearningOpportunities();
+		JAXBParser = new JAXBParser();
 	}
 
 	public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k) {
@@ -59,7 +62,7 @@ public class KoulutusWrapper {
 		lo.getUrl().add(i18NUrl);
 		i18NUrl = of.createI18NUrl();
 		
-		LearningOpportunitys.add(lo);
+		learningOpportunities.getLearningOpportunity().add(lo);
 	}
 
 	public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k) {
@@ -73,7 +76,7 @@ public class KoulutusWrapper {
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
 		
-		LearningOpportunitys.add(lo);
+		learningOpportunities.getLearningOpportunity().add(lo);
 	}
 
 	public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k) {
@@ -87,7 +90,7 @@ public class KoulutusWrapper {
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
 
-		LearningOpportunitys.add(lo);
+		learningOpportunities.getLearningOpportunity().add(lo);
 	}
 
 	public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k) {
@@ -101,7 +104,7 @@ public class KoulutusWrapper {
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
 
-		LearningOpportunitys.add(lo);
+		learningOpportunities.getLearningOpportunity().add(lo);
 	}
 
 	public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k) {
@@ -115,7 +118,7 @@ public class KoulutusWrapper {
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
 
-		LearningOpportunitys.add(lo);
+		learningOpportunities.getLearningOpportunity().add(lo);
 	}
 
 	public void fetchLukioInfo(KoulutusLukioV1RDTO k) {
@@ -129,7 +132,11 @@ public class KoulutusWrapper {
 		lo.getTitle().add(i18Non);
 		i18Non = of.createI18NNonEmptyString();
 
-		LearningOpportunitys.add(lo);
+		learningOpportunities.getLearningOpportunity().add(lo);
+	}
+	
+	public void forwardLOtoJaxBParser(){
+		JAXBParser.parseXML(learningOpportunities);
 	}
 
 	public void setKoulutusHakutulos(KoulutusHakutulosV1RDTO kh) {
