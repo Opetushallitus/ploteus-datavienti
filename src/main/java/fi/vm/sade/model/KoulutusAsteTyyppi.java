@@ -1,7 +1,7 @@
 package fi.vm.sade.model;
 
 public final class KoulutusAsteTyyppi {
-	public static final String AMMATILLINEN_PERUSKOULUTUS = "AMMATILLINEN_PERUSKOULUTUS";
+	public static final String AMMATILLINEN_PERUSTUTKINTO = "AMMATILLINEN_PERUSTUTKINTO";
 	public static final String AMMATTITUTKINTO = "AMMATTITUTKINTO";
 	public static final String ERIKOISAMMATTITUTKINTO = "ERIKOISAMMATTITUTKINTO";
 	public static final String KORKEAKOULUTUS = "KORKEAKOULUTUS";

@@ -60,7 +60,6 @@ public class KoulutusController {
 	
 	private ArrayList<KoulutusHakutulosV1RDTO> haetutKoulutukset;
 	private ArrayList<OrganisaatioRDTO> haetutOrganisaatiot;
-	private ArrayList<LearningOpportunity> LearningOpportunitys;
 	
 	private WebResource v1KoulutusResource;
 	private WebResource v1OrganisaatioResource;
@@ -106,7 +105,7 @@ public class KoulutusController {
 		statusObject.setStatusText("Alustetaan...");
 		haetutKoulutukset = new ArrayList<KoulutusHakutulosV1RDTO>();
 		haetutOrganisaatiot = new ArrayList<OrganisaatioRDTO>();
-		LearningOpportunitys = new ArrayList<LearningOpportunity>();
+		KoulutusWrapper kw = new KoulutusWrapper();
 		
 		ObjectMapper mapper = new ObjectMapper();	//Jacksonin mapper ja confaus
 		JacksonJsonProvider jacksProv = new JacksonJsonProvider(mapper);
@@ -156,62 +155,70 @@ public class KoulutusController {
 		ArrayList<String> myList = new ArrayList<String>();
 		myList.add("");
 		double i = 0.0;
-		while(iter3.hasNext()){	//iteroidaan koulutukset ja luodaan niista LearningOpportunityja
+		int skip = 0;
+		while(iter3.hasNext()){	//iteroidaan koulutukset ja luodaan niista LearningOpportunityja KoulutusWrapperilla
 			KoulutusHakutulosV1RDTO kh = iter3.next();
 			KuvausV1RDTO<KomoTeksti> kuvaus = null;
+			kw.setKoulutusHakutulos(kh);
 			
 			switch(kh.getToteutustyyppiEnum().name()) {
-				case KoulutusAsteTyyppi.TUNTEMATON:
-					ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> tuntematonResult = searchAmmatillinenPerustutkinto(kh.getOid());
-					KoulutusAmmatillinenPerustutkintoV1RDTO tuntematonKoulutus = tuntematonResult.getResult();
-					kuvaus = tuntematonKoulutus.getKuvausKomo();
+				case KoulutusAsteTyyppi.AMMATILLINEN_PERUSTUTKINTO:
+					ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> ammatillinenPerustutkintoResult = searchAmmatillinenPerustutkinto(kh.getOid());
+					KoulutusAmmatillinenPerustutkintoV1RDTO ammatillinenPerustutkintoKoulutus = ammatillinenPerustutkintoResult.getResult();
+					//kuvaus = ammatillinenPerustutkintoKoulutus.getKuvausKomo();
+					kw.fetchAmmatillinenPerustutkintoInfo(ammatillinenPerustutkintoKoulutus);
 					break;
 					
 				case KoulutusAsteTyyppi.AMMATTITUTKINTO:
 					ResultV1RDTO<AmmattitutkintoV1RDTO> ammattiResult = searchAmmattitutkinto(kh.getOid());
 					AmmattitutkintoV1RDTO ammattiKoulutus = ammattiResult.getResult();
-					
+					kw.fetchAmmattiInfo(ammattiKoulutus);
 					//System.out.println("PLSISISISDI" + kuvaus.get(KomoTeksti.TAVOITTEET).getTekstis().get("kieli_sv"));
-					
 					//for(NimiV1RDTO s : ammattiKoulutus.getKuvausKomo().values()){
-						//
 					//System.out.println(s.toString());
 					//}
-					
 					break;
 					
 				case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
 					ResultV1RDTO<ErikoisammattitutkintoV1RDTO> erikoisResult = searchErikoisammattitutkinto(kh.getOid());
 					ErikoisammattitutkintoV1RDTO erikoisKoulutus = erikoisResult.getResult();
-					kuvaus = erikoisKoulutus.getKuvausKomo();
-
+					kw.fetchErikoisInfo(erikoisKoulutus);
+					//kuvaus = erikoisKoulutus.getKuvausKomo();
 					break;
 					
 				case KoulutusAsteTyyppi.KORKEAKOULUTUS:
 					ResultV1RDTO<KoulutusKorkeakouluV1RDTO> koulutusResult = searchKoulutusKorkeakoulu(kh.getOid());
-					KoulutusKorkeakouluV1RDTO koulutus = koulutusResult.getResult();
-					kuvaus = koulutus.getKuvausKomo();
+					KoulutusKorkeakouluV1RDTO korkeaKoulutus = koulutusResult.getResult();
+					kw.fetchKorkeaInfo(korkeaKoulutus);
+					//kuvaus = koulutus.getKuvausKomo();
 					break;
 					
 				case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
 					ResultV1RDTO<ValmistavaKoulutusV1RDTO> ammValmistavaResult = searchValmistavaKoulutus(kh.getOid());
 					ValmistavaKoulutusV1RDTO ammValmistavaKoulutus = ammValmistavaResult.getResult();
-					kuvaus = ammValmistavaKoulutus.getKuvausKomo();
+					kw.fetchValmistavaInfo(ammValmistavaKoulutus);
+					//kuvaus = ammValmistavaKoulutus.getKuvausKomo();
 					break;
 					
 				case KoulutusAsteTyyppi.LUKIOKOULUTUS:
 					ResultV1RDTO<KoulutusLukioV1RDTO> lukioResult = searchKoulutusLukio(kh.getOid());
 					KoulutusLukioV1RDTO lukioKoulutus = lukioResult.getResult();
-					kuvaus = lukioKoulutus.getKuvausKomo();
+					kw.fetchLukioInfo(lukioKoulutus);
+					//kuvaus = lukioKoulutus.getKuvausKomo();
 					break;
+				default:
+					System.out.println("Skipping: " + kh.getToteutustyyppiEnum());
+					skip++;
 			}
-			if(kuvaus != null)
-				System.out.println("LOLNUB:" + kuvaus.get("SV"));
-			
+			/*if(kuvaus != null){
+				NimiV1RDTO kuva = kuvaus.get(KomoTeksti.TAVOITTEET);
+				System.out.println("kuvaus: " + kuva.getTekstis());
+			}*/
+			/*
 			String search = kh.getKoulutusasteTyyppi().name();
 			if(!myList.contains(search)){
 			    myList.add(search);
-			}
+			}*/
 			
 			
 			/* 
@@ -245,6 +252,8 @@ public class KoulutusController {
 			 * KORKEAKOULUTUS
 			 * AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS
 			 * LUKIOKOULUTUS
+			 * ---------------------------
+			 * 
 			 * MAAHANM_AMM_VALMISTAVA_KOULUTUS
 			 * TUNTEMATON
 			 * VALMENTAVA_JA_KUNTOUTTAVA_OPETUS
@@ -253,7 +262,7 @@ public class KoulutusController {
 			 * MAAHANM_LUKIO_VALMISTAVA_KOULUTUS
 			 */
 			
-			LearningOpportunity lo = of.createLearningOpportunity();
+			/*LearningOpportunity lo = of.createLearningOpportunity();
 			//System.out.println("komoto: " + kh.getKoulutuksenTarjoajaKomoto());
 			lo.setLearningOpportunityId(kh.getOid());
 			lo.setCountryCode("FI");
@@ -261,22 +270,24 @@ public class KoulutusController {
 			i18NonEmptyString.setValue(kh.getNimi().get("en"));
 			LanguageCode l = LanguageCode.fromValue("en");
 			i18NonEmptyString.setLanguage(l);
-			lo.getTitle().add(i18NonEmptyString);
+			lo.getTitle().add(i18NonEmptyString);*/
 			
 			i++;
+			statusObject.setStatusText("Haetaan ja parsitaan Koulutusta " +(int) i + "/" + haetutKoulutukset.size());
 			status =  0.3 + (i / (double) haetutKoulutukset.size() * 0.66); //337.00;
-			System.out.println(status);
 			status = (Math.ceil(status * 100.0) / 100.0);
 			statusObject.setStatus(status);
 			statusObject.setDurationEstimate((haetutKoulutukset.size() - i) / 1200);	//noin 1200 koulutusta minuutissa
-			LearningOpportunitys.add(lo);
+			
 		}
-		for(String elem : myList){
+		/*for(String elem : myList){
 			System.out.println(elem);
-		}
+		}*/
 		status = 1.0;
 		statusObject.setStatus(status);
 		statusObject.setStatusText("Valmis");
+
+		System.out.println("Skipperoni: " + skip);
 		return "";
 	}
 	
@@ -327,6 +338,7 @@ public class KoulutusController {
 				});
 	}
 	
+	//Hakee yhden organisaation tiedot organisaatio-rajapinnasta
 	public OrganisaatioRDTO searchOrganisation(String oid) throws Exception {
 		return (OrganisaatioRDTO ) getWithRetries(
 				v1OrganisaatioResource.path(oid),
@@ -334,6 +346,9 @@ public class KoulutusController {
 				});
 	}
 
+	
+	//Hakee yhden organisaation julkaistu-tilassa olevat koulutukset tarjonta-rajapinnasta.
+	//Jos OrganisationOid on tyhja, metodi palauttaa kaikkien organisaatioiden julkaistut koulutukset
 	@SuppressWarnings("unchecked")
 	public ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> searchOrganisationsEducations(String OrganisationOid) throws Exception {
 		if (OrganisationOid == "") {
