@@ -10,7 +10,9 @@ import eu.europa.ec.learningopportunities.v0_5_10.I18NUrl;
 import eu.europa.ec.learningopportunities.v0_5_10.LanguageCode;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
+import eu.europa.ec.learningopportunities.v0_5_10.Qualifications;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.LokalisointiV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ErikoisammattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoodiV1RDTO;
@@ -19,6 +21,7 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakoulu
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
 import fi.vm.sade.tarjonta.shared.types.KomoTeksti;
+import fi.vm.sade.tarjonta.shared.types.KomotoTeksti;
 
 public class KoulutusWrapper {
 	public static String COUNTRY_CODE = "FI";
@@ -74,7 +77,7 @@ public class KoulutusWrapper {
 		lo.getTeachingLanguage().addAll(langCodes);
 		
 		// DurationInformation
-		I18NString durationInfo = new I18NString();
+		I18NString durationInfo = of.createI18NString();
 		if(k.getSuunniteltuKestoArvo() != null){
 			System.out.println("Ammatillinen perustutkinto: " + k.getSuunniteltuKestoArvo());
 			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
@@ -85,7 +88,7 @@ public class KoulutusWrapper {
 		
 		// Dates
 		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = new I18NString();
+		I18NString dateString = of.createI18NString();
 		
 		// StartDate
 		for(Date d : k.getKoulutuksenAlkamisPvms()){
@@ -94,6 +97,22 @@ public class KoulutusWrapper {
 		}
 		
 		lo.getStartDate().addAll(dates);
+		
+		// Qualifications
+		Qualifications qualifications = of.createQualifications();
+		for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s.getNimi());
+			qualifications.getQualificationAwarded().add(temp);
+		}
+		
+		for(String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s);
+			qualifications.getQualificationAwardedDescription().add(temp);
+		}
+		
+		lo.getQualifications().add(qualifications);
 		
 		LearningOpportunitys.add(lo);
 		
@@ -118,7 +137,7 @@ public class KoulutusWrapper {
 		lo.getTeachingLanguage().addAll(langCodes);
 		
 		// DurationInformation
-		I18NString durationInfo = new I18NString();
+		I18NString durationInfo = of.createI18NString();
 		if(k.getSuunniteltuKestoArvo() != null){
 			System.out.println("Ammattitutkinto: " + k.getSuunniteltuKestoArvo());
 			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
@@ -129,7 +148,7 @@ public class KoulutusWrapper {
 		
 		// Dates
 		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = new I18NString();
+		I18NString dateString = of.createI18NString();
 				
 		// StartDate
 		for(Date d : k.getKoulutuksenAlkamisPvms()){
@@ -138,6 +157,22 @@ public class KoulutusWrapper {
 		}
 				
 		lo.getStartDate().addAll(dates);
+		
+		// Qualifications
+		Qualifications qualifications = of.createQualifications();
+		for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s.getNimi());
+			qualifications.getQualificationAwarded().add(temp);
+		}
+				
+		for(String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s);
+			qualifications.getQualificationAwardedDescription().add(temp);
+		}
+				
+		lo.getQualifications().add(qualifications);
 		
 		LearningOpportunitys.add(lo);
 	}
@@ -172,7 +207,7 @@ public class KoulutusWrapper {
 		
 		// Dates
 		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = new I18NString();
+		I18NString dateString = of.createI18NString();
 				
 		// StartDate
 		for(Date d : k.getKoulutuksenAlkamisPvms()){
@@ -181,6 +216,22 @@ public class KoulutusWrapper {
 		}
 				
 		lo.getStartDate().addAll(dates);
+		
+		// Qualifications
+		Qualifications qualifications = of.createQualifications();
+		for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s.getNimi());
+			qualifications.getQualificationAwarded().add(temp);
+		}
+				
+		for(String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s);
+			qualifications.getQualificationAwardedDescription().add(temp);
+		}
+				
+		lo.getQualifications().add(qualifications);
 		
 		LearningOpportunitys.add(lo);
 	}
@@ -204,7 +255,7 @@ public class KoulutusWrapper {
 		lo.getTeachingLanguage().addAll(langCodes);
 		
 		// DurationInformation
-		I18NString durationInfo = new I18NString();
+		I18NString durationInfo = of.createI18NString();
 		if(k.getSuunniteltuKestoArvo() != null){
 			
 			System.out.println("KoulutusKorkeakoulu: " + k.getSuunniteltuKestoArvo());
@@ -216,7 +267,7 @@ public class KoulutusWrapper {
 		
 		// Dates
 		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = new I18NString();
+		I18NString dateString = of.createI18NString();
 				
 		// StartDate
 		for(Date d : k.getKoulutuksenAlkamisPvms()){
@@ -225,6 +276,22 @@ public class KoulutusWrapper {
 		}
 				
 		lo.getStartDate().addAll(dates);
+		
+		// Qualifications
+		Qualifications qualifications = of.createQualifications();
+		for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s.getNimi());
+			qualifications.getQualificationAwarded().add(temp);
+		}
+				
+		for(String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s);
+			qualifications.getQualificationAwardedDescription().add(temp);
+		}
+				
+		lo.getQualifications().add(qualifications);
 		
 		LearningOpportunitys.add(lo);
 	}
@@ -248,7 +315,7 @@ public class KoulutusWrapper {
 		lo.getTeachingLanguage().addAll(langCodes);
 		
 		// DurationInformation
-		I18NString durationInfo = new I18NString();
+		I18NString durationInfo = of.createI18NString();
 		if(k.getSuunniteltuKestoArvo() != null){
 			System.out.println("ValmistavaKoulutus " + k.getSuunniteltuKestoArvo()); 
 			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
@@ -259,7 +326,7 @@ public class KoulutusWrapper {
 		
 		// Dates
 		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = new I18NString();
+		I18NString dateString = of.createI18NString();
 				
 		// StartDate
 		for(Date d : k.getKoulutuksenAlkamisPvms()){
@@ -268,6 +335,22 @@ public class KoulutusWrapper {
 		}
 				
 		lo.getStartDate().addAll(dates);
+		
+		// Qualifications
+		Qualifications qualifications = of.createQualifications();
+		for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s.getNimi());
+			qualifications.getQualificationAwarded().add(temp);
+		}
+				
+		for(String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s);
+			qualifications.getQualificationAwardedDescription().add(temp);
+		}
+				
+		lo.getQualifications().add(qualifications);
 		
 		LearningOpportunitys.add(lo);
 	}
@@ -291,7 +374,7 @@ public class KoulutusWrapper {
 		lo.getTeachingLanguage().addAll(langCodes);
 		
 		// DurationInformation
-		I18NString durationInfo = new I18NString();
+		I18NString durationInfo = of.createI18NString();
 		if(k.getSuunniteltuKestoArvo() != null){
 			System.out.println("KouolutusLukio: " + k.getSuunniteltuKestoArvo());
 			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
@@ -302,7 +385,7 @@ public class KoulutusWrapper {
 		
 		// Dates
 		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = new I18NString();
+		I18NString dateString = of.createI18NString();
 				
 		// StartDate
 		for(Date d : k.getKoulutuksenAlkamisPvms()){
@@ -311,6 +394,22 @@ public class KoulutusWrapper {
 		}
 				
 		lo.getStartDate().addAll(dates);
+		
+		// Qualifications
+		Qualifications qualifications = of.createQualifications();
+		for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s.getNimi());
+			qualifications.getQualificationAwarded().add(temp);
+		}
+				
+		for(String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()){
+			I18NString temp = of.createI18NString();
+			temp.setValue(s);
+			qualifications.getQualificationAwardedDescription().add(temp);
+		}
+				
+		lo.getQualifications().add(qualifications);
 		
 		LearningOpportunitys.add(lo);
 	}
