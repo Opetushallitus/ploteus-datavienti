@@ -26,10 +26,6 @@ public class JAXBParser {
 			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			Schema schema = schemaFactory.newSchema(new StreamSource("src/main/xsd/LearningOpportunities.xsd")); 
 
-			
-			//marshaller.marshal(objectToMarshal, new DefaultHandler());
-			
-			// output pretty printed
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			/*jaxbMarshaller.setSchema(schema); poistetaan kommentit kun tarvitaan validointia*/
 			jaxbMarshaller.marshal(learningOpportunities, file);
