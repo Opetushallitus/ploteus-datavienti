@@ -12,6 +12,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunities;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import eu.europa.ec.learningopportunities.v0_5_10.Qualifications;
+import eu.europa.ec.learningopportunities.v0_5_10.XsdTypeType;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.LokalisointiV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
@@ -40,6 +41,9 @@ public class KoulutusWrapper {
 		i18Non = of.createI18NNonEmptyString();
 		i18NUrl = of.createI18NUrl();
 		learningOpportunities = of.createLearningOpportunities();
+		learningOpportunities.setKey("ZDR5HGWBHP0J65P5VZIYEI2ZJJF18WGW");
+		learningOpportunities.setXsdType(XsdTypeType.fromValue("Learning Opportunity"));
+		learningOpportunities.setXsdVersion("0.5.10");
 		JAXBParser = new JAXBParser();
 	}
 
