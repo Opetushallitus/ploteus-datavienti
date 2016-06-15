@@ -15,5 +15,5 @@ target
 bower_components
 .DS_Store
 .~lock*
-o_full_sample.xml
-o_full_sample.zip
+generated/lo_full_sample.xml
+generated/lo_full_sample.zip

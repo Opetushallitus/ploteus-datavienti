@@ -54,7 +54,7 @@ public class KoulutusController {
 	private WebResource v1OrganisaatioResource;
 	private WebResource koodistoResource;
 
-	private static final String FILE_PATH = "o_full_sample.zip";
+	private static final String FILE_PATH = "generated/lo_full_sample.zip";
 	
 	private double status;
 	private StatusObject statusObject;
@@ -78,6 +78,7 @@ public class KoulutusController {
 		// Copy the stream to the response's output stream.
 		IOUtils.copy(myStream, response.getOutputStream());
 		response.flushBuffer();
+		myStream.close();
 	    /*System.out.println(file.getAbsolutePath());
 	    System.out.println(file.isFile());
 	    System.out.println(file.getName());

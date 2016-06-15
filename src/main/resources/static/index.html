@@ -43,7 +43,7 @@
 		<h2 style="margin-left: 15px;">Koulutustarjonta Ploteukseen -tiedonsiirto</h2>
 		<div>
 			<div id="startDiv">
-				<button type="button" onClick="start()" class="btn btn-default"
+				<button id="startButton" type="button" onClick="start()" class="btn btn-default"
 					aria-label="Left Align">
 					<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
 					Aloita
@@ -76,6 +76,7 @@
 
 	function start() {
 		$("#downloadButton").prop("disabled",true);
+		$("#startButton").prop("disabled",true);
 		$.ajax({
 			type : "GET",
 			url : "/koulutus/",
@@ -99,9 +100,15 @@
 				$("#progressbar").attr('aria-valuenow', Math.round(data.status * 100));
 				$("#progressbar").html(Math.round(data.status * 100) + "%");
 				$("#infoDiv").html("<i>" + data.statusText + "</i>");
-				$("#infoTimeDiv").html("<i>Arvioitu kesto: " + Math.ceil(data.durationEstimate) + " minuuttia</i>");
+				if( data.durationEstimate == 0.0){
+					$("#infoTimeDiv").html("<i>Arvioitu kesto: - </i>");
+				}
+				else{
+					$("#infoTimeDiv").html("<i>Arvioitu kesto: " + Math.ceil(data.durationEstimate) + " minuuttia</i>");
+				}
 				if (data.status >= 1.0) {
 					clearInterval(interval);
+					$("#startButton").prop("disabled",false);
 					$("#downloadButton").prop("disabled",false);
 				}
 			}

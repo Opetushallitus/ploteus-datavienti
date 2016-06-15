@@ -24,7 +24,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 public class JAXBParser {
 	
 	public void parseXML(LearningOpportunities learningOpportunities) {
-		File file = new File("o_full_sample.xml");
+		File file = new File("generated/lo_full_sample.xml");
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(LearningOpportunity.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -33,7 +33,7 @@ public class JAXBParser {
 			Schema schema = schemaFactory.newSchema(new StreamSource("src/main/xsd/LearningOpportunities.xsd")); 
 
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			/*jaxbMarshaller.setSchema(schema); poistetaan kommentit kun tarvitaan validointia*/
+			/*jaxbMarshaller.setSchema(schema); //poistetaan kommentit kun tarvitaan validointia*/
 			jaxbMarshaller.marshal(learningOpportunities, file);
 			jaxbMarshaller.marshal(learningOpportunities, System.out);
 
@@ -44,12 +44,11 @@ public class JAXBParser {
 		}
 		try {
 			FileInputStream in = new FileInputStream(file);
-			ZipOutputStream out = new ZipOutputStream(new FileOutputStream("o_full_sample.zip"));
-			out.putNextEntry(new ZipEntry("o_full_sample.xml"));
+			ZipOutputStream out = new ZipOutputStream(new FileOutputStream("generated/lo_full_sample.zip"));
+			out.putNextEntry(new ZipEntry("lo_full_sample.xml"));
 			byte[] b = new byte[1024];
 	        int count;
 	        while ((count = in.read(b)) > 0) {
-	            System.out.println();
 	            out.write(b, 0, count);
 	        }
 	        out.close();
