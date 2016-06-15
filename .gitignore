@@ -15,4 +15,5 @@ target
 bower_components
 .DS_Store
 .~lock*
-eu_tiedonsiirto.xml
+o_full_sample.xml
+o_full_sample.zip

@@ -54,7 +54,7 @@ public class KoulutusController {
 	private WebResource v1OrganisaatioResource;
 	private WebResource koodistoResource;
 
-	private static final String FILE_PATH = "eu_tiedonsiirto.xml";
+	private static final String FILE_PATH = "o_full_sample.zip";
 	
 	private double status;
 	private StatusObject statusObject;
