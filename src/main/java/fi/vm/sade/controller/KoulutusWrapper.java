@@ -1,8 +1,8 @@
 package fi.vm.sade.controller;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NString;
@@ -13,7 +13,6 @@ import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import eu.europa.ec.learningopportunities.v0_5_10.Qualifications;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.LokalisointiV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ErikoisammattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoodiV1RDTO;
@@ -25,7 +24,8 @@ import fi.vm.sade.tarjonta.shared.types.KomoTeksti;
 
 public class KoulutusWrapper {
 	public static String COUNTRY_CODE = "FI";
-	public static String TITLE_LANG_CODE = "en";
+	public static String TITLE_LANG_CODE_EN = "en";
+	public static String LANG_CODE_KIELI_EN = "kieli_en";
 
 	private LearningOpportunities learningOpportunities;
 
@@ -42,7 +42,7 @@ public class KoulutusWrapper {
 		learningOpportunities = of.createLearningOpportunities();
 		JAXBParser = new JAXBParser();
 	}
-
+	
 	public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
 
@@ -50,231 +50,133 @@ public class KoulutusWrapper {
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
 
-		// Title
-		i18Non.setValue(kh.getNimi().get(TITLE_LANG_CODE));
-		i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE));
-		lo.getTitle().add(i18Non);
-		i18Non = of.createI18NNonEmptyString();
-
-		// Description
-		for (String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().keySet()) {
-			if (s != null && !s.isEmpty()) {
-				i18Non.setValue(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().get(s));
-				// Sub removes "kieli_" and leaves the country code
-				i18Non.setLanguage(LanguageCode.fromValue(s.substring(s.length() - 2, s.length())));
-				lo.getDescription().add(i18Non);
-				i18Non = of.createI18NNonEmptyString();
-			}
-		}
+		this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
+		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
+			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		}	
+		// Url
 		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
 		lo.getUrl().add(i18NUrl);
-		i18NUrl = of.createI18NUrl();
 
 		// Teaching Language
-		List<LanguageCode> langCodes = new ArrayList<>();
-
-		for (KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()) {
-			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
-		}
-		lo.getTeachingLanguage().addAll(langCodes);
+		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
 
 		// DurationInformation
-		I18NString durationInfo = of.createI18NString();
 		if (k.getSuunniteltuKestoArvo() != null) {
-			System.out.println("Ammatillinen perustutkinto: " + k.getSuunniteltuKestoArvo());
-			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-			lo.getDurationInformation().add(durationInfo);
-		} else {
-			System.out.println("Ammatillinen perustutkinto oli null");
+			this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
 		}
+		this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
 
-		// Dates
-		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = of.createI18NString();
-
-		// StartDate
-		for (Date d : k.getKoulutuksenAlkamisPvms()) {
-			dateString.setValue(d.toString());
-			dates.add(dateString);
-		}
-
-		lo.getStartDate().addAll(dates);
-
-		// Qualifications
 		Qualifications qualifications = of.createQualifications();
-		for (KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()) {
-			I18NString temp = of.createI18NString();
-			temp.setValue(s.getNimi());
-			qualifications.getQualificationAwarded().add(temp);
-		}
-
-		for (String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()) {
-			I18NString temp = of.createI18NString();
-			temp.setValue(s);
-			qualifications.getQualificationAwardedDescription().add(temp);
-		}
-
+		this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
+		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
+			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
+		}		
 		lo.getQualifications().add(qualifications);
 		
 		/*I18NString temp = of.createI18NString();
 		temp.setValue(k.getHintaString());
 		lo.getCosts().add(temp);*/
 		
-		I18NString temp = of.createI18NString();
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
-			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			lo.getCredits().add(temp);
+			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
 		
 		//InformationLanguage
-		
 		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
 		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
 		
-
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
 
 	public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
 
+		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
 
-		i18Non.setValue(kh.getNimi().get(TITLE_LANG_CODE));
-		i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE));
-		lo.getTitle().add(i18Non);
-		i18Non = of.createI18NNonEmptyString();
+		this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
+		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
+			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		}		
+		// Url
+		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
+		lo.getUrl().add(i18NUrl);
 
-		List<LanguageCode> langCodes = new ArrayList<>();
-
-		for (KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()) {
-			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
-		}
-		lo.getTeachingLanguage().addAll(langCodes);
+		// Teaching Language
+		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
 
 		// DurationInformation
-		I18NString durationInfo = of.createI18NString();
 		if (k.getSuunniteltuKestoArvo() != null) {
-			System.out.println("Ammattitutkinto: " + k.getSuunniteltuKestoArvo());
-			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-			lo.getDurationInformation().add(durationInfo);
-		} else {
-			System.out.println("Ammattitutkinto oli null");
+			this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
 		}
+		this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
 
-		// Dates
-		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = of.createI18NString();
-
-		// StartDate
-		for (Date d : k.getKoulutuksenAlkamisPvms()) {
-			dateString.setValue(d.toString());
-			dates.add(dateString);
-		}
-
-		lo.getStartDate().addAll(dates);
-
-		// Qualifications
 		Qualifications qualifications = of.createQualifications();
-		/*
-		 * for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
-		 * I18NString temp = of.createI18NString(); temp.setValue(s.getNimi());
-		 * qualifications.getQualificationAwarded().add(temp); }
-		 */
-
+		//this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
-			for (String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()) {
-				I18NString temp = of.createI18NString();
-				temp.setValue(s);
-				qualifications.getQualificationAwardedDescription().add(temp);
-			}
-		}
+			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
+		}		
 		lo.getQualifications().add(qualifications);
 		
 		/*I18NString temp = of.createI18NString();
 		temp.setValue(k.getHintaString());
 		lo.getCosts().add(temp);*/
 		
-		I18NString temp = of.createI18NString();
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
-			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			lo.getCredits().add(temp);
+			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
-
+		
+		//InformationLanguage
+		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
+		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
+		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
 
 	public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
 
+		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
 
-		i18Non.setValue(kh.getNimi().get(TITLE_LANG_CODE));
-		i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE));
-		lo.getTitle().add(i18Non);
-		i18Non = of.createI18NNonEmptyString();
+		this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
+		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
+			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		}		
+		// Url
+		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
+		lo.getUrl().add(i18NUrl);
 
-		List<LanguageCode> langCodes = new ArrayList<>();
-
-		for (KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()) {
-			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
-		}
-		lo.getTeachingLanguage().addAll(langCodes);
+		// Teaching Language
+		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
 
 		// DurationInformation
-		I18NString durationInfo = new I18NString();
 		if (k.getSuunniteltuKestoArvo() != null) {
-			System.out.println("Erikoisammattitutkinto: " + k.getSuunniteltuKestoArvo());
-			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-			lo.getDurationInformation().add(durationInfo);
-		} else {
-			System.out.println("Erikoisammattitutkinto oli null");
+			this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
 		}
+		this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
 
-		// Dates
-		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = of.createI18NString();
-
-		// StartDate
-		for (Date d : k.getKoulutuksenAlkamisPvms()) {
-			dateString.setValue(d.toString());
-			dates.add(dateString);
-		}
-
-		lo.getStartDate().addAll(dates);
-
-		// Qualifications
 		Qualifications qualifications = of.createQualifications();
-		/*
-		 * for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
-		 * I18NString temp = of.createI18NString(); temp.setValue(s.getNimi());
-		 * qualifications.getQualificationAwarded().add(temp); }
-		 */
-
+		//this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
-			for (String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()) {
-				I18NString temp = of.createI18NString();
-				temp.setValue(s);
-				qualifications.getQualificationAwardedDescription().add(temp);
-			}
-		}
-
+			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
+		}		
 		lo.getQualifications().add(qualifications);
-
+		
 		/*I18NString temp = of.createI18NString();
 		temp.setValue(k.getHintaString());
 		lo.getCosts().add(temp);*/
 		
-		I18NString temp = of.createI18NString();
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
-			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			lo.getCredits().add(temp);
+			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
+		
+		//InformationLanguage
+		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
+		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -282,76 +184,47 @@ public class KoulutusWrapper {
 	public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
 
+		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
 
-		i18Non.setValue(kh.getNimi().get(TITLE_LANG_CODE));
-		i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE));
-		lo.getTitle().add(i18Non);
-		i18Non = of.createI18NNonEmptyString();
-
-		List<LanguageCode> langCodes = new ArrayList<>();
-
-		if(k.getOpetuskielis().getMeta() != null){
-			for (KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()) {
-				if(!s.getArvo().toLowerCase().trim().equals("la")){ //FIXME: Eu:n LanguageCodesta puuttuu latina (LA)
-					System.out.println(s.getArvo().toLowerCase().trim());
-					langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
-				}
-			}
+		this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
+		
+		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
+			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		}
-		lo.getTeachingLanguage().addAll(langCodes);
+		
+		// Url
+		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
+		lo.getUrl().add(i18NUrl);
+
+		// Teaching Language
+		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
 
 		// DurationInformation
-		I18NString durationInfo = of.createI18NString();
 		if (k.getSuunniteltuKestoArvo() != null) {
-
-			System.out.println("KoulutusKorkeakoulu: " + k.getSuunniteltuKestoArvo());
-			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-			lo.getDurationInformation().add(durationInfo);
-		} else {
-			System.out.println("KoulutusKorkeaKoulu oli null");
+			this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
 		}
+		this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
 
-		// Dates
-		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = of.createI18NString();
-
-		// StartDate
-		for (Date d : k.getKoulutuksenAlkamisPvms()) {
-			dateString.setValue(d.toString());
-			dates.add(dateString);
-		}
-
-		lo.getStartDate().addAll(dates);
-
-		// Qualifications
 		Qualifications qualifications = of.createQualifications();
-		for (KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()) {
-			I18NString temp = of.createI18NString();
-			temp.setValue(s.getNimi());
-			qualifications.getQualificationAwarded().add(temp);
-		}
-
+		this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
-			for (String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()) {
-				I18NString temp = of.createI18NString();
-				temp.setValue(s);
-				qualifications.getQualificationAwardedDescription().add(temp);
-			}
+			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
 		}
-
 		lo.getQualifications().add(qualifications);
+		
 		/*I18NString temp = of.createI18NString();
 		temp.setValue(k.getHintaString());
 		lo.getCosts().add(temp);*/
 		
-		I18NString temp = of.createI18NString();
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
-			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			lo.getCredits().add(temp);
+			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
+		
+		//InformationLanguage
+		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
+		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -359,144 +232,154 @@ public class KoulutusWrapper {
 	public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
 
+		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
 
-		i18Non.setValue(kh.getNimi().get(TITLE_LANG_CODE));
-		i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE));
-		lo.getTitle().add(i18Non);
-		i18Non = of.createI18NNonEmptyString();
+		this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
+		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
+			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		}	
+		// Url
+		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
+		lo.getUrl().add(i18NUrl);
 
-		List<LanguageCode> langCodes = new ArrayList<>();
-
-		for (KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()) {
-			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
-		}
-		lo.getTeachingLanguage().addAll(langCodes);
+		// Teaching Language
+		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
 
 		// DurationInformation
-		I18NString durationInfo = of.createI18NString();
 		if (k.getSuunniteltuKestoArvo() != null) {
-			System.out.println("ValmistavaKoulutus " + k.getSuunniteltuKestoArvo());
-			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-			lo.getDurationInformation().add(durationInfo);
-		} else {
-			System.out.println("ValmistavaKoulutus oli null");
+			this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
 		}
+		this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
 
-		// Dates
-		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = of.createI18NString();
-
-		// StartDate
-		for (Date d : k.getKoulutuksenAlkamisPvms()) {
-			dateString.setValue(d.toString());
-			dates.add(dateString);
-		}
-
-		lo.getStartDate().addAll(dates);
-
-		// Qualifications
 		Qualifications qualifications = of.createQualifications();
-		/*
-		 * for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
-		 * I18NString temp = of.createI18NString(); temp.setValue(s.getNimi());
-		 * qualifications.getQualificationAwarded().add(temp); }
-		 */
-
-		for (String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()) {
-			I18NString temp = of.createI18NString();
-			temp.setValue(s);
-			qualifications.getQualificationAwardedDescription().add(temp);
-		}
-
+		//this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
+		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
+			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
+		}		
 		lo.getQualifications().add(qualifications);
 		
 		/*I18NString temp = of.createI18NString();
 		temp.setValue(k.getHintaString());
 		lo.getCosts().add(temp);*/
 		
-		I18NString temp = of.createI18NString();
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
-			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			lo.getCredits().add(temp);
+			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
-
+		
+		//InformationLanguage
+		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
+		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
+		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
 
 	public void fetchLukioInfo(KoulutusLukioV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
 
+		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
 
-		i18Non.setValue(kh.getNimi().get(TITLE_LANG_CODE));
-		i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE));
-		lo.getTitle().add(i18Non);
-		i18Non = of.createI18NNonEmptyString();
+		this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
+		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
+			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		}		
+		// Url
+		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
+		lo.getUrl().add(i18NUrl);
 
-		List<LanguageCode> langCodes = new ArrayList<>();
-
-		for (KoodiV1RDTO s : k.getOpetuskielis().getMeta().values()) {
-			langCodes.add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
-		}
-		lo.getTeachingLanguage().addAll(langCodes);
+		// Teaching Language
+		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
 
 		// DurationInformation
-		I18NString durationInfo = of.createI18NString();
 		if (k.getSuunniteltuKestoArvo() != null) {
-			System.out.println("KouolutusLukio: " + k.getSuunniteltuKestoArvo());
-			durationInfo.setValue(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi());
-			lo.getDurationInformation().add(durationInfo);
-		} else {
-			System.out.println("KoulutusLukio oli null");
+			this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
 		}
+		this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
 
-		// Dates
-		List<I18NString> dates = new ArrayList<>();
-		I18NString dateString = of.createI18NString();
-
-		// StartDate
-		for (Date d : k.getKoulutuksenAlkamisPvms()) {
-			dateString.setValue(d.toString());
-			dates.add(dateString);
-		}
-
-		lo.getStartDate().addAll(dates);
-
-		// Qualifications
 		Qualifications qualifications = of.createQualifications();
-		/*
-		 * for(KoodiV1RDTO s : k.getTutkintonimikes().getMeta().values()){
-		 * I18NString temp = of.createI18NString(); temp.setValue(s.getNimi());
-		 * qualifications.getQualificationAwarded().add(temp); }
-		 */
-
+		//this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
-			for (String s : k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis().values()) {
-				I18NString temp = of.createI18NString();
-				temp.setValue(s);
-				qualifications.getQualificationAwardedDescription().add(temp);
-			}
-		}
-		
+			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
+		}		
 		lo.getQualifications().add(qualifications);
+		
 		/*I18NString temp = of.createI18NString();
 		temp.setValue(k.getHintaString());
 		lo.getCosts().add(temp);*/
 		
-		I18NString temp = of.createI18NString();
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
-			temp.setValue(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			System.out.println(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get("kieli_en").getNimi());
-			lo.getCredits().add(temp);
+			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
-
+		
+		//InformationLanguage
+		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
+		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
+		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
 
+	private void setTitle(String title, LearningOpportunity lo){
+		i18Non.setValue(title);
+		i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE_EN));
+		lo.getTitle().add(i18Non);
+	}
+	
+	private void setDescription(Map<String, String> descriptions, LearningOpportunity lo){
+		for (String s : descriptions.keySet()) {
+			if (s != null && !s.isEmpty()) {
+				i18Non.setValue(descriptions.get(s));
+				i18Non.setLanguage(LanguageCode.fromValue(s.substring(s.length() - 2, s.length()))); // Leave only the country code
+				lo.getDescription().add(i18Non);
+			}
+		}
+	}
+	
+	private void setTeachingLangs(Map<String, KoodiV1RDTO> teachingLangs,  LearningOpportunity lo){
+		for (KoodiV1RDTO s : teachingLangs.values()) {
+			if(!s.getArvo().toLowerCase().equals("la"))
+				lo.getTeachingLanguage().add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
+		}
+	}
+	
+	private void setDurationInformation(String duration, LearningOpportunity lo){
+		I18NString durationInfo = of.createI18NString();
+		durationInfo.setValue(duration);
+		lo.getDurationInformation().add(durationInfo);
+	}
+	
+	private void setDate(Set<Date> dates, LearningOpportunity lo){
+		I18NString dateString = of.createI18NString();
+		for (Date d : dates) {
+			dateString.setValue(d.toString());
+			lo.getStartDate().add(dateString);
+		}
+	}
+	
+	private void setQualificationAwarded(Map<String, KoodiV1RDTO> list, Qualifications qualifications){
+		for (KoodiV1RDTO s : list.values()) {
+			I18NString temp = of.createI18NString();
+			temp.setValue(s.getNimi());
+			qualifications.getQualificationAwarded().add(temp);
+		}
+	}
+	
+	private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
+		for (String s : list.values()) {
+			I18NString temp = of.createI18NString();
+			temp.setValue(s);
+			qualifications.getQualificationAwardedDescription().add(temp);
+		}
+	}
+	
+	private void setCredits(String credits, LearningOpportunity lo){
+		I18NString temp = of.createI18NString();
+		temp.setValue(credits);
+		lo.getCredits().add(temp);
+	}
+	
 	public void forwardLOtoJaxBParser() {
 		JAXBParser.parseXML(learningOpportunities);
 	}
