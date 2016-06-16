@@ -114,6 +114,7 @@ public class KoulutusWrapper {
 
 		// Teaching Language
 		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+		this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
 
 		// DurationInformation
 		if (k.getSuunniteltuKestoArvo() != null) {
@@ -160,6 +161,7 @@ public class KoulutusWrapper {
 
 		// Teaching Language
 		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+		this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
 
 		// DurationInformation
 		if (k.getSuunniteltuKestoArvo() != null) {
@@ -208,6 +210,7 @@ public class KoulutusWrapper {
 
 		// Teaching Language
 		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+		this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
 
 		// DurationInformation
 		if (k.getSuunniteltuKestoArvo() != null) {
@@ -262,6 +265,7 @@ public class KoulutusWrapper {
 
 		// Teaching Language
 		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+		this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
 
 		// DurationInformation
 		if (k.getSuunniteltuKestoArvo() != null) {
@@ -293,14 +297,6 @@ public class KoulutusWrapper {
 
 	public void fetchLukioInfo(KoulutusLukioV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
-		
-		for(String s : k.getOpetusPaikkas().getUris().keySet()){
-			System.out.println(s);
-		}
-		
-		for(String s : k.getOpetusmuodos().getUris().keySet()){
-			System.out.println(s);
-		}
 
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
@@ -316,6 +312,7 @@ public class KoulutusWrapper {
 
 		// Teaching Language
 		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+		this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
 
 		// DurationInformation
 		if (k.getSuunniteltuKestoArvo() != null) {
