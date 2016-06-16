@@ -16,7 +16,9 @@ import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import eu.europa.ec.learningopportunities.v0_5_10.Qualifications;
 import eu.europa.ec.learningopportunities.v0_5_10.StudyTypeType;
 import eu.europa.ec.learningopportunities.v0_5_10.XsdTypeType;
+import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.LokalisointiV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ErikoisammattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoodiV1RDTO;
@@ -38,6 +40,7 @@ public class KoulutusWrapper {
 	private KoulutusHakutulosV1RDTO kh;
 	private I18NUrl i18NUrl;
 	private JAXBParser JAXBParser;
+	private ArrayList<OrganisaatioRDTO> haetutOrganisaatiot;
 
 	public KoulutusWrapper() {
 		of = new ObjectFactory();
@@ -74,7 +77,7 @@ public class KoulutusWrapper {
 			this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
 		}
 		this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
-
+		
 		Qualifications qualifications = of.createQualifications();
 		this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
@@ -96,7 +99,7 @@ public class KoulutusWrapper {
 
 	public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
-		
+
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
@@ -185,7 +188,7 @@ public class KoulutusWrapper {
 
 	public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
-
+		
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
@@ -231,7 +234,7 @@ public class KoulutusWrapper {
 
 	public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
-		
+
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
@@ -276,6 +279,8 @@ public class KoulutusWrapper {
 
 	public void fetchLukioInfo(KoulutusLukioV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
+		
+		k.getOrganisaatio().getNimet();
 		
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
@@ -411,5 +416,10 @@ public class KoulutusWrapper {
 
 	public void setKoulutusHakutulos(KoulutusHakutulosV1RDTO kh) {
 		this.kh = kh;
+	}
+
+	public void setOrganisaatiot(ArrayList<OrganisaatioRDTO> haetutOrganisaatiot) {
+		this.haetutOrganisaatiot = haetutOrganisaatiot;
+		
 	}
 }
