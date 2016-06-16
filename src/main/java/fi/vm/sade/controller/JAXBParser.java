@@ -35,7 +35,7 @@ public class JAXBParser {
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			/*jaxbMarshaller.setSchema(schema); //poistetaan kommentit kun tarvitaan validointia*/
 			jaxbMarshaller.marshal(learningOpportunities, file);
-			jaxbMarshaller.marshal(learningOpportunities, System.out);
+			//jaxbMarshaller.marshal(learningOpportunities, System.out);
 
 		} catch (SAXException e) {
 			e.printStackTrace();

@@ -1,6 +1,8 @@
 package fi.vm.sade.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,6 +14,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunities;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import eu.europa.ec.learningopportunities.v0_5_10.Qualifications;
+import eu.europa.ec.learningopportunities.v0_5_10.StudyTypeType;
 import eu.europa.ec.learningopportunities.v0_5_10.XsdTypeType;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
@@ -64,6 +67,7 @@ public class KoulutusWrapper {
 
 		// Teaching Language
 		this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+		this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
 
 		// DurationInformation
 		if (k.getSuunniteltuKestoArvo() != null) {
@@ -235,6 +239,14 @@ public class KoulutusWrapper {
 
 	public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
+		
+		for(String s : k.getOpetusPaikkas().getUris().keySet()){
+			System.out.println(s);
+		}
+		
+		for(String s : k.getOpetusmuodos().getUris().keySet()){
+			System.out.println(s);
+		}
 
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
@@ -281,6 +293,14 @@ public class KoulutusWrapper {
 
 	public void fetchLukioInfo(KoulutusLukioV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
+		
+		for(String s : k.getOpetusPaikkas().getUris().keySet()){
+			System.out.println(s);
+		}
+		
+		for(String s : k.getOpetusmuodos().getUris().keySet()){
+			System.out.println(s);
+		}
 
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
@@ -302,7 +322,7 @@ public class KoulutusWrapper {
 			this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
 		}
 		this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
-
+		
 		Qualifications qualifications = of.createQualifications();
 		//this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
@@ -346,6 +366,28 @@ public class KoulutusWrapper {
 			if(!s.getArvo().toLowerCase().equals("la"))
 				lo.getTeachingLanguage().add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
 		}
+	}
+	
+	private void setStudyType(Map<String, Integer> paikkaList, Map<String, Integer> muotoList, LearningOpportunity lo){
+		List<StudyTypeType> studyTypeList = new ArrayList<>();
+		
+		for(String s : paikkaList.keySet()){
+			if(s.equals("opetuspaikkak_1")){
+				studyTypeList.add(StudyTypeType.FF);
+			} else if(s.equals("opetuspaikkak_2")){
+				studyTypeList.add(StudyTypeType.DL);
+			}
+		}
+		
+		for(String s : muotoList.keySet()){
+			if(s.equals("opetusmuotokk_3")){
+				studyTypeList.add(StudyTypeType.BL);
+			} else if(s.equals("opetusmuotokk_4")){
+				studyTypeList.add(StudyTypeType.ON);
+			}
+		}
+		
+		lo.getStudyType().addAll(studyTypeList);
 	}
 	
 	private void setDurationInformation(String duration, LearningOpportunity lo){
