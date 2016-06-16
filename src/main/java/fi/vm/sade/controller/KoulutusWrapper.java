@@ -52,7 +52,7 @@ public class KoulutusWrapper {
 	
 	public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
-
+		
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
@@ -81,10 +81,7 @@ public class KoulutusWrapper {
 			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
 		}		
 		lo.getQualifications().add(qualifications);
-		
-		/*I18NString temp = of.createI18NString();
-		temp.setValue(k.getHintaString());
-		lo.getCosts().add(temp);*/
+		this.setCost(k.getHintaString(), lo);
 		
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
@@ -99,7 +96,7 @@ public class KoulutusWrapper {
 
 	public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
-
+		
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
@@ -128,10 +125,7 @@ public class KoulutusWrapper {
 			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
 		}		
 		lo.getQualifications().add(qualifications);
-		
-		/*I18NString temp = of.createI18NString();
-		temp.setValue(k.getHintaString());
-		lo.getCosts().add(temp);*/
+		this.setCost(k.getHintaString(), lo);
 		
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
@@ -176,9 +170,7 @@ public class KoulutusWrapper {
 		}		
 		lo.getQualifications().add(qualifications);
 		
-		/*I18NString temp = of.createI18NString();
-		temp.setValue(k.getHintaString());
-		lo.getCosts().add(temp);*/
+		this.setCost(k.getHintaString(), lo);
 		
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
@@ -224,10 +216,7 @@ public class KoulutusWrapper {
 			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
 		}
 		lo.getQualifications().add(qualifications);
-		
-		/*I18NString temp = of.createI18NString();
-		temp.setValue(k.getHintaString());
-		lo.getCosts().add(temp);*/
+		this.setCost(k.getHintaString(), lo);
 		
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
@@ -243,14 +232,6 @@ public class KoulutusWrapper {
 	public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
 		
-		for(String s : k.getOpetusPaikkas().getUris().keySet()){
-			System.out.println(s);
-		}
-		
-		for(String s : k.getOpetusmuodos().getUris().keySet()){
-			System.out.println(s);
-		}
-
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
@@ -280,9 +261,7 @@ public class KoulutusWrapper {
 		}		
 		lo.getQualifications().add(qualifications);
 		
-		/*I18NString temp = of.createI18NString();
-		temp.setValue(k.getHintaString());
-		lo.getCosts().add(temp);*/
+		this.setCost(k.getHintaString(), lo);
 		
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
@@ -297,7 +276,7 @@ public class KoulutusWrapper {
 
 	public void fetchLukioInfo(KoulutusLukioV1RDTO k) {
 		LearningOpportunity lo = of.createLearningOpportunity();
-
+		
 		// ID & COUNTRY CODE
 		lo.setLearningOpportunityId(k.getOid());
 		lo.setCountryCode(COUNTRY_CODE);
@@ -327,19 +306,22 @@ public class KoulutusWrapper {
 		}		
 		lo.getQualifications().add(qualifications);
 		
-		/*I18NString temp = of.createI18NString();
-		temp.setValue(k.getHintaString());
-		lo.getCosts().add(temp);*/
+		this.setCost(k.getHintaString(), lo);
 		
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
-		
 		//InformationLanguage
 		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
 		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
+	}
+	
+	private void setCost(String cost, LearningOpportunity lo){
+		I18NString temp = of.createI18NString();
+		temp.setValue(cost);
+		lo.getCosts().add(temp);
 	}
 
 	private void setTitle(String title, LearningOpportunity lo){

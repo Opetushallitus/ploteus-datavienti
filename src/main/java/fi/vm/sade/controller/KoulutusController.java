@@ -42,7 +42,7 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV
 @RestController
 public class KoulutusController {
 	private static String tarjontaURI = 	"https://testi.virkailija.opintopolku.fi/tarjonta-service/rest/";
-	private static String organisaatioURI = "https://virkailija.opintopolku.fi/organisaatio-service/rest/";
+	private static String organisaatioURI = "https://testi.virkailija.opintopolku.fi/organisaatio-service/rest/";
 	private static String koodistoURI = "https://virkailija.opintopolku.fi/koodisto-service/rest/";
 	private static final String JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=UTF-8";
 	
@@ -118,7 +118,7 @@ public class KoulutusController {
 		statusObject.setStatusText("Haetaan Organisaatio dataa...");
 
 		//Aalto yliopisto 1.2.246.562.10.72985435253
-		organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.72985435253"); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
+		organisaatioResult = searchOrganisationsEducations(""); //1.2.246.562.10.53642770753 tai tyhja kaikille tuloksille
 		HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = organisaatioResult.getResult(); //poistetaan result container
 		Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = hakutulokset.getTulokset().iterator();
 		double numberOfOrganisations = hakutulokset.getTulokset().size();
