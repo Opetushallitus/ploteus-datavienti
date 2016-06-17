@@ -1,4 +1,4 @@
-package fi.vm.sade.controller;
+package fi.vm.sade.parser;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -19,8 +19,8 @@ import eu.europa.ec.learningopportunities.v0_5_10.StudyTypeType;
 import eu.europa.ec.learningopportunities.v0_5_10.XsdTypeType;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioNimiRDTO;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
+import fi.vm.sade.parser.JAXBParser;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.LokalisointiV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ErikoisammattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoodiV1RDTO;
@@ -41,7 +41,7 @@ public class KoulutusWrapper {
     private I18NNonEmptyString i18Non;
     private KoulutusHakutulosV1RDTO kh;
     private I18NUrl i18NUrl;
-    private JAXBParser JAXBParser;
+    private fi.vm.sade.parser.JAXBParser JAXBParser;
     private HashMap<String, OrganisaatioRDTO> organisaatioMap;
 
     public KoulutusWrapper() {
