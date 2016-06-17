@@ -239,7 +239,7 @@ public class KoulutusWrapper {
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		this.setProviderName(k.getOpetusTarjoajat(), lo);
 		this.setProviderContactInfo(k.getOpetusTarjoajat(), lo);
-		this.setCourseAddress(k.getOpetusTarjoajat(), lo);
+		//this.setCourseAddress(k.getOpetusTarjoajat(), lo); TODO
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
