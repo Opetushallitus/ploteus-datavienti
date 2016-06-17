@@ -38,7 +38,6 @@ public class KoulutusWrapper {
     private LearningOpportunities learningOpportunities;
 
     private ObjectFactory of;
-    private I18NNonEmptyString i18Non;
     private KoulutusHakutulosV1RDTO kh;
     private fi.vm.sade.parser.JAXBParser JAXBParser;
     private HashMap<String, OrganisaatioRDTO> organisaatioMap;
@@ -46,7 +45,6 @@ public class KoulutusWrapper {
     public KoulutusWrapper() {
         organisaatioMap = new HashMap<>();
         of = new ObjectFactory();
-        i18Non = of.createI18NNonEmptyString();
         learningOpportunities = of.createLearningOpportunities();
         learningOpportunities.setKey("ZDR5HGWBHP0J65P5VZIYEI2ZJJF18WGW");
         learningOpportunities.setXsdType(XsdTypeType.fromValue("Learning Opportunity"));
@@ -57,7 +55,6 @@ public class KoulutusWrapper {
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid());
 
-        this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
@@ -78,6 +75,7 @@ public class KoulutusWrapper {
         lo.setLearningOpportunityId(kOid);
         lo.setCountryCode(COUNTRY_CODE);
         lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + kOid));
+        lo.getTitle().add(createTitle(kh.getNimi().get(TITLE_LANG_CODE_EN)));
         return lo;
     }
 
@@ -118,7 +116,6 @@ public class KoulutusWrapper {
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid());
 
-        this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
@@ -169,7 +166,7 @@ public class KoulutusWrapper {
         lo.setLearningOpportunityId(k.getOid());
         lo.setCountryCode(COUNTRY_CODE);
 
-        this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
+        // this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo); TODO
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
@@ -213,7 +210,7 @@ public class KoulutusWrapper {
         lo.setLearningOpportunityId(k.getOid());
         lo.setCountryCode(COUNTRY_CODE);
 
-        this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
+        //this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo); //TODO
 
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
@@ -259,7 +256,8 @@ public class KoulutusWrapper {
         lo.setLearningOpportunityId(k.getOid());
         lo.setCountryCode(COUNTRY_CODE);
 
-        this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
+        //this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo); //TODO
+
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
@@ -305,7 +303,7 @@ public class KoulutusWrapper {
         lo.setLearningOpportunityId(k.getOid());
         lo.setCountryCode(COUNTRY_CODE);
 
-        this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
+        // this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo); //todo
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
@@ -409,16 +407,17 @@ public class KoulutusWrapper {
         lo.getCosts().add(temp);
     }
 
-    private void setTitle(String title, LearningOpportunity lo) {
+    private I18NNonEmptyString createTitle(String title) {
+        final I18NNonEmptyString i18Non = of.createI18NNonEmptyString();
         i18Non.setValue(title);
         i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE_EN));
-        lo.getTitle().add(i18Non);
+        return i18Non;
     }
 
     private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
         for (String s : descriptions.keySet()) {
             if (s != null && !s.isEmpty()) {
-                i18Non = of.createI18NNonEmptyString();
+                final I18NNonEmptyString i18Non = of.createI18NNonEmptyString();
                 i18Non.setValue(descriptions.get(s));
                 i18Non.setLanguage(LanguageCode.fromValue(s.substring(s.length() - 2, s.length()))); // Leave only the country code
                 lo.getDescription().add(i18Non);
