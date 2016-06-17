@@ -29,11 +29,13 @@ public class JAXBParser {
     private static final String OUTPUT_PATH = "generated/";
     private static final String OUTPUT_FILE = "lo_full_sample";
 
-
     public void parseXML(LearningOpportunities learningOpportunities) {
         String sourceFile = OUTPUT_PATH + OUTPUT_FILE + ".xml";
-
         File xmlFile = createXMLFile(learningOpportunities, sourceFile);
+        zipXMLFile(xmlFile);
+    }
+
+    private void zipXMLFile(File xmlFile) {
         try {
             FileInputStream in = new FileInputStream(xmlFile);
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(OUTPUT_PATH + OUTPUT_FILE + ".zip"));
@@ -45,12 +47,9 @@ public class JAXBParser {
             }
             out.close();
             in.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("XML creation error", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -68,12 +67,10 @@ public class JAXBParser {
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             jaxbMarshaller.marshal(learningOpportunities, file);
 
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (JAXBException e) {
-            e.printStackTrace();
+        } catch (SAXException | JAXBException e) {
+            log.error("XML creation error", e);
+            throw new RuntimeException(e);
         }
         return file;
     }
-
 }
