@@ -40,7 +40,6 @@ public class KoulutusWrapper {
     private ObjectFactory of;
     private I18NNonEmptyString i18Non;
     private KoulutusHakutulosV1RDTO kh;
-    private I18NUrl i18NUrl;
     private fi.vm.sade.parser.JAXBParser JAXBParser;
     private HashMap<String, OrganisaatioRDTO> organisaatioMap;
 
@@ -48,7 +47,6 @@ public class KoulutusWrapper {
         organisaatioMap = new HashMap<>();
         of = new ObjectFactory();
         i18Non = of.createI18NNonEmptyString();
-        i18NUrl = of.createI18NUrl();
         learningOpportunities = of.createLearningOpportunities();
         learningOpportunities.setKey("ZDR5HGWBHP0J65P5VZIYEI2ZJJF18WGW");
         learningOpportunities.setXsdType(XsdTypeType.fromValue("Learning Opportunity"));
@@ -58,18 +56,11 @@ public class KoulutusWrapper {
 
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k) {
         LearningOpportunity lo = of.createLearningOpportunity();
-
-        // ID & COUNTRY CODE
         lo.setLearningOpportunityId(k.getOid());
         lo.setCountryCode(COUNTRY_CODE);
-
         this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
-        if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
-            this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        }
-        // Url
-        i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
-        lo.getUrl().add(i18NUrl);
+        setDescription(k, lo);
+        lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + k.getOid()));
 
         // Teaching Language
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
@@ -101,6 +92,19 @@ public class KoulutusWrapper {
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
+
+    private void setDescription(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo) {
+        if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
+            this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+        }
+    }
+
+    private I18NUrl createUrl(String src) {
+        final I18NUrl url = of.createI18NUrl();
+        url.setValue(src);
+        return url;
+    }
+
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k) {
         LearningOpportunity lo = of.createLearningOpportunity();
 
@@ -112,9 +116,7 @@ public class KoulutusWrapper {
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
-        // Url
-        i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
-        lo.getUrl().add(i18NUrl);
+        lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + k.getOid()));
 
         // Teaching Language
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
@@ -157,9 +159,8 @@ public class KoulutusWrapper {
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
-        // Url
-        i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
-        lo.getUrl().add(i18NUrl);
+
+        lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + k.getOid()));
 
         // Teaching Language
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
@@ -204,9 +205,7 @@ public class KoulutusWrapper {
             this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
 
-        // Url
-        i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
-        lo.getUrl().add(i18NUrl);
+        lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + k.getOid()));
 
         // Teaching Language
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
@@ -250,9 +249,8 @@ public class KoulutusWrapper {
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
-        // Url
-        i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
-        lo.getUrl().add(i18NUrl);
+
+        lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + k.getOid()));
 
         // Teaching Language
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
@@ -297,9 +295,8 @@ public class KoulutusWrapper {
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
-        // Url
-        i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
-        lo.getUrl().add(i18NUrl);
+
+        lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + k.getOid()));
 
         // Teaching Language
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
