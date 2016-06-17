@@ -234,6 +234,7 @@ public class KoulutusWrapper {
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		this.setProviderName(k.getOpetusTarjoajat(), lo);
+		this.setProviderContactInfo(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -352,7 +353,6 @@ public class KoulutusWrapper {
 			for(OrganisaatioNimiRDTO o : organisaatioMap.get(s).getNimet()){
 				I18NString temp = of.createI18NString();
 				temp.setValue(o.getNimi().get("en"));
-				System.out.println(temp.getValue());
 				qualifications.getAwardingBody().add(temp);
 			}
 		}
@@ -363,8 +363,31 @@ public class KoulutusWrapper {
 			for(OrganisaatioNimiRDTO o : organisaatioMap.get(s).getNimet()){
 				I18NNonEmptyString temp = of.createI18NNonEmptyString();
 				temp.setValue(o.getNimi().get("en"));
-				System.out.println(temp.getValue());
 				lo.getProviderName().add(temp);
+			}
+		}
+	}
+	
+	private void setProviderContactInfo(Set<String> set, LearningOpportunity lo){
+		ArrayList<I18NString> list = new ArrayList<>();
+		for(String s : set){
+			for(Map<String, String> map : organisaatioMap.get(s).getYhteystiedot()){
+				I18NString providerName = of.createI18NString(); // Mikä on hakijapalvelun nimi? sama kuin tarjoajan nimi?
+				I18NString mailingAdd = of.createI18NString(); // miten koostuu? PL XXXXX, Osoite, Postinumero?
+				I18NString mail = of.createI18NString();	// Ei sähköpostia?
+				I18NString phone = of.createI18NString();
+								
+				if(map.get("postitoimipaikka") != null && map.get("osoite") != null && map.get("postinumeroUri") != null){
+					mailingAdd.setValue(map.get("osoite") + ", " + map.get("postitoimipaikka") + ", " + map.get("postinumeroUri").replace("posti_", ""));
+					list.add(mailingAdd);
+				}
+				
+				if(map.get("numero") != null){
+					phone.setValue(map.get("numero"));
+					list.add(phone);
+				}
+				
+				lo.getProviderContactInfo().addAll(list);
 			}
 		}
 	}
@@ -384,6 +407,7 @@ public class KoulutusWrapper {
 	private void setDescription(Map<String, String> descriptions, LearningOpportunity lo){
 		for (String s : descriptions.keySet()) {
 			if (s != null && !s.isEmpty()) {
+				i18Non = of.createI18NNonEmptyString();
 				i18Non.setValue(descriptions.get(s));
 				i18Non.setLanguage(LanguageCode.fromValue(s.substring(s.length() - 2, s.length()))); // Leave only the country code
 				lo.getDescription().add(i18Non);
