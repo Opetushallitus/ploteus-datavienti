@@ -2,6 +2,7 @@ package fi.vm.sade.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import eu.europa.ec.learningopportunities.v0_5_10.Qualifications;
 import eu.europa.ec.learningopportunities.v0_5_10.StudyTypeType;
 import eu.europa.ec.learningopportunities.v0_5_10.XsdTypeType;
+import fi.vm.sade.organisaatio.resource.dto.OrganisaatioNimiRDTO;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.LokalisointiV1RDTO;
@@ -40,9 +42,10 @@ public class KoulutusWrapper {
 	private KoulutusHakutulosV1RDTO kh;
 	private I18NUrl i18NUrl;
 	private JAXBParser JAXBParser;
-	private ArrayList<OrganisaatioRDTO> haetutOrganisaatiot;
+	private HashMap<String, OrganisaatioRDTO> organisaatioMap;
 
 	public KoulutusWrapper() {
+		organisaatioMap = new HashMap<String, OrganisaatioRDTO>();
 		of = new ObjectFactory();
 		i18Non = of.createI18NNonEmptyString();
 		i18NUrl = of.createI18NUrl();
@@ -82,16 +85,18 @@ public class KoulutusWrapper {
 		this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
 			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
-		}		
+		}	
+		this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
 		lo.getQualifications().add(qualifications);
-		this.setCost(k.getHintaString(), lo);
 		
+		this.setCost(k.getHintaString(), lo);
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
 		
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		this.setProviderName(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -126,15 +131,17 @@ public class KoulutusWrapper {
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
 			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
 		}		
+		this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
 		lo.getQualifications().add(qualifications);
-		this.setCost(k.getHintaString(), lo);
 		
+		this.setCost(k.getHintaString(), lo);
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
 		
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		this.setProviderName(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -168,17 +175,18 @@ public class KoulutusWrapper {
 		//this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
 			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
-		}		
+		}
+		this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
 		lo.getQualifications().add(qualifications);
 		
 		this.setCost(k.getHintaString(), lo);
-		
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
 		
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		this.setProviderName(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -215,15 +223,17 @@ public class KoulutusWrapper {
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
 			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
 		}
+		this.setQualificationAwardingBody(k.getOpetusTarjoajat(), qualifications);
 		lo.getQualifications().add(qualifications);
-		this.setCost(k.getHintaString(), lo);
 		
+		this.setCost(k.getHintaString(), lo);
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
 		
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		this.setProviderName(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -258,16 +268,17 @@ public class KoulutusWrapper {
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
 			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
 		}		
+		this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
 		lo.getQualifications().add(qualifications);
 		
 		this.setCost(k.getHintaString(), lo);
-		
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
 		
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		this.setProviderName(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -303,7 +314,8 @@ public class KoulutusWrapper {
 		//this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
 		if(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null){
 			this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
-		}		
+		}	
+		this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
 		lo.getQualifications().add(qualifications);
 		
 		this.setCost(k.getHintaString(), lo);
@@ -314,6 +326,7 @@ public class KoulutusWrapper {
 		
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+		this.setProviderName(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -330,6 +343,28 @@ public class KoulutusWrapper {
 				if(map.get("kieli_" + l.value().toLowerCase()) != null){
 					lo.setInformationLanguage(l);
 				}
+			}
+		}
+	}
+	
+	private void setQualificationAwardingBody(Set<String> set, Qualifications qualifications){
+		for(String s : set){
+			for(OrganisaatioNimiRDTO o : organisaatioMap.get(s).getNimet()){
+				I18NString temp = of.createI18NString();
+				temp.setValue(o.getNimi().get("en"));
+				System.out.println(temp.getValue());
+				qualifications.getAwardingBody().add(temp);
+			}
+		}
+	}
+	
+	private void setProviderName(Set<String> set, LearningOpportunity lo){
+		for(String s : set){
+			for(OrganisaatioNimiRDTO o : organisaatioMap.get(s).getNimet()){
+				I18NNonEmptyString temp = of.createI18NNonEmptyString();
+				temp.setValue(o.getNimi().get("en"));
+				System.out.println(temp.getValue());
+				lo.getProviderName().add(temp);
 			}
 		}
 	}
@@ -430,7 +465,8 @@ public class KoulutusWrapper {
 	}
 
 	public void setOrganisaatiot(ArrayList<OrganisaatioRDTO> haetutOrganisaatiot) {
-		this.haetutOrganisaatiot = haetutOrganisaatiot;
-		
+		for(OrganisaatioRDTO organisaatio : haetutOrganisaatiot){
+			organisaatioMap.put(organisaatio.getOid(), organisaatio);
+		}
 	}
 }
