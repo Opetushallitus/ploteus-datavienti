@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import eu.europa.ec.learningopportunities.v0_5_10.CourseLocation;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NString;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NUrl;
@@ -97,6 +98,7 @@ public class KoulutusWrapper {
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		this.setProviderName(k.getOpetusTarjoajat(), lo);
+		this.setProviderContactInfo(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -142,6 +144,7 @@ public class KoulutusWrapper {
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		this.setProviderName(k.getOpetusTarjoajat(), lo);
+		this.setProviderContactInfo(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -187,6 +190,7 @@ public class KoulutusWrapper {
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		this.setProviderName(k.getOpetusTarjoajat(), lo);
+		this.setProviderContactInfo(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -235,6 +239,7 @@ public class KoulutusWrapper {
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		this.setProviderName(k.getOpetusTarjoajat(), lo);
 		this.setProviderContactInfo(k.getOpetusTarjoajat(), lo);
+		this.setCourseAddress(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -280,6 +285,7 @@ public class KoulutusWrapper {
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		this.setProviderName(k.getOpetusTarjoajat(), lo);
+		this.setProviderContactInfo(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -328,6 +334,7 @@ public class KoulutusWrapper {
 		//InformationLanguage
 		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		this.setProviderName(k.getOpetusTarjoajat(), lo);
+		this.setProviderContactInfo(k.getOpetusTarjoajat(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -388,6 +395,20 @@ public class KoulutusWrapper {
 				}
 				
 				lo.getProviderContactInfo().addAll(list);
+			}
+		}
+	}
+	
+	private void setCourseAddress(Set<String> set, CourseLocation co){
+		for(String s : set){
+			for(Map<String, String> map : organisaatioMap.get(s).getYhteystiedot()){
+				I18NString address = of.createI18NString(); // Mikä on hakijapalvelun nimi? sama kuin tarjoajan nimi?
+								
+				if(map.get("osoiteTyyppi") != null && map.get("osoiteTyyppi").equals("kaynti") && map.get("osoite") != null){
+					co.getCourseAddress().add(address);
+				}
+				
+				//TODO: TEE LOPPUUN
 			}
 		}
 	}
