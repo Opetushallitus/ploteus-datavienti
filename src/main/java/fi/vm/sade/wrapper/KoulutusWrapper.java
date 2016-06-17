@@ -1,4 +1,4 @@
-package fi.vm.sade.controller;
+package fi.vm.sade.wrapper;
 
 import java.util.ArrayList;
 import java.util.Date;

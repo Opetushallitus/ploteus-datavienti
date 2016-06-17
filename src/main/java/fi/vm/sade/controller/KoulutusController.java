@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.core.MediaType;
 
+import fi.vm.sade.wrapper.KoulutusWrapper;
 import org.apache.cxf.helpers.IOUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
