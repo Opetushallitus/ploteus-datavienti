@@ -16,36 +16,28 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunities;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 
 public class JAXBParser {
+    private static final Logger log = LoggerFactory.getLogger(JAXBParser.class);
+
+    private static final String OUTPUT_PATH = "generated/";
+    private static final String OUTPUT_FILE = "lo_full_sample";
+
 
     public void parseXML(LearningOpportunities learningOpportunities) {
-        File file = new File("generated/lo_full_sample.xml");
+        String sourceFile = OUTPUT_PATH + OUTPUT_FILE + ".xml";
+
+        File xmlFile = createXMLFile(learningOpportunities, sourceFile);
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(LearningOpportunity.class);
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(new StreamSource("src/main/xsd/LearningOpportunities.xsd"));
-
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            /*jaxbMarshaller.setSchema(schema); //poistetaan kommentit kun tarvitaan validointia*/
-            jaxbMarshaller.marshal(learningOpportunities, file);
-            //jaxbMarshaller.marshal(learningOpportunities, System.out);
-
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-        try {
-            FileInputStream in = new FileInputStream(file);
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream("generated/lo_full_sample.zip"));
-            out.putNextEntry(new ZipEntry("lo_full_sample.xml"));
+            FileInputStream in = new FileInputStream(xmlFile);
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(OUTPUT_PATH + OUTPUT_FILE + ".zip"));
+            out.putNextEntry(new ZipEntry(OUTPUT_FILE + ".xml"));
             byte[] b = new byte[1024];
             int count;
             while ((count = in.read(b)) > 0) {
@@ -60,6 +52,28 @@ public class JAXBParser {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private File createXMLFile(LearningOpportunities learningOpportunities, String sourceFile) {
+        File file = new File(sourceFile);
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(LearningOpportunity.class);
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            //poistetaan kommentit kun tarvitaan validointia
+            Schema schema = schemaFactory.newSchema(new StreamSource("src/main/xsd/LearningOpportunities.xsd"));
+            //jaxbMarshaller.setSchema(schema);
+
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            jaxbMarshaller.marshal(learningOpportunities, file);
+
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        return file;
     }
 
 }
