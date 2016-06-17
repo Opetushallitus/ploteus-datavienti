@@ -91,8 +91,7 @@ public class KoulutusWrapper {
 		}
 		
 		//InformationLanguage
-		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
-		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
+		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -135,8 +134,7 @@ public class KoulutusWrapper {
 		}
 		
 		//InformationLanguage
-		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
-		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
+		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -180,8 +178,7 @@ public class KoulutusWrapper {
 		}
 		
 		//InformationLanguage
-		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
-		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
+		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -226,8 +223,7 @@ public class KoulutusWrapper {
 		}
 		
 		//InformationLanguage
-		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
-		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
+		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -271,8 +267,7 @@ public class KoulutusWrapper {
 		}
 		
 		//InformationLanguage
-		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
-		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
+		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
 	}
@@ -316,11 +311,27 @@ public class KoulutusWrapper {
 		if(k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null){
 			this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
 		}
+		
 		//InformationLanguage
-		//k.getKuvausKomo().get("TAVOITTEET").getTekstis().get("kieli_" + k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim());
-		//lo.setInformationLanguage(LanguageCode.fromValue(k.getKuvausKomo().get("TAVOITTEET").getMeta().get("kieliArvo").getArvo().toLowerCase().trim()));
+		this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		
 		learningOpportunities.getLearningOpportunity().add(lo);
+	}
+	
+	private void setInformationLanguage(Map<String, String> map, LearningOpportunity lo){
+		if(map.get("kieli_en") != null){
+			lo.setInformationLanguage(LanguageCode.EN);
+		} else if(map.get("kieli_fi") != null){
+			lo.setInformationLanguage(LanguageCode.FI);
+		} else if(map.get("kieli_sv") != null){
+			lo.setInformationLanguage(LanguageCode.SV);
+		} else {
+			for(LanguageCode l : LanguageCode.values()){
+				if(map.get("kieli_" + l.value().toLowerCase()) != null){
+					lo.setInformationLanguage(l);
+				}
+			}
+		}
 	}
 	
 	private void setCost(String cost, LearningOpportunity lo){
