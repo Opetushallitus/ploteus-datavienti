@@ -55,15 +55,7 @@ public class KoulutusWrapper {
     }
 
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k) {
-        LearningOpportunity lo = of.createLearningOpportunity();
-        lo.setLearningOpportunityId(k.getOid());
-        lo.setCountryCode(COUNTRY_CODE);
-        lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + k.getOid()));
-
-        setDescription(k, lo);
-        setDurationInformation(k, lo);
-        setQualifications(k, lo);
-        setCredits(k, lo);
+        LearningOpportunity lo = initLearningOpportunity(k.getOid());
 
         this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
@@ -72,7 +64,21 @@ public class KoulutusWrapper {
         this.setCost(k.getHintaString(), lo);
         this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         this.setProviderName(k.getOpetusTarjoajat(), lo);
+
+        setDescription(k, lo);
+        setDurationInformation(k, lo);
+        setQualifications(k, lo);
+        setCredits(k, lo);
+
         learningOpportunities.getLearningOpportunity().add(lo);
+    }
+
+    private LearningOpportunity initLearningOpportunity(String kOid) {
+        LearningOpportunity lo = of.createLearningOpportunity();
+        lo.setLearningOpportunityId(kOid);
+        lo.setCountryCode(COUNTRY_CODE);
+        lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + kOid));
+        return lo;
     }
 
     private void setCredits(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo) {
@@ -110,15 +116,7 @@ public class KoulutusWrapper {
     }
 
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k) {
-        LearningOpportunity lo = of.createLearningOpportunity();
-        lo.setLearningOpportunityId(k.getOid());
-        lo.setCountryCode(COUNTRY_CODE);
-        lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + k.getOid()));
-
-        setDescription(k, lo);
-        setDurationInformation(k, lo);
-        setQualifications(k, lo);
-        setCredits(k, lo);
+        LearningOpportunity lo = initLearningOpportunity(k.getOid());
 
         this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
@@ -127,6 +125,11 @@ public class KoulutusWrapper {
         this.setCost(k.getHintaString(), lo);
         this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         this.setProviderName(k.getOpetusTarjoajat(), lo);
+
+        setDescription(k, lo);
+        setDurationInformation(k, lo);
+        setQualifications(k, lo);
+        setCredits(k, lo);
 
         learningOpportunities.getLearningOpportunity().add(lo);
     }
