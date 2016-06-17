@@ -45,7 +45,7 @@ public class KoulutusWrapper {
     private HashMap<String, OrganisaatioRDTO> organisaatioMap;
 
     public KoulutusWrapper() {
-        organisaatioMap = new HashMap<String, OrganisaatioRDTO>();
+        organisaatioMap = new HashMap<>();
         of = new ObjectFactory();
         i18Non = of.createI18NNonEmptyString();
         i18NUrl = of.createI18NUrl();
