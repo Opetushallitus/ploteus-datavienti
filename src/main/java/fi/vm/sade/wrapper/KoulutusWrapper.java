@@ -61,17 +61,25 @@ public class KoulutusWrapper {
         this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
         setDescription(k, lo);
         lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + k.getOid()));
-
-        // Teaching Language
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-
-        // DurationInformation
-        if (k.getSuunniteltuKestoArvo() != null) {
-            this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        }
+        setDurationInformation(k, lo);
         this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
+        setQualifications(k, lo);
+        this.setCost(k.getHintaString(), lo);
+        setCredits(k, lo);
+        this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+        this.setProviderName(k.getOpetusTarjoajat(), lo);
+        learningOpportunities.getLearningOpportunity().add(lo);
+    }
 
+    private void setCredits(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo) {
+        if (k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null) {
+            this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
+        }
+    }
+
+    private void setQualifications(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo) {
         Qualifications qualifications = of.createQualifications();
         this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
@@ -79,17 +87,12 @@ public class KoulutusWrapper {
         }
         this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
         lo.getQualifications().add(qualifications);
+    }
 
-        this.setCost(k.getHintaString(), lo);
-        if (k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null) {
-            this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
+    private void setDurationInformation(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo) {
+        if (k.getSuunniteltuKestoArvo() != null) {
+            this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         }
-
-        //InformationLanguage
-        this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        this.setProviderName(k.getOpetusTarjoajat(), lo);
-
-        learningOpportunities.getLearningOpportunity().add(lo);
     }
 
 
