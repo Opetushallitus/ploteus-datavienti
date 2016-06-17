@@ -58,16 +58,18 @@ public class KoulutusWrapper {
         LearningOpportunity lo = of.createLearningOpportunity();
         lo.setLearningOpportunityId(k.getOid());
         lo.setCountryCode(COUNTRY_CODE);
-        this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
-        setDescription(k, lo);
         lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + k.getOid()));
+
+        setDescription(k, lo);
+        setDurationInformation(k, lo);
+        setQualifications(k, lo);
+        setCredits(k, lo);
+
+        this.setTitle(kh.getNimi().get(TITLE_LANG_CODE_EN), lo);
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        setDurationInformation(k, lo);
         this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
-        setQualifications(k, lo);
         this.setCost(k.getHintaString(), lo);
-        setCredits(k, lo);
         this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         this.setProviderName(k.getOpetusTarjoajat(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
