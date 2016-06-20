@@ -62,6 +62,7 @@ public class KoulutusWrapper {
 			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		}	
 		// Url
+		i18NUrl = of.createI18NUrl();
 		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
 		lo.getUrl().add(i18NUrl);
 
@@ -109,7 +110,8 @@ public class KoulutusWrapper {
 			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		}		
 		// Url
-		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
+		i18NUrl = of.createI18NUrl();
+		i18NUrl.setValue("https://opintopolku.fi/app/#!/ammatillinenaikuiskoulutus/" + k.getOid());
 		lo.getUrl().add(i18NUrl);
 
 		// Teaching Language
@@ -156,7 +158,8 @@ public class KoulutusWrapper {
 			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		}		
 		// Url
-		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
+		i18NUrl = of.createI18NUrl();
+		i18NUrl.setValue("https://opintopolku.fi/app/#!/ammatillinenaikuiskoulutus/" + k.getOid());
 		lo.getUrl().add(i18NUrl);
 
 		// Teaching Language
@@ -205,7 +208,8 @@ public class KoulutusWrapper {
 		}
 		
 		// Url
-		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
+		i18NUrl = of.createI18NUrl();
+		i18NUrl.setValue("https://opintopolku.fi/app/#!/korkeakoulu/" + k.getOid());
 		lo.getUrl().add(i18NUrl);
 
 		// Teaching Language
@@ -260,6 +264,7 @@ public class KoulutusWrapper {
 			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		}	
 		// Url
+		i18NUrl = of.createI18NUrl();
 		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
 		lo.getUrl().add(i18NUrl);
 
@@ -307,6 +312,7 @@ public class KoulutusWrapper {
 			this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
 		}		
 		// Url
+		i18NUrl = of.createI18NUrl();
 		i18NUrl.setValue("https://opintopolku.fi/app/#!/koulutus/" + k.getOid());
 		lo.getUrl().add(i18NUrl);
 

@@ -1,6 +1,10 @@
 package fi.vm.sade.model;
 
 public final class KoulutusAsteTyyppi {
+	//Kaytetaan vain koulutus/search? -tyyppisten koulutusten kanssa
+	public static final String AMMATILLINENPERUSKOULUTUS = "AMMATILLINENPERUSKOULUTUS";
+	public static final String AMMATILLINEN_PERUSKOULUTUS = "AMMATILLINEN_PERUSKOULUTUS";
+	
 	public static final String AMMATILLINEN_PERUSTUTKINTO = "AMMATILLINEN_PERUSTUTKINTO";
 	public static final String AMMATTITUTKINTO = "AMMATTITUTKINTO";
 	public static final String ERIKOISAMMATTITUTKINTO = "ERIKOISAMMATTITUTKINTO";
