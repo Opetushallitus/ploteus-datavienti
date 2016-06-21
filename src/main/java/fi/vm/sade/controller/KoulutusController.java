@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -29,6 +30,12 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
+import fi.vm.sade.koodisto.service.types.*;
+import fi.vm.sade.koodisto.service.types.common.KoodiType;
+import fi.vm.sade.koodisto.service.types.common.KoodistoRyhmaCollectionType;
+import fi.vm.sade.koodisto.service.types.common.KoodistoVersioListType;
+import fi.vm.sade.koodisto.util.CachingKoodistoClient;
+import fi.vm.sade.koodisto.util.KoodistoClient;
 import fi.vm.sade.model.KoulutusAsteTyyppi;
 import fi.vm.sade.model.StatusObject;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
@@ -49,15 +56,18 @@ public class KoulutusController {
 	private static final String organisaatioURI = 	"https://testi.virkailija.opintopolku.fi/organisaatio-service/rest/";
 	private static final String koodistoURI = 		"https://testi.virkailija.opintopolku.fi/koodisto-service/rest/";
 	private static final String opitopolkuURI = 	"https://testi.opintopolku.fi/lo/";
+	private static final String koodisto = 	"https://testi.virkailija.opintopolku.fi/koodisto-service";
 	private static final String JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=UTF-8";
 	
 	private ArrayList<KoulutusHakutulosV1RDTO> haetutKoulutukset;
 	private ArrayList<OrganisaatioRDTO> haetutOrganisaatiot;
-	//private KoodistoVersioListType haettuKoodisto;
+	private KoodistoRyhmaCollectionType haettuKoodisto; //KoodistoVersioListDto
 	
 	private WebResource v1KoulutusResource;
 	private WebResource v1OrganisaatioResource;
 	private WebResource koodistoResource;
+	
+	private KoodistoClient koodistoClient;
 
 	private static final String FILE_PATH = "generated/lo_full_sample.zip";
 	
@@ -79,22 +89,13 @@ public class KoulutusController {
 	public void download(HttpServletResponse response) throws IOException{
 	    File file = new File(FILE_PATH);
 	    InputStream myStream = new FileInputStream(file);
-	 // Set the content type and attachment header.
-		response.addHeader("Content-disposition", "attachment;filename=" + file.getName());
+	    response.addHeader("Content-disposition", "attachment;filename=" + file.getName());
 		response.setContentType("txt/plain");
-
-		// Copy the stream to the response's output stream.
 		IOUtils.copy(myStream, response.getOutputStream());
 		response.flushBuffer();
-		myStream.close();
-	    /*System.out.println(file.getAbsolutePath());
-	    System.out.println(file.isFile());
-	    System.out.println(file.getName());
-	    Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
-	      .header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"" ) //optional
-	      .build();*/
-	    
+		myStream.close();	    
 	}
+	
 	@RequestMapping("/koulutus/")
 	public String getKoulutukset() throws Exception {
 		status = 0.01;
@@ -105,7 +106,9 @@ public class KoulutusController {
 		haetutKoulutukset = new ArrayList<KoulutusHakutulosV1RDTO>();
 		haetutOrganisaatiot = new ArrayList<OrganisaatioRDTO>();
 		KoulutusWrapper kw = new KoulutusWrapper();
-		//haettuKoodisto = new KoodistoVersioListType();
+		koodistoClient = new CachingKoodistoClient(koodisto);
+		List<KoodiType> kt = koodistoClient.getAlakoodis("koulutus_731201");
+		System.out.println("koulutus_731201: " + kt.get(0).getKoodiArvo());
 		
 		ObjectMapper mapper = new ObjectMapper();	//Jacksonin mapper ja confaus
 		JacksonJsonProvider jacksProv = new JacksonJsonProvider(mapper);
@@ -116,7 +119,7 @@ public class KoulutusController {
 		
 		v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI + "v1/koulutus"); 		 //tarjonnan koulutus url
 		v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI + "organisaatio"); //organisaatio palvelun url
-		//koodistoResource = clientWithJacksonSerializer.resource(koodistoURI + "codes/all"); 			 //koodisto palvelun url
+		//koodistoResource = clientWithJacksonSerializer.resource(koodistoURI );//+ "codes/all"); 			 //koodisto palvelun url
 		
 		statusObject.setStatusText("Haetaan Koodisto dataa...");
 		//haettuKoodisto = searchAllKoodistoData();
@@ -337,26 +340,6 @@ public class KoulutusController {
 	
 	//Hakee yhden organisaation tiedot organisaatio-rajapinnasta
 		public boolean checkKoulutusValidnessFromOpintopolku(String type, String oid) throws Exception {
-			int timeout = 200;
-			/*try{
-				OpintopolkuResource.path(type).path(oid).accept(JSON_UTF8).get(new GenericType<ResultV1RDTO<>>(){});
-				System.out.println("Löytyi: " + OpintopolkuResource.path(type).path(oid).toString());
-				return true;
-			}catch(Exception exception){
-				System.out.println("EI Löytynyt: " + OpintopolkuResource.path(type).path(oid).toString());
-				return false;	
-			}*/
-			/*try (Socket socket = new Socket()) {
-		        
-		        System.out.println(opitopolkuURI + type + oid);
-				socket.connect(new InetSocketAddress("178.217.129.250/" + type + oid, 443), timeout );
-				System.out.println("Löytyi: " + opitopolkuURI + type + oid);
-		        return true;
-		    } catch (IOException e) {
-		    	System.out.println("EI Löytynyt: " + opitopolkuURI + type + oid);
-		    	System.out.println(e);
-		        return false; // Either timeout or unreachable or failed DNS lookup.
-		    }*/
 			try {
 		        HttpURLConnection connection = (HttpURLConnection) new URL(opitopolkuURI + type + oid).openConnection();
 		     // wrap the urlconnection in a bufferedreader
@@ -379,26 +362,20 @@ public class KoulutusController {
 		        	System.out.println("EI Löytynyt: " + opitopolkuURI + type + oid + " Koska yhdistämisessä oli virhe");
 		        	return false;
 		        }
-		       /* connection.setConnectTimeout(timeout);
-		        connection.setReadTimeout(timeout);
-		        connection.setRequestMethod("HEAD");
-		        int responseCode = connection.getResponseCode();
-		        System.out.println("Löytyi: " + opitopolkuURI + type + oid);
-		        return (200 <= responseCode && responseCode <= 399);*/
 		    } catch (IOException exception) {
 		    	System.out.println("Syntax Terroria urlilla: " + opitopolkuURI + type + oid);
 		        return false;
 		    }
 		}
 		
-	/*//Hakee Koodiston kaikken datan
-	public KoodistoVersioListType searchAllKoodistoData() throws Exception {
-			return (KoodistoVersioListType ) getWithRetries(
+/*	//Hakee Koodistosta kaiken datan
+	public KoodistoRyhmaCollectionType searchAllKoodistoData() throws Exception {
+			return (KoodistoRyhmaCollectionType) getWithRetries(
 					koodistoResource,
-					new GenericType<KoodistoVersioListType>() {
+					new GenericType<KoodistoRyhmaCollectionType>() {
 					});
-		}*/
-
+		}
+*/
 	
 	//Hakee yhden organisaation julkaistu-tilassa olevat koulutukset tarjonta-rajapinnasta.
 	//Jos OrganisationOid on tyhja, metodi palauttaa kaikkien organisaatioiden julkaistut koulutukset
