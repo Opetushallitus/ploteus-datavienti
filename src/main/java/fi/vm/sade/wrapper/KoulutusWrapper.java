@@ -48,8 +48,6 @@ public class KoulutusWrapper {
                 k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-
-        setDescription(k, lo);
         setDurationInformation(k, lo);
         setQualifications(k, lo, haetutOrganisaatiot);
         setCredits(k, lo);
@@ -63,6 +61,7 @@ public class KoulutusWrapper {
         setDate(koulutuksenAlkamisPvms, lo);
         setCost(hintaString, lo);
         setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+        setDescription(kuvausKomo, lo);
         setProviderName(opetusTarjoajat, lo, haetutOrganisaatiot);
         lo.setLearningOpportunityId(kOid);
         lo.setCountryCode(COUNTRY_CODE);
@@ -93,9 +92,9 @@ public class KoulutusWrapper {
         }
     }
 
-    private void setDescription(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo) {
-        if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
-            this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+    private void setDescription(KuvausV1RDTO<KomoTeksti> kuvausKomo, LearningOpportunity lo) {
+        if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
+            this.setDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
     }
 
