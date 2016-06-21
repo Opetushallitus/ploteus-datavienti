@@ -239,14 +239,7 @@ public class KoulutusWrapper {
             lo.getDurationInformation().add(createI18NString(suunniteltuKestoArvo + " " + suunniteltuNimi));
         }
     }
-
-    private void setDescription(AmmattitutkintoV1RDTO k, LearningOpportunity lo) {
-        if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
-            this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        }
-    }
-
-
+    
     private void setInformationLanguage(Map<String, String> map, LearningOpportunity lo) {
         if (map.get("kieli_en") != null) {
             lo.setInformationLanguage(LanguageCode.EN);
@@ -353,10 +346,6 @@ public class KoulutusWrapper {
     	I18NString temp = of.createI18NString();
     	temp.setValue(string);
     	return temp;
-    }
-
-    private void setDurationInformation(String duration, LearningOpportunity lo) {
-        lo.getDurationInformation().add(createI18NString(duration));
     }
 
     private void setDate(Set<Date> dates, LearningOpportunity lo) {
