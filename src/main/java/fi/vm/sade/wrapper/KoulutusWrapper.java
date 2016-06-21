@@ -289,10 +289,6 @@ public class KoulutusWrapper {
         	.forEach(e -> qualifications.getQualificationAwardedDescription().add(createI18NString(e)));
     }
 
-    private void setCredits(String credits, LearningOpportunity lo) {
-        lo.getCredits().add(createI18NString(credits));
-    }
-
     public void forwardLOtoJaxBParser() {
         JAXBParser.parseXML(learningOpportunities);
     }
