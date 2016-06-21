@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NString;
@@ -433,24 +435,24 @@ public class KoulutusWrapper {
 
     private void setStudyType(Map<String, Integer> paikkaList, Map<String, Integer> muotoList, LearningOpportunity lo) {
         List<StudyTypeType> studyTypeList = new ArrayList<>();
-
-        for (String s : paikkaList.keySet()) {
-            if (s.equals("opetuspaikkak_1")) {
-                studyTypeList.add(StudyTypeType.FF);
-            } else if (s.equals("opetuspaikkak_2")) {
-                studyTypeList.add(StudyTypeType.DL);
-            }
-        }
-
-        for (String s : muotoList.keySet()) {
-            if (s.equals("opetusmuotokk_3")) {
-                studyTypeList.add(StudyTypeType.BL);
-            } else if (s.equals("opetusmuotokk_4")) {
-                studyTypeList.add(StudyTypeType.ON);
-            }
-        }
+        List<StudyTypeType> muotoTypeList = new ArrayList<>();
+        
+       paikkaList.keySet().stream()
+        	.filter(e -> e.equals("opetuspaikkak_1"))
+        	.forEach(e -> studyTypeList.add(StudyTypeType.FF)); 
+       paikkaList.keySet().stream()
+        	.filter(e -> e.equals("opetuspaikkak_2"))
+        	.forEach(e -> studyTypeList.add(StudyTypeType.DL));
+       
+       muotoList.keySet().stream()
+        	.filter(e -> e.equals("opetusmuotokk_3"))
+        	.forEach(e -> muotoTypeList.add(StudyTypeType.BL));
+       muotoList.keySet().stream()
+        	.filter(e -> e.equals("opetusmuotokk_4"))
+        	.forEach(e -> muotoTypeList.add(StudyTypeType.ON));
 
         lo.getStudyType().addAll(studyTypeList);
+        lo.getStudyType().addAll(muotoTypeList);
     }
 
     private void setDurationInformation(String duration, LearningOpportunity lo) {
