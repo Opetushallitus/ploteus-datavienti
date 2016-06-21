@@ -55,6 +55,62 @@ public class KoulutusWrapper {
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
+    public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
+                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
+        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
+        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
+        setQualifications(k, lo, haetutOrganisaatiot);
+        setCredits(k, lo);
+
+        learningOpportunities.getLearningOpportunity().add(lo);
+    }
+
+    public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
+                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
+        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
+        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
+        setQualifications(k, lo, haetutOrganisaatiot);
+        setCredits(k, lo);
+        learningOpportunities.getLearningOpportunity().add(lo);
+    }
+
+    public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
+                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
+        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
+        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
+        setQualifications(k, lo, haetutOrganisaatiot);
+        setCredits(k, lo);
+        learningOpportunities.getLearningOpportunity().add(lo);
+    }
+
+    public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
+                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
+        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
+        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
+        setQualifications(k, lo, haetutOrganisaatiot);
+        setCredits(k, lo);
+        learningOpportunities.getLearningOpportunity().add(lo);
+    }
+
+    public void fetchLukioInfo(KoulutusLukioV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
+                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
+        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
+        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
+        setQualifications(k, lo, haetutOrganisaatiot);
+        setCredits(k, lo);
+        learningOpportunities.getLearningOpportunity().add(lo);
+    }
+
     private LearningOpportunity initLearningOpportunity(String kOid, Set<Date> koulutuksenAlkamisPvms, String hintaString,
                                                         Set<String> opetusTarjoajat, KuvausV1RDTO<KomoTeksti> kuvausKomo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         LearningOpportunity lo = of.createLearningOpportunity();
@@ -96,18 +152,6 @@ public class KoulutusWrapper {
         final I18NUrl url = of.createI18NUrl();
         url.setValue(src);
         return url;
-    }
-
-    public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
-                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
-
-        learningOpportunities.getLearningOpportunity().add(lo);
     }
 
     private void setCredits(AmmattitutkintoV1RDTO k, LearningOpportunity lo) {
@@ -202,49 +246,6 @@ public class KoulutusWrapper {
         }
     }
 
-    public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
-                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
-        learningOpportunities.getLearningOpportunity().add(lo);
-    }
-
-    public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
-                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
-        learningOpportunities.getLearningOpportunity().add(lo);
-    }
-
-    public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
-                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
-        learningOpportunities.getLearningOpportunity().add(lo);
-    }
-
-    public void fetchLukioInfo(KoulutusLukioV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
-                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
-        learningOpportunities.getLearningOpportunity().add(lo);
-    }
 
     private void setInformationLanguage(Map<String, String> map, LearningOpportunity lo) {
         if (map.get("kieli_en") != null) {
