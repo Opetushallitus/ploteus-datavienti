@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NString;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NUrl;
@@ -19,6 +21,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import eu.europa.ec.learningopportunities.v0_5_10.Qualifications;
 import eu.europa.ec.learningopportunities.v0_5_10.StudyTypeType;
 import eu.europa.ec.learningopportunities.v0_5_10.XsdTypeType;
+import fi.vm.sade.controller.KoulutusController;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioNimiRDTO;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
 import fi.vm.sade.parser.JAXBParser;
@@ -30,6 +33,8 @@ public class KoulutusWrapper {
     public static String COUNTRY_CODE = "FI";
     public static String TITLE_LANG_CODE_EN = "en";
     public static String LANG_CODE_KIELI_EN = "kieli_en";
+    
+    private static final Logger log = LoggerFactory.getLogger(KoulutusWrapper.class);
 
     private LearningOpportunities learningOpportunities;
 
@@ -129,7 +134,7 @@ public class KoulutusWrapper {
         lo.setCountryCode(COUNTRY_CODE);
         lo.getUrl().add(createUrl(opitopolkuUrl));
         lo.getTitle().add(createI18NonEmptyString(kh.getNimi().get(TITLE_LANG_CODE_EN)));
-        //System.out.println("koodisto: " + koodisto.get(koodistoID) + ", koodiID: " + koodistoID);
+        log.debug("koodisto: " + koodisto.get(koodistoID) + ", koodiID: " + koodistoID);
         lo.setEducationLevel(koodisto.get(koodistoID));
         return lo;
     }

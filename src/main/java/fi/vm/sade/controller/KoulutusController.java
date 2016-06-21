@@ -27,6 +27,8 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.GenericType;
@@ -44,6 +46,7 @@ import fi.vm.sade.koodisto.util.KoodistoClient;
 import fi.vm.sade.model.KoulutusAsteTyyppi;
 import fi.vm.sade.model.StatusObject;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
+import fi.vm.sade.parser.JAXBParser;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakutuloksetV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
@@ -63,6 +66,8 @@ public class KoulutusController {
     private static final String koodisto = "https://testi.virkailija.opintopolku.fi/koodisto-service";
     private static final String JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=UTF-8";
 
+    private static final Logger log = LoggerFactory.getLogger(KoulutusController.class);
+    
     private ArrayList<KoulutusHakutulosV1RDTO> haetutKoulutukset;
     private ArrayList<OrganisaatioRDTO> haetutOrganisaatiot;
     private HashMap<String, String> haetutKoodit;
@@ -113,9 +118,13 @@ public class KoulutusController {
         haetutOrganisaatiot = new ArrayList<OrganisaatioRDTO>();
         haetutKoodit = new HashMap<>();
         KoulutusWrapper kw = new KoulutusWrapper();
+        /*ch.qos.logback.classic.Level level = ch.qos.logback.classic.Level.DEBUG;
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(log.ROOT_LOGGER_NAME);
+        root.setLevel(level);*/ //TODO: Is this needed?
+        
         koodistoClient = new CachingKoodistoClient(koodisto);
         List<KoodiType> kt = koodistoClient.getAlakoodis("koulutus_731201");
-        System.out.println("koulutus_731201: " + kt.get(0).getKoodiArvo());
+        log.debug("koulutus_731201: " + kt.get(0).getKoodiArvo());
 
         ObjectMapper mapper = new ObjectMapper(); // Jacksonin mapper ja confaus
         JacksonJsonProvider jacksProv = new JacksonJsonProvider(mapper);
@@ -178,7 +187,8 @@ public class KoulutusController {
                         }
                         break;
                     default:
-                        System.out.println("Skipping Before: " + koulutusData.getToteutustyyppiEnum());
+                        log.info("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() + 
+                                ", Type: " + koulutusData.getKoulutusasteTyyppi());
                         break;
                     }
                 }
@@ -237,7 +247,8 @@ public class KoulutusController {
                 kw.fetchLukioInfo(lukioKoulutus, organisaatioMap);
                 break;
             default:
-                System.out.println("Skipping: " + kh.getToteutustyyppiEnum());
+                log.info("Skipping on data parsing Koulutus: " + kh.getKomoOid() + 
+                        ", Type: " + kh.getKoulutusasteTyyppi());
                 skip++;
             }
             i++;
@@ -254,7 +265,10 @@ public class KoulutusController {
         statusObject.setStatus(status);
         statusObject.setStatusText("Valmis");
 
-        System.out.println("Skipperoni: " + skip);
+        if(skip != 0){
+            log.warn("Amount of skipped koulutus: " + skip);
+        }
+        log.info("Request ready");
         return "";
     }
 
@@ -327,20 +341,15 @@ public class KoulutusController {
                 content.append(line + "\n");
             }
             bufferedReader.close();
-            System.out.println("Response code: " + connection.getResponseCode());
-            if (content.equals("{\"message\": \"Koulutus learning opportunity specification not found: " + oid + "\"}")) {
-                System.out.println("EI Loytynyt: " + opitopolkuURI + type + oid);
-                return false;
-            } else if (200 <= connection.getResponseCode() && connection.getResponseCode() <= 399) {
-                System.out.println("Loytyi: " + opitopolkuURI + type + oid);
+            if (200 <= connection.getResponseCode() && connection.getResponseCode() <= 399) {
+                log.debug("checkKoulutusValidnessFromOpintopolku found: " + opitopolkuURI + type + oid);
                 return true;
             } else {
-                System.out.println("EI Loytynyt: " + opitopolkuURI + type + oid + " Koska yhdistamisessa oli virhe");
+                log.debug("checkKoulutusValidnessFromOpintopolku didn't find: " + opitopolkuURI + type + oid);
                 return false;
             }
         } catch (IOException exception) {
-            // System.out.println("Syntax Terroria urlilla: " + opitopolkuURI +
-            // type + oid);
+            log.debug("checkKoulutusValidnessFromOpintopolku didn't find: " + opitopolkuURI + type + oid);
             return false;
         }
     }
@@ -376,12 +385,12 @@ public class KoulutusController {
     @SuppressWarnings("unchecked")
     private Object getWithRetries(WebResource resource, GenericType type) throws Exception {
         int retries = 2;
-        System.out.println(resource.getURI());
+        log.debug("getWithRetries: " + resource.getURI().toString());
         while (--retries > 0) {
             try {
                 return resource.accept(JSON_UTF8).get(type);
             } catch (Exception e) {
-                System.out.println("Calling resource failed: " + resource);
+                log.warn("Calling resource failed: " + resource);
                 try {
                     Thread.sleep(2500);
                 } catch (InterruptedException e1) {
@@ -389,22 +398,20 @@ public class KoulutusController {
                 }
             }
         }
-        System.out.println("Calling resource failed, last retry: " + resource);
+        log.warn("Calling resource failed, last retry: " + resource);
         try {
             return resource.accept(JSON_UTF8).get(type);
         } catch (Exception e) {
-            System.out.println("Calling resource failed: " + resource);
+            log.error("Calling resource failed: " + resource);
             throw e;
         }
     }
 
     private void addKoulutusToArray(KoulutusHakutulosV1RDTO koulutusData) {
-        System.out.println("Lisataan: " + koulutusData.getOid());
+        log.debug("Adding : " + koulutusData.getOid());
         haetutKoulutukset.add(koulutusData); // lisataan koulutus
         status = numberOfCurrentOrganisation / numberOfOrganisations * 0.30;
-        // System.out.println(status);
         status = (Math.ceil(status * 100.0) / 100.0);
         statusObject.setStatus(status);
-        // System.out.println(status);
     }
 }
