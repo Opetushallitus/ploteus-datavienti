@@ -58,10 +58,9 @@ public class KoulutusWrapper {
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/ammatillinenaikuiskoulutus/" + k.getOid());
-        // setTeachingLangs(k.getOpetuskielis().getMeta(), lo); //TODO: null
+        setTeachingLangs(k.getOpetuskielis().getMeta(), lo); //TODO: null
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        // setDurationInformation(k.getSuunniteltuKestoArvo(),
-        // k.getSuunniteltuKestoTyyppi().getNimi(), lo); //TODO: null
+        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo); //TODO: null
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
@@ -72,8 +71,7 @@ public class KoulutusWrapper {
                 k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/ammatillinenaikuiskoulutus/" + k.getOid());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        // setDurationInformation(k.getSuunniteltuKestoArvo(),
-        // k.getSuunniteltuKestoTyyppi().getNimi(), lo); //TODO: null
+        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo); //TODO: null
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
@@ -81,6 +79,7 @@ public class KoulutusWrapper {
 
     public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         // TODO: korkeakoulu setInformationLanguage null
+        // TODO: korkeakoulu setProviderName null
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/korkeakoulu/" + k.getOid());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
@@ -119,10 +118,9 @@ public class KoulutusWrapper {
         LearningOpportunity lo = of.createLearningOpportunity();
         setDate(koulutuksenAlkamisPvms, lo);
         setCost(hintaString, lo);
-        // setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(),
-        // lo); //TODO: null
+        setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo); //TODO: null
         setDescription(kuvausKomo, lo);
-        setProviderName(opetusTarjoajat, lo, haetutOrganisaatiot);
+        setProviderName(opetusTarjoajat, lo, haetutOrganisaatiot); //TODO: null
         lo.setLearningOpportunityId(kOid);
         lo.setCountryCode(COUNTRY_CODE);
         lo.getUrl().add(createUrl(opitopolkuUrl));

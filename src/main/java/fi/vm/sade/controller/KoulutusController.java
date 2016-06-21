@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import fi.vm.sade.koodisto.service.types.*;
 import fi.vm.sade.koodisto.service.types.common.KoodiType;
 import fi.vm.sade.koodisto.service.types.common.KoodistoRyhmaCollectionType;
+import fi.vm.sade.koodisto.service.types.common.KoodistoType;
 import fi.vm.sade.koodisto.service.types.common.KoodistoVersioListType;
 import fi.vm.sade.koodisto.util.CachingKoodistoClient;
 import fi.vm.sade.koodisto.util.KoodistoClient;
@@ -63,7 +65,8 @@ public class KoulutusController {
 
     private ArrayList<KoulutusHakutulosV1RDTO> haetutKoulutukset;
     private ArrayList<OrganisaatioRDTO> haetutOrganisaatiot;
-    // private KoodistoRyhmaCollectionType haettuKoodisto; //
+    private HashMap<String, String> haetutKoodit;
+    // private KoodistoRyhmaCollectionType haettuKoodisto;
     // KoodistoVersioListDto
 
     private WebResource v1KoulutusResource;
@@ -108,6 +111,7 @@ public class KoulutusController {
         statusObject.setStatusText("Alustetaan...");
         haetutKoulutukset = new ArrayList<KoulutusHakutulosV1RDTO>();
         haetutOrganisaatiot = new ArrayList<OrganisaatioRDTO>();
+        haetutKoodit = new HashMap<>();
         KoulutusWrapper kw = new KoulutusWrapper();
         koodistoClient = new CachingKoodistoClient(koodisto);
         List<KoodiType> kt = koodistoClient.getAlakoodis("koulutus_731201");
@@ -133,7 +137,7 @@ public class KoulutusController {
         // Aalto yliopisto 1.2.246.562.10.72985435253
         // 1.2.246.562.10.53642770753
         // tai tyhja kaikille tuloksille
-        organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.72985435253");
+        organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.53642770753");
         HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = organisaatioResult.getResult();
         Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = hakutulokset.getTulokset().iterator();
         numberOfOrganisations = hakutulokset.getTulokset().size();
@@ -157,17 +161,20 @@ public class KoulutusController {
                     case KoulutusAsteTyyppi.AMMATILLINENPERUSKOULUTUS:
                         if (checkKoulutusValidnessFromOpintopolku("koulutus/", koulutusData.getOid())) {
                             addKoulutusToArray(koulutusData);
+                            fetchKoodi(koulutusData);
                         }
                         break;
                     case KoulutusAsteTyyppi.AMMATTITUTKINTO:
                     case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
                         if (checkKoulutusValidnessFromOpintopolku("adultvocational/", koulutusData.getOid())) {
                             addKoulutusToArray(koulutusData);
+                            fetchKoodi(koulutusData);
                         }
                         break;
                     case KoulutusAsteTyyppi.KORKEAKOULUTUS:
                         if (checkKoulutusValidnessFromOpintopolku("highered/", koulutusData.getOid())) {
                             addKoulutusToArray(koulutusData);
+                            fetchKoodi(koulutusData);
                         }
                         break;
                     default:
@@ -249,6 +256,15 @@ public class KoulutusController {
 
         System.out.println("Skipperoni: " + skip);
         return "";
+    }
+
+    private void fetchKoodi(KoulutusHakutulosV1RDTO koulutusData) {
+        List<KoodiType> kt = koodistoClient.getAlakoodis(koulutusData.getKoulutuskoodi());
+        for(KoodiType k : kt ){
+            if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusaste")){
+                haetutKoodit.put(koulutusData.getKoulutuskoodi(), k.getKoodiArvo());
+            }
+        }        
     }
 
     @SuppressWarnings("unchecked")
