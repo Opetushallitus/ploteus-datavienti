@@ -50,8 +50,7 @@ public class KoulutusWrapper {
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
-
+        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
@@ -62,8 +61,7 @@ public class KoulutusWrapper {
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
-
+        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
@@ -74,7 +72,7 @@ public class KoulutusWrapper {
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
+        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
@@ -85,7 +83,7 @@ public class KoulutusWrapper {
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
+        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
@@ -96,7 +94,7 @@ public class KoulutusWrapper {
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
+        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
@@ -107,7 +105,7 @@ public class KoulutusWrapper {
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k, lo, haetutOrganisaatiot);
-        setCredits(k, lo);
+        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
@@ -124,12 +122,6 @@ public class KoulutusWrapper {
         lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + kOid));
         lo.getTitle().add(createI18NonEmptyString(kh.getNimi().get(TITLE_LANG_CODE_EN)));
         return lo;
-    }
-
-    private void setCredits(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo) {
-        if (k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null) {
-            this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
-        }
     }
 
     private void setQualifications(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
@@ -154,33 +146,9 @@ public class KoulutusWrapper {
         return url;
     }
 
-    private void setCredits(AmmattitutkintoV1RDTO k, LearningOpportunity lo) {
-        if (k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null) {
-            this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
-        }
-    }
-
-    private void setCredits(ErikoisammattitutkintoV1RDTO k, LearningOpportunity lo) {
-        if (k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null) {
-            this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
-        }
-    }
-
-    private void setCredits(KoulutusKorkeakouluV1RDTO k, LearningOpportunity lo) {
-        if (k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null) {
-            this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
-        }
-    }
-
-    private void setCredits(ValmistavaKoulutusV1RDTO k, LearningOpportunity lo) {
-        if (k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null) {
-            this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
-        }
-    }
-
-    private void setCredits(KoulutusLukioV1RDTO k, LearningOpportunity lo) {
-        if (k.getOpintojenLaajuusarvo() != null && k.getOpintojenLaajuusyksikko().getMeta() != null) {
-            this.setCredits(k.getOpintojenLaajuusarvo().getArvo() + " " + k.getOpintojenLaajuusyksikko().getMeta().get(LANG_CODE_KIELI_EN).getNimi(), lo);
+    private void setCredits(KoodiV1RDTO laajuusArvo, KoodiV1RDTO laajuusYksikko, LearningOpportunity lo) {
+        if (laajuusArvo != null && laajuusYksikko.getMeta() != null) {
+            lo.getCredits().add(createI18NString(laajuusArvo.getArvo() + " " + laajuusYksikko.getMeta().get(LANG_CODE_KIELI_EN).getNimi()));
         }
     }
 
@@ -239,7 +207,7 @@ public class KoulutusWrapper {
             lo.getDurationInformation().add(createI18NString(suunniteltuKestoArvo + " " + suunniteltuNimi));
         }
     }
-    
+
     private void setInformationLanguage(Map<String, String> map, LearningOpportunity lo) {
         if (map.get("kieli_en") != null) {
             lo.setInformationLanguage(LanguageCode.EN);
