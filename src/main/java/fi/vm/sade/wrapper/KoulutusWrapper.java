@@ -57,12 +57,12 @@ public class KoulutusWrapper {
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid());
 
-        this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
-        this.setCost(k.getHintaString(), lo);
-        this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        this.setProviderName(k.getOpetusTarjoajat(), lo);
+        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
+        setDate(k.getKoulutuksenAlkamisPvms(), lo);
+        setCost(k.getHintaString(), lo);
+        setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+        setProviderName(k.getOpetusTarjoajat(), lo);
 
         setDescription(k, lo);
         setDurationInformation(k, lo);
@@ -450,7 +450,7 @@ public class KoulutusWrapper {
     	temp.setValue(string);
     	return temp;
     }
-    
+
     private void setDurationInformation(String duration, LearningOpportunity lo) {
         lo.getDurationInformation().add(createI18NString(duration));
     }
