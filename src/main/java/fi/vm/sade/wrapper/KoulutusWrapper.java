@@ -77,7 +77,7 @@ public class KoulutusWrapper {
         lo.setLearningOpportunityId(kOid);
         lo.setCountryCode(COUNTRY_CODE);
         lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + kOid));
-        lo.getTitle().add(createTitle(kh.getNimi().get(TITLE_LANG_CODE_EN)));
+        lo.getTitle().add(createI18NonEmptyString(kh.getNimi().get(TITLE_LANG_CODE_EN)));
         return lo;
     }
 
@@ -409,7 +409,7 @@ public class KoulutusWrapper {
         lo.getCosts().add(temp);
     }
 
-    private I18NNonEmptyString createTitle(String title) {
+    private I18NNonEmptyString createI18NonEmptyString(String title) {
         final I18NNonEmptyString i18Non = of.createI18NNonEmptyString();
         i18Non.setValue(title);
         i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE_EN));
@@ -417,14 +417,9 @@ public class KoulutusWrapper {
     }
 
     private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
-        for (String s : descriptions.keySet()) {
-            if (s != null && !s.isEmpty()) {
-                final I18NNonEmptyString i18Non = of.createI18NNonEmptyString();
-                i18Non.setValue(descriptions.get(s));
-                i18Non.setLanguage(LanguageCode.fromValue(s.substring(s.length() - 2, s.length()))); // Leave only the country code
-                lo.getDescription().add(i18Non);
-            }
-        }
+        descriptions.keySet().stream()
+        	.filter(e -> e != null && !e.isEmpty())
+        	.forEach(e -> lo.getDescription().add(createI18NonEmptyString(descriptions.get(e))));
     }
 
     private void setTeachingLangs(Map<String, KoodiV1RDTO> teachingLangs, LearningOpportunity lo) {
