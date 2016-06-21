@@ -475,11 +475,8 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
-        for (String s : list.values()) {
-            I18NString temp = of.createI18NString();
-            temp.setValue(s);
-            qualifications.getQualificationAwardedDescription().add(temp);
-        }
+        list.values().stream()
+        	.forEach(e -> qualifications.getQualificationAwardedDescription().add(createI18NString(e)));
     }
 
     private void setCredits(String credits, LearningOpportunity lo) {
