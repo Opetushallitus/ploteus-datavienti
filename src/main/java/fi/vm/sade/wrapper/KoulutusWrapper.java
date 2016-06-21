@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NString;
@@ -184,22 +185,18 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationAwardingBody(Set<String> set, Qualifications qualifications, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        for (String s : set) {
-            for (OrganisaatioNimiRDTO o : haetutOrganisaatiot.get(s).getNimet()) {
-                I18NString temp = of.createI18NString();
-                temp.setValue(o.getNimi().get("en"));
-                qualifications.getAwardingBody().add(temp);
-            }
+        for (String s: set) {
+            haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
+                qualifications.getAwardingBody().add(createI18NString(o.getNimi().get("en")));
+            });
         }
     }
 
     private void setProviderName(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         for (String s : set) {
-            for (OrganisaatioNimiRDTO o : haetutOrganisaatiot.get(s).getNimet()) {
-                I18NNonEmptyString temp = of.createI18NNonEmptyString();
-                temp.setValue(o.getNimi().get("en"));
-                lo.getProviderName().add(temp);
-            }
+            haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
+                lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en")));
+            });
         }
     }
 
