@@ -455,10 +455,14 @@ public class KoulutusWrapper {
         lo.getStudyType().addAll(muotoTypeList);
     }
 
+    private I18NString createI18NString(String string){
+    	I18NString temp = of.createI18NString();
+    	temp.setValue(string);
+    	return temp;
+    }
+    
     private void setDurationInformation(String duration, LearningOpportunity lo) {
-        I18NString durationInfo = of.createI18NString();
-        durationInfo.setValue(duration);
-        lo.getDurationInformation().add(durationInfo);
+        lo.getDurationInformation().add(createI18NString(duration));
     }
 
     private void setDate(Set<Date> dates, LearningOpportunity lo) {
