@@ -60,7 +60,7 @@ public class KoulutusWrapper {
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k, lo, haetutOrganisaatiot);
+        setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
@@ -71,7 +71,7 @@ public class KoulutusWrapper {
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k, lo, haetutOrganisaatiot);
+        setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
@@ -82,7 +82,7 @@ public class KoulutusWrapper {
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
+        setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
@@ -93,7 +93,7 @@ public class KoulutusWrapper {
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k, lo, haetutOrganisaatiot);
+        setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
@@ -104,7 +104,7 @@ public class KoulutusWrapper {
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k, lo, haetutOrganisaatiot);
+        setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
@@ -152,43 +152,12 @@ public class KoulutusWrapper {
         lo.getQualifications().add(qualifications);
     }
 
-    private void setQualifications(AmmattitutkintoV1RDTO k, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+    private void setQualifications(KuvausV1RDTO<KomoTeksti> kuvausKomo, Set<String> opetusJarjestajat, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         Qualifications qualifications = of.createQualifications();
-        //this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
-        if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
-            this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
+        if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
+            this.setQualificationDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
-        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications, haetutOrganisaatiot);
-        lo.getQualifications().add(qualifications);
-    }
-
-    private void setQualifications(ErikoisammattitutkintoV1RDTO k, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        Qualifications qualifications = of.createQualifications();
-        //this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
-        if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
-            this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
-        }
-        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications, haetutOrganisaatiot);
-        lo.getQualifications().add(qualifications);
-    }
-    
-    private void setQualifications(ValmistavaKoulutusV1RDTO k, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        Qualifications qualifications = of.createQualifications();
-        //this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
-        if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
-            this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
-        }
-        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications, haetutOrganisaatiot);
-        lo.getQualifications().add(qualifications);
-    }
-
-    private void setQualifications(KoulutusLukioV1RDTO k, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        Qualifications qualifications = of.createQualifications();
-        //this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
-        if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
-            this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
-        }
-        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications, haetutOrganisaatiot);
+        this.setQualificationAwardingBody(opetusJarjestajat, qualifications, haetutOrganisaatiot);
         lo.getQualifications().add(qualifications);
     }
 
