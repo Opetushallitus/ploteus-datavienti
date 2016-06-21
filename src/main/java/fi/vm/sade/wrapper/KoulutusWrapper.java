@@ -430,24 +430,19 @@ public class KoulutusWrapper {
 
     private void setStudyType(Map<String, Integer> paikkaList, Map<String, Integer> muotoList, LearningOpportunity lo) {
         List<StudyTypeType> studyTypeList = new ArrayList<>();
-        List<StudyTypeType> muotoTypeList = new ArrayList<>();
-        
-       paikkaList.keySet().stream()
-        	.filter(e -> e.equals("opetuspaikkak_1"))
-        	.forEach(e -> studyTypeList.add(StudyTypeType.FF)); 
-       paikkaList.keySet().stream()
-        	.filter(e -> e.equals("opetuspaikkak_2"))
-        	.forEach(e -> studyTypeList.add(StudyTypeType.DL));
-       
-       muotoList.keySet().stream()
-        	.filter(e -> e.equals("opetusmuotokk_3"))
-        	.forEach(e -> muotoTypeList.add(StudyTypeType.BL));
-       muotoList.keySet().stream()
-        	.filter(e -> e.equals("opetusmuotokk_4"))
-        	.forEach(e -> muotoTypeList.add(StudyTypeType.ON));
-
+        if(paikkaList.containsKey("opetuspaikkak_1")) {
+            studyTypeList.add(StudyTypeType.FF);
+        }
+        if(paikkaList.containsKey("opetuspaikkak_2")) {
+            studyTypeList.add(StudyTypeType.DL);
+        }
+        if(muotoList.containsKey("opetuspaikkak_3")) {
+            studyTypeList.add(StudyTypeType.BL);
+        }
+        if(muotoList.containsKey("opetuspaikkak_4")) {
+            studyTypeList.add(StudyTypeType.ON);
+        }
         lo.getStudyType().addAll(studyTypeList);
-        lo.getStudyType().addAll(muotoTypeList);
     }
 
     private I18NString createI18NString(String string){
