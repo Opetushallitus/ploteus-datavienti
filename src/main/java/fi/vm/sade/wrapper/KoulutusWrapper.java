@@ -105,14 +105,10 @@ public class KoulutusWrapper {
     }
 
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
-
-        this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        this.setProviderName(k.getOpetusTarjoajat(), lo, haetutOrganisaatiot);
-
-        setDescription(k, lo);
+        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(),
+                k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
+        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k, lo);
         setQualifications(k, lo, haetutOrganisaatiot);
         setCredits(k, lo);
