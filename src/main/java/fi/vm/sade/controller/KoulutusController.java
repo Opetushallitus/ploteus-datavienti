@@ -63,11 +63,12 @@ public class KoulutusController {
 
     private ArrayList<KoulutusHakutulosV1RDTO> haetutKoulutukset;
     private ArrayList<OrganisaatioRDTO> haetutOrganisaatiot;
-    //private KoodistoRyhmaCollectionType haettuKoodisto; // KoodistoVersioListDto
+    // private KoodistoRyhmaCollectionType haettuKoodisto; //
+    // KoodistoVersioListDto
 
     private WebResource v1KoulutusResource;
     private WebResource v1OrganisaatioResource;
-    //private WebResource koodistoResource;
+    // private WebResource koodistoResource;
 
     private KoodistoClient koodistoClient;
 
@@ -194,10 +195,8 @@ public class KoulutusController {
 
             switch (kh.getKoulutusasteTyyppi().name()) {
             case KoulutusAsteTyyppi.AMMATILLINEN_PERUSKOULUTUS:
-                ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> ammatillinenPerustutkintoResult = searchAmmatillinenPerustutkinto(
-                        kh.getOid());
-                KoulutusAmmatillinenPerustutkintoV1RDTO ammatillinenPerustutkintoKoulutus = ammatillinenPerustutkintoResult
-                        .getResult();
+                ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> ammatillinenPerustutkintoResult = searchAmmatillinenPerustutkinto(kh.getOid());
+                KoulutusAmmatillinenPerustutkintoV1RDTO ammatillinenPerustutkintoKoulutus = ammatillinenPerustutkintoResult.getResult();
                 kw.fetchAmmatillinenPerustutkintoInfo(ammatillinenPerustutkintoKoulutus, organisaatioMap);
                 break;
 
@@ -253,8 +252,7 @@ public class KoulutusController {
     }
 
     @SuppressWarnings("unchecked")
-    public ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> searchAmmatillinenPerustutkinto(String oid)
-            throws Exception {
+    public ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> searchAmmatillinenPerustutkinto(String oid) throws Exception {
         return (ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid),
                 new GenericType<ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>>() {
                 });
@@ -290,9 +288,8 @@ public class KoulutusController {
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<KoulutusLukioV1RDTO> searchKoulutusLukio(String oid) throws Exception {
-        return (ResultV1RDTO<KoulutusLukioV1RDTO>) getWithRetries(v1KoulutusResource.path(oid),
-                new GenericType<ResultV1RDTO<KoulutusLukioV1RDTO>>() {
-                });
+        return (ResultV1RDTO<KoulutusLukioV1RDTO>) getWithRetries(v1KoulutusResource.path(oid), new GenericType<ResultV1RDTO<KoulutusLukioV1RDTO>>() {
+        });
     }
 
     // Hakee yhden organisaation tiedot organisaatio-rajapinnasta
@@ -315,8 +312,7 @@ public class KoulutusController {
             }
             bufferedReader.close();
             System.out.println("Response code: " + connection.getResponseCode());
-            if (content
-                    .equals("{\"message\": \"Koulutus learning opportunity specification not found: " + oid + "\"}")) {
+            if (content.equals("{\"message\": \"Koulutus learning opportunity specification not found: " + oid + "\"}")) {
                 System.out.println("EI Loytynyt: " + opitopolkuURI + type + oid);
                 return false;
             } else if (200 <= connection.getResponseCode() && connection.getResponseCode() <= 399) {
@@ -327,7 +323,8 @@ public class KoulutusController {
                 return false;
             }
         } catch (IOException exception) {
-            //System.out.println("Syntax Terroria urlilla: " + opitopolkuURI + type + oid);
+            // System.out.println("Syntax Terroria urlilla: " + opitopolkuURI +
+            // type + oid);
             return false;
         }
     }
@@ -344,18 +341,16 @@ public class KoulutusController {
     // Jos OrganisationOid on tyhja, metodi palauttaa kaikkien organisaatioiden
     // julkaistut koulutukset
     @SuppressWarnings("unchecked")
-    public ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> searchOrganisationsEducations(
-            String OrganisationOid) throws Exception {
+    public ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> searchOrganisationsEducations(String OrganisationOid) throws Exception {
         if (OrganisationOid == "") {
             return (ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>) getWithRetries(
-                    v1KoulutusResource.path("search").queryParam("tila", "JULKAISTU").queryParam("meta", "true")
-                            .queryParam("img", "false"),
+                    v1KoulutusResource.path("search").queryParam("tila", "JULKAISTU").queryParam("meta", "true").queryParam("img", "false"),
                     new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>() {
                     });
         } else {
             return (ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>) getWithRetries(
-                    v1KoulutusResource.path("search").queryParam("organisationOid", OrganisationOid)
-                            .queryParam("tila", "JULKAISTU").queryParam("meta", "true").queryParam("img", "false"),
+                    v1KoulutusResource.path("search").queryParam("organisationOid", OrganisationOid).queryParam("tila", "JULKAISTU")
+                            .queryParam("meta", "true").queryParam("img", "false"),
                     new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>() {
                     });
         }
