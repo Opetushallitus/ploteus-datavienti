@@ -426,10 +426,9 @@ public class KoulutusWrapper {
     }
 
     private void setTeachingLangs(Map<String, KoodiV1RDTO> teachingLangs, LearningOpportunity lo) {
-        for (KoodiV1RDTO s : teachingLangs.values()) {
-            if (!s.getArvo().toLowerCase().equals("la"))
-                lo.getTeachingLanguage().add(LanguageCode.fromValue(s.getArvo().toLowerCase()));
-        }
+        teachingLangs.values().stream()
+        	.filter(e -> !e.getArvo().toLowerCase().equals("la"))
+        	.forEach(e -> lo.getTeachingLanguage().add(LanguageCode.fromValue(e.getArvo().toLowerCase())));
     }
 
     private void setStudyType(Map<String, Integer> paikkaList, Map<String, Integer> muotoList, LearningOpportunity lo) {
