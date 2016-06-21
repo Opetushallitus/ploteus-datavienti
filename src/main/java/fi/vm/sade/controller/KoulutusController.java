@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -153,46 +155,46 @@ public class KoulutusController {
         myList.add("");
         double i = 0.0;
         int skip = 0;
-        kw.setOrganisaatiot(haetutOrganisaatiot);
         while (iter3.hasNext()) {    //iteroidaan koulutukset ja luodaan niista LearningOpportunityja KoulutusWrapperilla
             KoulutusHakutulosV1RDTO kh = iter3.next();
             kw.setKoulutusHakutulos(kh);
+            final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream().collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
 
             switch (kh.getToteutustyyppiEnum().name()) {
                 case KoulutusAsteTyyppi.AMMATILLINEN_PERUSTUTKINTO:
                     ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> ammatillinenPerustutkintoResult = searchAmmatillinenPerustutkinto(kh.getOid());
                     KoulutusAmmatillinenPerustutkintoV1RDTO ammatillinenPerustutkintoKoulutus = ammatillinenPerustutkintoResult.getResult();
-                    kw.fetchAmmatillinenPerustutkintoInfo(ammatillinenPerustutkintoKoulutus);
+                    kw.fetchAmmatillinenPerustutkintoInfo(ammatillinenPerustutkintoKoulutus, organisaatioMap);
                     break;
 
                 case KoulutusAsteTyyppi.AMMATTITUTKINTO:
                     ResultV1RDTO<AmmattitutkintoV1RDTO> ammattiResult = searchAmmattitutkinto(kh.getOid());
                     AmmattitutkintoV1RDTO ammattiKoulutus = ammattiResult.getResult();
-                    kw.fetchAmmattiInfo(ammattiKoulutus);
+                    kw.fetchAmmattiInfo(ammattiKoulutus, organisaatioMap);
                     break;
 
                 case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
                     ResultV1RDTO<ErikoisammattitutkintoV1RDTO> erikoisResult = searchErikoisammattitutkinto(kh.getOid());
                     ErikoisammattitutkintoV1RDTO erikoisKoulutus = erikoisResult.getResult();
-                    kw.fetchErikoisInfo(erikoisKoulutus);
+                    kw.fetchErikoisInfo(erikoisKoulutus, organisaatioMap);
                     break;
 
                 case KoulutusAsteTyyppi.KORKEAKOULUTUS:
                     ResultV1RDTO<KoulutusKorkeakouluV1RDTO> koulutusResult = searchKoulutusKorkeakoulu(kh.getOid());
                     KoulutusKorkeakouluV1RDTO korkeaKoulutus = koulutusResult.getResult();
-                    kw.fetchKorkeaInfo(korkeaKoulutus);
+                    kw.fetchKorkeaInfo(korkeaKoulutus, organisaatioMap);
                     break;
 
                 case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
                     ResultV1RDTO<ValmistavaKoulutusV1RDTO> ammValmistavaResult = searchValmistavaKoulutus(kh.getOid());
                     ValmistavaKoulutusV1RDTO ammValmistavaKoulutus = ammValmistavaResult.getResult();
-                    kw.fetchValmistavaInfo(ammValmistavaKoulutus);
+                    kw.fetchValmistavaInfo(ammValmistavaKoulutus, organisaatioMap);
                     break;
 
                 case KoulutusAsteTyyppi.LUKIOKOULUTUS:
                     ResultV1RDTO<KoulutusLukioV1RDTO> lukioResult = searchKoulutusLukio(kh.getOid());
                     KoulutusLukioV1RDTO lukioKoulutus = lukioResult.getResult();
-                    kw.fetchLukioInfo(lukioKoulutus);
+                    kw.fetchLukioInfo(lukioKoulutus, organisaatioMap);
                     break;
                 default:
                     System.out.println("Skipping: " + kh.getToteutustyyppiEnum());

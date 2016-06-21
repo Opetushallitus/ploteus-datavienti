@@ -40,10 +40,8 @@ public class KoulutusWrapper {
     private ObjectFactory of;
     private KoulutusHakutulosV1RDTO kh;
     private fi.vm.sade.parser.JAXBParser JAXBParser;
-    private HashMap<String, OrganisaatioRDTO> organisaatioMap;
 
     public KoulutusWrapper() {
-        organisaatioMap = new HashMap<>();
         of = new ObjectFactory();
         learningOpportunities = of.createLearningOpportunities();
         learningOpportunities.setKey("ZDR5HGWBHP0J65P5VZIYEI2ZJJF18WGW");
@@ -52,16 +50,16 @@ public class KoulutusWrapper {
         JAXBParser = new JAXBParser();
     }
 
-    public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k) {
+    public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        setProviderName(k.getOpetusTarjoajat(), lo);
+        setProviderName(k.getOpetusTarjoajat(), lo, haetutOrganisaatiot);
 
         setDescription(k, lo);
         setDurationInformation(k, lo);
-        setQualifications(k, lo);
+        setQualifications(k, lo, haetutOrganisaatiot);
         setCredits(k, lo);
 
         learningOpportunities.getLearningOpportunity().add(lo);
@@ -84,13 +82,13 @@ public class KoulutusWrapper {
         }
     }
 
-    private void setQualifications(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo) {
+    private void setQualifications(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         Qualifications qualifications = of.createQualifications();
         this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
-        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
+        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications, haetutOrganisaatiot);
         lo.getQualifications().add(qualifications);
     }
 
@@ -112,17 +110,17 @@ public class KoulutusWrapper {
         return url;
     }
 
-    public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k) {
+    public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString());
 
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        this.setProviderName(k.getOpetusTarjoajat(), lo);
+        this.setProviderName(k.getOpetusTarjoajat(), lo, haetutOrganisaatiot);
 
         setDescription(k, lo);
         setDurationInformation(k, lo);
-        setQualifications(k, lo);
+        setQualifications(k, lo, haetutOrganisaatiot);
         setCredits(k, lo);
 
         learningOpportunities.getLearningOpportunity().add(lo);
@@ -134,13 +132,13 @@ public class KoulutusWrapper {
         }
     }
 
-    private void setQualifications(AmmattitutkintoV1RDTO k, LearningOpportunity lo) {
+    private void setQualifications(AmmattitutkintoV1RDTO k, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         Qualifications qualifications = of.createQualifications();
         //this.setQualificationAwarded(k.getTutkintonimikes().getMeta(), qualifications);
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
-        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
+        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications, haetutOrganisaatiot);
         lo.getQualifications().add(qualifications);
     }
 
@@ -156,7 +154,7 @@ public class KoulutusWrapper {
         }
     }
 
-    public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k) {
+    public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         LearningOpportunity lo = of.createLearningOpportunity();
 
         // ID & COUNTRY CODE
@@ -185,7 +183,7 @@ public class KoulutusWrapper {
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
-        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
+        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications, haetutOrganisaatiot);
         lo.getQualifications().add(qualifications);
 
         this.setCost(k.getHintaString(), lo);
@@ -195,12 +193,12 @@ public class KoulutusWrapper {
 
         //InformationLanguage
         this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        this.setProviderName(k.getOpetusTarjoajat(), lo);
+        this.setProviderName(k.getOpetusTarjoajat(), lo, haetutOrganisaatiot);
 
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
-    public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k) {
+    public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         LearningOpportunity lo = of.createLearningOpportunity();
 
         // ID & COUNTRY CODE
@@ -230,7 +228,7 @@ public class KoulutusWrapper {
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
-        this.setQualificationAwardingBody(k.getOpetusTarjoajat(), qualifications);
+        this.setQualificationAwardingBody(k.getOpetusTarjoajat(), qualifications, haetutOrganisaatiot);
         lo.getQualifications().add(qualifications);
 
         this.setCost(k.getHintaString(), lo);
@@ -240,13 +238,13 @@ public class KoulutusWrapper {
 
         //InformationLanguage
         this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        this.setProviderName(k.getOpetusTarjoajat(), lo);
-        this.setProviderContactInfo(k.getOpetusTarjoajat(), lo);
+        this.setProviderName(k.getOpetusTarjoajat(), lo, haetutOrganisaatiot);
+        this.setProviderContactInfo(k.getOpetusTarjoajat(), lo, haetutOrganisaatiot);
 
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
-    public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k) {
+    public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         LearningOpportunity lo = of.createLearningOpportunity();
 
         // ID & COUNTRY CODE
@@ -276,7 +274,7 @@ public class KoulutusWrapper {
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
-        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
+        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications, haetutOrganisaatiot);
         lo.getQualifications().add(qualifications);
 
         this.setCost(k.getHintaString(), lo);
@@ -286,12 +284,12 @@ public class KoulutusWrapper {
 
         //InformationLanguage
         this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        this.setProviderName(k.getOpetusTarjoajat(), lo);
+        this.setProviderName(k.getOpetusTarjoajat(), lo, haetutOrganisaatiot);
 
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
-    public void fetchLukioInfo(KoulutusLukioV1RDTO k) {
+    public void fetchLukioInfo(KoulutusLukioV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         LearningOpportunity lo = of.createLearningOpportunity();
 
         k.getOrganisaatio().getNimet();
@@ -322,7 +320,7 @@ public class KoulutusWrapper {
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setQualificationDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
-        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications);
+        this.setQualificationAwardingBody(k.getOpetusJarjestajat(), qualifications, haetutOrganisaatiot);
         lo.getQualifications().add(qualifications);
 
         this.setCost(k.getHintaString(), lo);
@@ -333,7 +331,7 @@ public class KoulutusWrapper {
 
         //InformationLanguage
         this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
-        this.setProviderName(k.getOpetusTarjoajat(), lo);
+        this.setProviderName(k.getOpetusTarjoajat(), lo, haetutOrganisaatiot);
 
         learningOpportunities.getLearningOpportunity().add(lo);
     }
@@ -354,9 +352,9 @@ public class KoulutusWrapper {
         }
     }
 
-    private void setQualificationAwardingBody(Set<String> set, Qualifications qualifications) {
+    private void setQualificationAwardingBody(Set<String> set, Qualifications qualifications, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         for (String s : set) {
-            for (OrganisaatioNimiRDTO o : organisaatioMap.get(s).getNimet()) {
+            for (OrganisaatioNimiRDTO o : haetutOrganisaatiot.get(s).getNimet()) {
                 I18NString temp = of.createI18NString();
                 temp.setValue(o.getNimi().get("en"));
                 qualifications.getAwardingBody().add(temp);
@@ -364,9 +362,9 @@ public class KoulutusWrapper {
         }
     }
 
-    private void setProviderName(Set<String> set, LearningOpportunity lo) {
+    private void setProviderName(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         for (String s : set) {
-            for (OrganisaatioNimiRDTO o : organisaatioMap.get(s).getNimet()) {
+            for (OrganisaatioNimiRDTO o : haetutOrganisaatiot.get(s).getNimet()) {
                 I18NNonEmptyString temp = of.createI18NNonEmptyString();
                 temp.setValue(o.getNimi().get("en"));
                 lo.getProviderName().add(temp);
@@ -374,10 +372,10 @@ public class KoulutusWrapper {
         }
     }
 
-    private void setProviderContactInfo(Set<String> set, LearningOpportunity lo) {
+    private void setProviderContactInfo(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         ArrayList<I18NString> list = new ArrayList<>();
         for (String s : set) {
-            for (Map<String, String> map : organisaatioMap.get(s).getYhteystiedot()) {
+            for (Map<String, String> map : haetutOrganisaatiot.get(s).getYhteystiedot()) {
                 I18NString providerName = of.createI18NString(); // Mikä on hakijapalvelun nimi? sama kuin tarjoajan nimi?
                 I18NString mailingAdd = of.createI18NString(); // miten koostuu? PL XXXXX, Osoite, Postinumero?
                 I18NString mail = of.createI18NString();    // Ei sähköpostia?
@@ -474,9 +472,5 @@ public class KoulutusWrapper {
 
     public void setKoulutusHakutulos(KoulutusHakutulosV1RDTO kh) {
         this.kh = kh;
-    }
-
-    public void setOrganisaatiot(ArrayList<OrganisaatioRDTO> haetutOrganisaatiot) {
-    	haetutOrganisaatiot.stream().forEach(e -> organisaatioMap.put(e.getOid(), e));
     }
 }
