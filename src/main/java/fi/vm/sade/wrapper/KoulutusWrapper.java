@@ -480,9 +480,7 @@ public class KoulutusWrapper {
     }
 
     private void setCredits(String credits, LearningOpportunity lo) {
-        I18NString temp = of.createI18NString();
-        temp.setValue(credits);
-        lo.getCredits().add(temp);
+        lo.getCredits().add(createI18NString(credits));
     }
 
     public void forwardLOtoJaxBParser() {
@@ -494,8 +492,6 @@ public class KoulutusWrapper {
     }
 
     public void setOrganisaatiot(ArrayList<OrganisaatioRDTO> haetutOrganisaatiot) {
-        for (OrganisaatioRDTO organisaatio : haetutOrganisaatiot) {
-            organisaatioMap.put(organisaatio.getOid(), organisaatio);
-        }
+    	haetutOrganisaatiot.stream().forEach(e -> organisaatioMap.put(e.getOid(), e));
     }
 }
