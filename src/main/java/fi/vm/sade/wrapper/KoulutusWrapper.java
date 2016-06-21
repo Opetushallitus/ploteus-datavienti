@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NString;
@@ -55,12 +53,9 @@ public class KoulutusWrapper {
     }
 
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k) {
-        LearningOpportunity lo = initLearningOpportunity(k.getOid());
-
+        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        setDate(k.getKoulutuksenAlkamisPvms(), lo);
-        setCost(k.getHintaString(), lo);
         setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         setProviderName(k.getOpetusTarjoajat(), lo);
 
@@ -72,8 +67,10 @@ public class KoulutusWrapper {
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
-    private LearningOpportunity initLearningOpportunity(String kOid) {
+    private LearningOpportunity initLearningOpportunity(String kOid, Set<Date> koulutuksenAlkamisPvms, String hintaString) {
         LearningOpportunity lo = of.createLearningOpportunity();
+        setDate(koulutuksenAlkamisPvms, lo);
+        setCost(hintaString, lo);
         lo.setLearningOpportunityId(kOid);
         lo.setCountryCode(COUNTRY_CODE);
         lo.getUrl().add(createUrl("https://opintopolku.fi/app/#!/koulutus/" + kOid));
@@ -116,12 +113,10 @@ public class KoulutusWrapper {
     }
 
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k) {
-        LearningOpportunity lo = initLearningOpportunity(k.getOid());
+        LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString());
 
         this.setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         this.setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        this.setDate(k.getKoulutuksenAlkamisPvms(), lo);
-        this.setCost(k.getHintaString(), lo);
         this.setInformationLanguage(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         this.setProviderName(k.getOpetusTarjoajat(), lo);
 
