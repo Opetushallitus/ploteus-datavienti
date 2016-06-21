@@ -48,7 +48,7 @@ public class KoulutusWrapper {
                 k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        setDurationInformation(k, lo);
+        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k, lo, haetutOrganisaatiot);
         setCredits(k, lo);
 
@@ -86,12 +86,6 @@ public class KoulutusWrapper {
         lo.getQualifications().add(qualifications);
     }
 
-    private void setDurationInformation(KoulutusAmmatillinenPerustutkintoV1RDTO k, LearningOpportunity lo) {
-        if (k.getSuunniteltuKestoArvo() != null) {
-            this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        }
-    }
-
     private void setDescription(KuvausV1RDTO<KomoTeksti> kuvausKomo, LearningOpportunity lo) {
         if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
             this.setDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
@@ -109,7 +103,7 @@ public class KoulutusWrapper {
                 k.getOpetusTarjoajat(), k.getKuvausKomo(), haetutOrganisaatiot);
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        setDurationInformation(k, lo);
+        setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k, lo, haetutOrganisaatiot);
         setCredits(k, lo);
 
@@ -148,21 +142,12 @@ public class KoulutusWrapper {
         lo.getQualifications().add(qualifications);
     }
 
-
-
-    private void setDurationInformation(AmmattitutkintoV1RDTO k, LearningOpportunity lo) {
-        if (k.getSuunniteltuKestoArvo() != null) {
-            this.setDurationInformation(k.getSuunniteltuKestoArvo() + " " + k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        }
-    }
-
     private void setDurationInformation(String suunniteltuKestoArvo, String suunniteltuNimi, LearningOpportunity lo) {
         if (suunniteltuKestoArvo != null) {
             lo.getDurationInformation().add(createI18NString(suunniteltuKestoArvo + " " + suunniteltuNimi));
         }
     }
-
-
+    
     private void setDescription(AmmattitutkintoV1RDTO k, LearningOpportunity lo) {
         if (k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             this.setDescription(k.getKuvausKomo().get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
