@@ -466,11 +466,7 @@ public class KoulutusWrapper {
     }
 
     private void setDate(Set<Date> dates, LearningOpportunity lo) {
-        I18NString dateString = of.createI18NString();
-        for (Date d : dates) {
-            dateString.setValue(d.toString());
-            lo.getStartDate().add(dateString);
-        }
+        dates.stream().forEach(e -> lo.getStartDate().add(createI18NString(e.toString())));
     }
 
     private void setQualificationAwarded(Map<String, KoodiV1RDTO> list, Qualifications qualifications) {
