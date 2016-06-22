@@ -130,7 +130,7 @@ public class KoulutusController {
         final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
                 .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
         KoulutusWrapper kw = new KoulutusWrapper();
-        int skixpCount = fetchKoulutukset(kw, organisaatioMap);
+        int skipCount = fetchKoulutukset(kw, organisaatioMap);
         kw.forwardLOtoJaxBParser();
 
         status = 1.0;
