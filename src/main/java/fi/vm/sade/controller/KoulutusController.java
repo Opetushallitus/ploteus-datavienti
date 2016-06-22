@@ -119,47 +119,43 @@ public class KoulutusController {
         // 1.2.246.562.10.53642770753
         // tai tyhja kaikille tuloksille
         HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.72985435253").getResult();
-
-        Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = hakutulokset.getTulokset().iterator();
         numberOfOrganisations = hakutulokset.getTulokset().size();
         numberOfCurrentOrganisation = 0.0;
-        while (iter.hasNext()) {
-            TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData = iter.next();
+
+        for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData: hakutulokset.getTulokset()) {
             OrganisaatioRDTO organisaatio = null;
             organisaatio = searchOrganisation(organisaatioData.getOid());
             haetutOrganisaatiot.add(organisaatio);
             numberOfCurrentOrganisation++;
 
-            Iterator<KoulutusHakutulosV1RDTO> iter2 = organisaatioData.getTulokset().iterator();
-            while (iter2.hasNext()) {
-                KoulutusHakutulosV1RDTO koulutusData = iter2.next();
+            for (KoulutusHakutulosV1RDTO koulutusData : organisaatioData.getTulokset()) {
                 if (koulutusData != null) {
                     switch (koulutusData.getKoulutusasteTyyppi().value().toUpperCase()) {
-                    case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
-                    case KoulutusAsteTyyppi.LUKIOKOULUTUS:
-                    case KoulutusAsteTyyppi.AMMATILLINENPERUSKOULUTUS:
-                        if (checkKoulutusValidnessFromOpintopolku("koulutus/", koulutusData.getOid())) {
-                            addKoulutusToArray(koulutusData);
-                            fetchKoodi(koulutusData);
-                        }
-                        break;
-                    case KoulutusAsteTyyppi.AMMATTITUTKINTO:
-                    case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
-                        if (checkKoulutusValidnessFromOpintopolku("adultvocational/", koulutusData.getOid())) {
-                            addKoulutusToArray(koulutusData);
-                            fetchKoodi(koulutusData);
-                        }
-                        break;
-                    case KoulutusAsteTyyppi.KORKEAKOULUTUS:
-                        if (checkKoulutusValidnessFromOpintopolku("highered/", koulutusData.getOid())) {
-                            addKoulutusToArray(koulutusData);
-                            fetchKoodi(koulutusData);
-                        }
-                        break;
-                    default:
-                        log.info("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() + 
-                                ", Type: " + koulutusData.getKoulutusasteTyyppi());
-                        break;
+                        case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
+                        case KoulutusAsteTyyppi.LUKIOKOULUTUS:
+                        case KoulutusAsteTyyppi.AMMATILLINENPERUSKOULUTUS:
+                            if (checkKoulutusValidnessFromOpintopolku("koulutus/", koulutusData.getOid())) {
+                                addKoulutusToArray(koulutusData);
+                                fetchKoodi(koulutusData);
+                            }
+                            break;
+                        case KoulutusAsteTyyppi.AMMATTITUTKINTO:
+                        case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
+                            if (checkKoulutusValidnessFromOpintopolku("adultvocational/", koulutusData.getOid())) {
+                                addKoulutusToArray(koulutusData);
+                                fetchKoodi(koulutusData);
+                            }
+                            break;
+                        case KoulutusAsteTyyppi.KORKEAKOULUTUS:
+                            if (checkKoulutusValidnessFromOpintopolku("highered/", koulutusData.getOid())) {
+                                addKoulutusToArray(koulutusData);
+                                fetchKoodi(koulutusData);
+                            }
+                            break;
+                        default:
+                            log.info("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() +
+                                    ", Type: " + koulutusData.getKoulutusasteTyyppi());
+                            break;
                     }
                 }
             }
