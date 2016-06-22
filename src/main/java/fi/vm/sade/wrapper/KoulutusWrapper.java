@@ -141,7 +141,7 @@ public class KoulutusWrapper {
 
     private void setDescription(KuvausV1RDTO<KomoTeksti> kuvausKomo, LearningOpportunity lo) {
         if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
-            this.setDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+            setDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
     }
 
@@ -175,9 +175,9 @@ public class KoulutusWrapper {
         Qualifications qualifications = of.createQualifications();
         setQualificationAwarded(tutkintonimikes.getMeta(), qualifications);
         if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
-            this.setQualificationDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
+            setQualificationDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
-        this.setQualificationAwardingBody(opetusJarjestajat, qualifications, haetutOrganisaatiot);
+        setQualificationAwardingBody(opetusJarjestajat, qualifications, haetutOrganisaatiot);
         lo.getQualifications().add(qualifications);
     }
 
@@ -185,9 +185,9 @@ public class KoulutusWrapper {
             Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         Qualifications qualifications = of.createQualifications();
         if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
-            this.setQualificationDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
+            setQualificationDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
-        this.setQualificationAwardingBody(opetusJarjestajat, qualifications, haetutOrganisaatiot);
+        setQualificationAwardingBody(opetusJarjestajat, qualifications, haetutOrganisaatiot);
         lo.getQualifications().add(qualifications);
     }
     
@@ -234,38 +234,27 @@ public class KoulutusWrapper {
     }
 
     private void setProviderName(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        for (String s : set) {
-            haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
+        set.forEach(s -> {
+        	haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
                 lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en")));
             });
-        }
+        });
     }
 
     private void setProviderContactInfo(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         ArrayList<I18NString> list = new ArrayList<>();
-        for (String s : set) {
-            for (Map<String, String> map : haetutOrganisaatiot.get(s).getYhteystiedot()) {
-                // Mikä on hakijapalvelun nimi? sama kuin tarjoajan nimi?
-                I18NString providerName = of.createI18NString();
-                // miten koostuu? PL XXXXX, Osoite, Postinumero?
-                I18NString mailingAdd = of.createI18NString();
-                I18NString mail = of.createI18NString(); // Ei sähköpostia?
-                I18NString phone = of.createI18NString();
-
-                if (map.get("postitoimipaikka") != null && map.get("osoite") != null && map.get("postinumeroUri") != null) {
-                    mailingAdd.setValue(
-                            map.get("osoite") + ", " + map.get("postitoimipaikka") + ", " + map.get("postinumeroUri").replace("posti_", ""));
-                    list.add(mailingAdd);
+        set.forEach(s -> {
+        	haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
+        		if (p.get("postitoimipaikka") != null && p.get("osoite") != null && p.get("postinumeroUri") != null) {
+                    list.add(createI18NString(p.get("osoite") + ", " + p.get("postitoimipaikka") + ", " + p.get("postinumeroUri").replace("posti_", "")));
                 }
-
-                if (map.get("numero") != null) {
-                    phone.setValue(map.get("numero"));
-                    list.add(phone);
+                if (p.get("numero") != null) {
+                    list.add(createI18NString(p.get("numero")));
                 }
-
+                //TODO: mail, providername
                 lo.getProviderContactInfo().addAll(list);
-            }
-        }
+        	});
+        });
     }
 
     private void setCost(String cost, LearningOpportunity lo) {
