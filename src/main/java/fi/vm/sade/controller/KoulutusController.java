@@ -106,7 +106,7 @@ public class KoulutusController {
         haetutKoulutukset = new ArrayList<>();
         haetutOrganisaatiot = new ArrayList<>();
         haetutKoodit = new HashMap<>();
-        KoulutusWrapper kw = new KoulutusWrapper();
+
 
         createInitialStatusObject();
         Client clientWithJacksonSerializer = createClient();
@@ -126,10 +126,11 @@ public class KoulutusController {
         // noin 1200 koulutusta minuutissa
         statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
         statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
-        
+
         final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
                 .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
-        int skipCount = fetchKoulutukset(kw, organisaatioMap);
+        KoulutusWrapper kw = new KoulutusWrapper();
+        int skixpCount = fetchKoulutukset(kw, organisaatioMap);
         kw.forwardLOtoJaxBParser();
 
         status = 1.0;
