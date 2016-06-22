@@ -43,6 +43,7 @@ import fi.vm.sade.koodisto.service.types.common.KoodistoType;
 import fi.vm.sade.koodisto.service.types.common.KoodistoVersioListType;
 import fi.vm.sade.koodisto.util.CachingKoodistoClient;
 import fi.vm.sade.koodisto.util.KoodistoClient;
+import fi.vm.sade.model.Koodi;
 import fi.vm.sade.model.KoulutusAsteTyyppi;
 import fi.vm.sade.model.StatusObject;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
@@ -71,7 +72,7 @@ public class KoulutusController {
     
     private List<KoulutusHakutulosV1RDTO> haetutKoulutukset;
     private List<OrganisaatioRDTO> haetutOrganisaatiot;
-    private Map<String, String> haetutKoodit;
+    private Map<String, Koodi> haetutKoodit;
     private WebResource v1KoulutusResource;
     private WebResource v1OrganisaatioResource;
     private KoodistoClient koodistoClient = new CachingKoodistoClient(koodisto);
@@ -257,10 +258,15 @@ public class KoulutusController {
 
     private void fetchKoodi(KoulutusHakutulosV1RDTO koulutusData) {
         List<KoodiType> kt = koodistoClient.getAlakoodis(koulutusData.getKoulutuskoodi());
+        Koodi code = new Koodi();
         for(KoodiType k : kt ){
             if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusaste")){
-                haetutKoodit.put(koulutusData.getKoulutuskoodi(), k.getKoodiArvo());
+                code.setIsced2011koulutusaste(k.getKoodiArvo());
             }
+            if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusalataso3")){
+                code.setIsced2011koulutusalataso3(k.getKoodiArvo());
+            }
+            haetutKoodit.put(koulutusData.getKoulutuskoodi(), code);
         }        
     }
 
