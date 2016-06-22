@@ -74,7 +74,7 @@ public class KoulutusController {
     private Map<String, String> haetutKoodit;
     private WebResource v1KoulutusResource;
     private WebResource v1OrganisaatioResource;
-    private KoodistoClient koodistoClient;
+    private KoodistoClient koodistoClient = new CachingKoodistoClient(koodisto);
 
     private double status;
     private StatusObject statusObject;
@@ -103,16 +103,12 @@ public class KoulutusController {
     @RequestMapping("/koulutus/")
     public String getKoulutukset() throws Exception {
         status = 0.01;
-        createInitialStatusObject();
         haetutKoulutukset = new ArrayList<>();
         haetutOrganisaatiot = new ArrayList<>();
         haetutKoodit = new HashMap<>();
         KoulutusWrapper kw = new KoulutusWrapper();
 
-        koodistoClient = new CachingKoodistoClient(koodisto);
-        List<KoodiType> kt = koodistoClient.getAlakoodis("koulutus_731201");
-        log.debug("koulutus_731201: " + kt.get(0).getKoodiArvo());
-
+        createInitialStatusObject();
         Client clientWithJacksonSerializer = createClient();
         v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI + "v1/koulutus");
         v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI + "organisaatio");
@@ -123,7 +119,6 @@ public class KoulutusController {
         // 1.2.246.562.10.53642770753
         // tai tyhja kaikille tuloksille
         HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.72985435253").getResult();
-
 
         Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = hakutulokset.getTulokset().iterator();
         numberOfOrganisations = hakutulokset.getTulokset().size();
