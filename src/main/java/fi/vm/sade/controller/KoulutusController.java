@@ -126,11 +126,26 @@ public class KoulutusController {
         // noin 1200 koulutusta minuutissa
         statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
         statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
-
-        double i = 0.0;
-        int skip = 0;
+        
         final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
                 .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
+        int skipCount = fetchKoulutukset(kw, organisaatioMap);
+        kw.forwardLOtoJaxBParser();
+
+        status = 1.0;
+        statusObject.setStatus(status);
+        statusObject.setStatusText("Valmis");
+
+        if(skipCount != 0){
+            log.warn("Amount of skipped koulutus: " + skipCount);
+        }
+        log.info("Request ready");
+        return "";
+    }
+
+    private int fetchKoulutukset(KoulutusWrapper kw, Map<String, OrganisaatioRDTO> organisaatioMap) throws Exception {
+        double i = 0.0;
+        int skip = 0;
         for (KoulutusHakutulosV1RDTO kh : haetutKoulutukset) {
             switch (kh.getKoulutusasteTyyppi().name()) {
                 case KoulutusAsteTyyppi.AMMATILLINEN_PERUSKOULUTUS:
@@ -181,17 +196,7 @@ public class KoulutusController {
             // noin 1200 koulutusta minuutissa
             statusObject.setDurationEstimate((haetutKoulutukset.size() - i) / 1200);
         }
-        kw.forwardLOtoJaxBParser();
-
-        status = 1.0;
-        statusObject.setStatus(status);
-        statusObject.setStatusText("Valmis");
-
-        if(skip != 0){
-            log.warn("Amount of skipped koulutus: " + skip);
-        }
-        log.info("Request ready");
-        return "";
+        return skip;
     }
 
     private void fetchOrganisaatiotAndKoulutuksetAndKoodit(HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset) throws Exception {
