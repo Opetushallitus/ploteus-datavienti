@@ -78,7 +78,7 @@ public class KoulutusController {
     private KoodistoClient koodistoClient = new CachingKoodistoClient(koodisto);
 
     private double status;
-    private StatusObject statusObject;
+    private final StatusObject statusObject = new StatusObject();
 
     private double numberOfOrganisations;
     private double numberOfCurrentOrganisation;
@@ -99,6 +99,13 @@ public class KoulutusController {
         IOUtils.copy(myStream, response.getOutputStream());
         response.flushBuffer();
         myStream.close();
+        resetStatusObject();
+    }
+
+    private void resetStatusObject() {
+        statusObject.setStatus(0.0);
+        statusObject.setStatusText(null);
+        statusObject.setDurationEstimate(0.0);
     }
 
     @RequestMapping("/koulutus/")
@@ -242,7 +249,6 @@ public class KoulutusController {
     }
 
     private void createInitialStatusObject() {
-        statusObject = new StatusObject();
         statusObject.setDurationEstimate(0.0);
         statusObject.setStatus(status);
         statusObject.setStatusText("Alustetaan...");
