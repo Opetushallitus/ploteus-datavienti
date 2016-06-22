@@ -192,11 +192,11 @@ public class KoulutusWrapper {
     }
     
     private void setQualificationAwardingBody(Set<String> set, Qualifications qualifications, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        for (String s : set) {
-            haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
+    	set.forEach(s -> {
+        	haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
                 qualifications.getAwardingBody().add(createI18NString(o.getNimi().get("en")));
             });
-        }
+        });
     }
 
     private void setQualificationAwarded(Map<String, KoodiV1RDTO> list, Qualifications qualifications) {
