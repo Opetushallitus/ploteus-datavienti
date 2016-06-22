@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.stream.Stream;import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import eu.europa.ec.learningopportunities.v0_5_10.ObjectFactory;
 import eu.europa.ec.learningopportunities.v0_5_10.Qualifications;
 import eu.europa.ec.learningopportunities.v0_5_10.StudyTypeType;
+import eu.europa.ec.learningopportunities.v0_5_10.ThematicAreas;
 import eu.europa.ec.learningopportunities.v0_5_10.XsdTypeType;
 import fi.vm.sade.controller.KoulutusController;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioNimiRDTO;
@@ -135,6 +137,9 @@ public class KoulutusWrapper {
         lo.getTitle().add(createI18NonEmptyString(khNimi.get(TITLE_LANG_CODE_EN)));
         log.debug("koodisto: " + koodisto.get(koodistoID) + ", koodiID: " + koodistoID);
         lo.setEducationLevel(koodisto.get(koodistoID));
+        ThematicAreas areas = of.createThematicAreas();
+        areas.getThematicAreas1997OrThematicAreas2013().add(new JAXBElement<String>(new QName("ThematicAreas1997") , String.class, koodisto.get(koodistoID)));
+        lo.getThematicAreas().add(areas);
         return lo;
     }
 
