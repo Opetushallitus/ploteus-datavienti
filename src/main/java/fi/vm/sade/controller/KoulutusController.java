@@ -103,10 +103,7 @@ public class KoulutusController {
     @RequestMapping("/koulutus/")
     public String getKoulutukset() throws Exception {
         status = 0.01;
-        statusObject = new StatusObject();
-        statusObject.setDurationEstimate(0.0);
-        statusObject.setStatus(status);
-        statusObject.setStatusText("Alustetaan...");
+        createInitialStatusObject();
         haetutKoulutukset = new ArrayList<>();
         haetutOrganisaatiot = new ArrayList<>();
         haetutKoodit = new HashMap<>();
@@ -243,6 +240,13 @@ public class KoulutusController {
         }
         log.info("Request ready");
         return "";
+    }
+
+    private void createInitialStatusObject() {
+        statusObject = new StatusObject();
+        statusObject.setDurationEstimate(0.0);
+        statusObject.setStatus(status);
+        statusObject.setStatusText("Alustetaan...");
     }
 
     private Client createClient() {
