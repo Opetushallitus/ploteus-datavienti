@@ -67,7 +67,7 @@ public class KoulutusWrapper {
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, HashMap<String, String> koodisto) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/ammatillinenaikuiskoulutus/" + k.getOid(), kh.getKoulutuskoodi(), kh.getNimi(), koodisto); //FIXME: kh.getKoulutuskoodi()?
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo); //TODO: null
+        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo); //TODO: null
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
@@ -135,6 +135,7 @@ public class KoulutusWrapper {
         lo.getTitle().add(createI18NonEmptyString(khNimi.get(TITLE_LANG_CODE_EN)));
         log.debug("koodisto: " + koodisto.get(koodistoID) + ", koodiID: " + koodistoID);
         lo.setEducationLevel(koodisto.get(koodistoID));
+        setProviderContactInfo(opetusTarjoajat, lo, haetutOrganisaatiot);
         return lo;
     }
 
@@ -239,14 +240,17 @@ public class KoulutusWrapper {
     private void setProviderContactInfo(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         ArrayList<I18NString> list = new ArrayList<>();
         set.forEach(s -> {
-        	haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
+        	haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> { 
         		if (p.get("postitoimipaikka") != null && p.get("osoite") != null && p.get("postinumeroUri") != null) {
                     list.add(createI18NString(p.get("osoite") + ", " + p.get("postitoimipaikka") + ", " + p.get("postinumeroUri").replace("posti_", "")));
                 }
                 if (p.get("numero") != null) {
                     list.add(createI18NString(p.get("numero")));
                 }
-                //TODO: mail, providername
+                if(haetutOrganisaatiot.get(s).getNimi().get("en") != null){
+                	list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en")));
+                }
+                //TODO: Mail
                 lo.getProviderContactInfo().addAll(list);
         	});
         });
