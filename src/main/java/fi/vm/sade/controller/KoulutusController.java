@@ -122,44 +122,7 @@ public class KoulutusController {
         numberOfOrganisations = hakutulokset.getTulokset().size();
         numberOfCurrentOrganisation = 0.0;
 
-        for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData: hakutulokset.getTulokset()) {
-            OrganisaatioRDTO organisaatio = null;
-            organisaatio = searchOrganisation(organisaatioData.getOid());
-            haetutOrganisaatiot.add(organisaatio);
-            numberOfCurrentOrganisation++;
-
-            for (KoulutusHakutulosV1RDTO koulutusData : organisaatioData.getTulokset()) {
-                if (koulutusData != null) {
-                    switch (koulutusData.getKoulutusasteTyyppi().value().toUpperCase()) {
-                        case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
-                        case KoulutusAsteTyyppi.LUKIOKOULUTUS:
-                        case KoulutusAsteTyyppi.AMMATILLINENPERUSKOULUTUS:
-                            if (checkKoulutusValidnessFromOpintopolku("koulutus/", koulutusData.getOid())) {
-                                addKoulutusToArray(koulutusData);
-                                fetchKoodi(koulutusData);
-                            }
-                            break;
-                        case KoulutusAsteTyyppi.AMMATTITUTKINTO:
-                        case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
-                            if (checkKoulutusValidnessFromOpintopolku("adultvocational/", koulutusData.getOid())) {
-                                addKoulutusToArray(koulutusData);
-                                fetchKoodi(koulutusData);
-                            }
-                            break;
-                        case KoulutusAsteTyyppi.KORKEAKOULUTUS:
-                            if (checkKoulutusValidnessFromOpintopolku("highered/", koulutusData.getOid())) {
-                                addKoulutusToArray(koulutusData);
-                                fetchKoodi(koulutusData);
-                            }
-                            break;
-                        default:
-                            log.info("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() +
-                                    ", Type: " + koulutusData.getKoulutusasteTyyppi());
-                            break;
-                    }
-                }
-            }
-        }
+        fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset);
         // noin 1200 koulutusta minuutissa
         statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
         statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
@@ -229,6 +192,46 @@ public class KoulutusController {
         }
         log.info("Request ready");
         return "";
+    }
+
+    private void fetchOrganisaatiotAndKoulutuksetAndKoodit(HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset) throws Exception {
+        for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData: hakutulokset.getTulokset()) {
+            OrganisaatioRDTO organisaatio = searchOrganisation(organisaatioData.getOid());
+            haetutOrganisaatiot.add(organisaatio);
+            numberOfCurrentOrganisation++;
+
+            for (KoulutusHakutulosV1RDTO koulutusData : organisaatioData.getTulokset()) {
+                if (koulutusData != null) {
+                    switch (koulutusData.getKoulutusasteTyyppi().value().toUpperCase()) {
+                        case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
+                        case KoulutusAsteTyyppi.LUKIOKOULUTUS:
+                        case KoulutusAsteTyyppi.AMMATILLINENPERUSKOULUTUS:
+                            if (checkKoulutusValidnessFromOpintopolku("koulutus/", koulutusData.getOid())) {
+                                addKoulutusToArray(koulutusData);
+                                fetchKoodi(koulutusData);
+                            }
+                            break;
+                        case KoulutusAsteTyyppi.AMMATTITUTKINTO:
+                        case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
+                            if (checkKoulutusValidnessFromOpintopolku("adultvocational/", koulutusData.getOid())) {
+                                addKoulutusToArray(koulutusData);
+                                fetchKoodi(koulutusData);
+                            }
+                            break;
+                        case KoulutusAsteTyyppi.KORKEAKOULUTUS:
+                            if (checkKoulutusValidnessFromOpintopolku("highered/", koulutusData.getOid())) {
+                                addKoulutusToArray(koulutusData);
+                                fetchKoodi(koulutusData);
+                            }
+                            break;
+                        default:
+                            log.info("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() +
+                                    ", Type: " + koulutusData.getKoulutusasteTyyppi());
+                            break;
+                    }
+                }
+            }
+        }
     }
 
     private void createInitialStatusObject() {
