@@ -203,48 +203,46 @@ public class KoulutusController {
         myList.add("");
         double i = 0.0;
         int skip = 0;
-        kw.setKoodisto(haetutKoodit);
         final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
                 .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
         while (iter3.hasNext()) { // iteroidaan koulutukset ja luodaan niista
                                   // LearningOpportunityja KoulutusWrapperilla
             KoulutusHakutulosV1RDTO kh = iter3.next();
-            kw.setKoulutusHakutulos(kh);
             switch (kh.getKoulutusasteTyyppi().name()) {
             case KoulutusAsteTyyppi.AMMATILLINEN_PERUSKOULUTUS:
                 ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> ammatillinenPerustutkintoResult = searchAmmatillinenPerustutkinto(kh.getOid());
                 KoulutusAmmatillinenPerustutkintoV1RDTO ammatillinenPerustutkintoKoulutus = ammatillinenPerustutkintoResult.getResult();
-                kw.fetchAmmatillinenPerustutkintoInfo(ammatillinenPerustutkintoKoulutus, organisaatioMap);
+                kw.fetchAmmatillinenPerustutkintoInfo(ammatillinenPerustutkintoKoulutus, organisaatioMap, kh, haetutKoodit);
                 break;
 
             case KoulutusAsteTyyppi.AMMATTITUTKINTO:
                 ResultV1RDTO<AmmattitutkintoV1RDTO> ammattiResult = searchAmmattitutkinto(kh.getOid());
                 AmmattitutkintoV1RDTO ammattiKoulutus = ammattiResult.getResult();
-                kw.fetchAmmattiInfo(ammattiKoulutus, organisaatioMap);
+                kw.fetchAmmattiInfo(ammattiKoulutus, organisaatioMap, kh, haetutKoodit);
                 break;
 
             case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
                 ResultV1RDTO<ErikoisammattitutkintoV1RDTO> erikoisResult = searchErikoisammattitutkinto(kh.getOid());
                 ErikoisammattitutkintoV1RDTO erikoisKoulutus = erikoisResult.getResult();
-                kw.fetchErikoisInfo(erikoisKoulutus, organisaatioMap);
+                kw.fetchErikoisInfo(erikoisKoulutus, organisaatioMap, kh, haetutKoodit);
                 break;
 
             case KoulutusAsteTyyppi.KORKEAKOULUTUS:
                 ResultV1RDTO<KoulutusKorkeakouluV1RDTO> koulutusResult = searchKoulutusKorkeakoulu(kh.getOid());
                 KoulutusKorkeakouluV1RDTO korkeaKoulutus = koulutusResult.getResult();
-                kw.fetchKorkeaInfo(korkeaKoulutus, organisaatioMap);
+                kw.fetchKorkeaInfo(korkeaKoulutus, organisaatioMap, kh, haetutKoodit);
                 break;
 
             case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
                 ResultV1RDTO<ValmistavaKoulutusV1RDTO> ammValmistavaResult = searchValmistavaKoulutus(kh.getOid());
                 ValmistavaKoulutusV1RDTO ammValmistavaKoulutus = ammValmistavaResult.getResult();
-                kw.fetchValmistavaInfo(ammValmistavaKoulutus, organisaatioMap);
+                kw.fetchValmistavaInfo(ammValmistavaKoulutus, organisaatioMap, kh, haetutKoodit);
                 break;
 
             case KoulutusAsteTyyppi.LUKIOKOULUTUS:
                 ResultV1RDTO<KoulutusLukioV1RDTO> lukioResult = searchKoulutusLukio(kh.getOid());
                 KoulutusLukioV1RDTO lukioKoulutus = lukioResult.getResult();
-                kw.fetchLukioInfo(lukioKoulutus, organisaatioMap);
+                kw.fetchLukioInfo(lukioKoulutus, organisaatioMap, kh, haetutKoodit);
                 break;
             default:
                 log.info("Skipping on data parsing Koulutus: " + kh.getKomoOid() + 

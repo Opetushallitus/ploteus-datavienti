@@ -42,9 +42,7 @@ public class KoulutusWrapper {
     private LearningOpportunities learningOpportunities;
 
     private ObjectFactory of;
-    private KoulutusHakutulosV1RDTO kh;
     private fi.vm.sade.parser.JAXBParser JAXBParser;
-    private Map<String, String> koodisto;
     
     public KoulutusWrapper() {
         of = new ObjectFactory();
@@ -55,9 +53,9 @@ public class KoulutusWrapper {
         JAXBParser = new JAXBParser();
     }
 
-    public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+    public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, HashMap<String, String> koodisto) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
-                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/koulutus/" + k.getOid(), kh.getKoulutuskoodi()); //FIXME: kh.getKoulutuskoodi()?
+                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/koulutus/" + k.getOid(), kh.getKoulutuskoodi(), kh.getNimi(), koodisto); //FIXME: kh.getKoulutuskoodi()?
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
@@ -66,9 +64,9 @@ public class KoulutusWrapper {
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
-    public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+    public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, HashMap<String, String> koodisto) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
-                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/ammatillinenaikuiskoulutus/" + k.getOid(), kh.getKoulutuskoodi()); //FIXME: kh.getKoulutuskoodi()?
+                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/ammatillinenaikuiskoulutus/" + k.getOid(), kh.getKoulutuskoodi(), kh.getNimi(), koodisto); //FIXME: kh.getKoulutuskoodi()?
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo); //TODO: null
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo); //TODO: null
@@ -77,9 +75,9 @@ public class KoulutusWrapper {
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
-    public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+    public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, HashMap<String, String> koodisto) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
-                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/ammatillinenaikuiskoulutus/" + k.getOid(), kh.getKoulutuskoodi()); //FIXME: kh.getKoulutuskoodi()?
+                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/ammatillinenaikuiskoulutus/" + k.getOid(), kh.getKoulutuskoodi(), kh.getNimi(), koodisto); //FIXME: kh.getKoulutuskoodi()?
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo); //TODO: null
@@ -88,9 +86,9 @@ public class KoulutusWrapper {
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
-    public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+    public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, HashMap<String, String> koodisto) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
-                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/korkeakoulu/" + k.getOid(), kh.getKoulutuskoodi()); //FIXME: kh.getKoulutuskoodi()?
+                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/korkeakoulu/" + k.getOid(), kh.getKoulutuskoodi(), kh.getNimi(), koodisto); //FIXME: kh.getKoulutuskoodi()?
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
@@ -100,9 +98,9 @@ public class KoulutusWrapper {
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
-    public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+    public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, HashMap<String, String> koodisto) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
-                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/koulutus/" + k.getOid(), kh.getKoulutuskoodi()); //FIXME: kh.getKoulutuskoodi()?
+                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/koulutus/" + k.getOid(), kh.getKoulutuskoodi(), kh.getNimi(), koodisto); //FIXME: kh.getKoulutuskoodi()?
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
@@ -111,9 +109,9 @@ public class KoulutusWrapper {
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
-    public void fetchLukioInfo(KoulutusLukioV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+    public void fetchLukioInfo(KoulutusLukioV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, HashMap<String, String> koodisto) {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
-                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/koulutus/" + k.getOid(), kh.getKoulutuskoodi()); //FIXME: kh.getKoulutuskoodi()?
+                k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/koulutus/" + k.getOid(), kh.getKoulutuskoodi(), kh.getNimi(), koodisto); //FIXME: kh.getKoulutuskoodi()?
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
@@ -124,7 +122,7 @@ public class KoulutusWrapper {
 
     private LearningOpportunity initLearningOpportunity(String kOid, Set<Date> koulutuksenAlkamisPvms, String hintaString,
             Set<String> opetusTarjoajat, KuvausV1RDTO<KomoTeksti> kuvausKomo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot,
-            String opitopolkuUrl, String koodistoID) {
+            String opitopolkuUrl, String koodistoID, Map<String, String> khNimi, HashMap<String, String> koodisto) {
         LearningOpportunity lo = of.createLearningOpportunity();
         setDate(koulutuksenAlkamisPvms, lo);
         setCost(hintaString, lo);
@@ -134,7 +132,7 @@ public class KoulutusWrapper {
         lo.setLearningOpportunityId(kOid);
         lo.setCountryCode(COUNTRY_CODE);
         lo.getUrl().add(createUrl(opitopolkuUrl));
-        lo.getTitle().add(createI18NonEmptyString(kh.getNimi().get(TITLE_LANG_CODE_EN)));
+        lo.getTitle().add(createI18NonEmptyString(khNimi.get(TITLE_LANG_CODE_EN)));
         log.debug("koodisto: " + koodisto.get(koodistoID) + ", koodiID: " + koodistoID);
         lo.setEducationLevel(koodisto.get(koodistoID));
         return lo;
@@ -216,18 +214,14 @@ public class KoulutusWrapper {
 
     private void setInformationLanguage(Map<String, String> map, LearningOpportunity lo) {
         if (map.get("kieli_en") != null) {
-        	System.out.println("en");
             lo.setInformationLanguage(LanguageCode.EN);
         } else if (map.get("kieli_fi") != null) {
-        	System.out.println("fi");
             lo.setInformationLanguage(LanguageCode.FI);
         } else if (map.get("kieli_sv") != null) {
-        	System.out.println("sv");
             lo.setInformationLanguage(LanguageCode.SV);
         } else {
             for (LanguageCode l : LanguageCode.values()) {
                 if (map.get("kieli_" + l.value().toLowerCase()) != null) {
-                	System.out.println("muu");
                     lo.setInformationLanguage(l);
                 }
             }
@@ -295,13 +289,5 @@ public class KoulutusWrapper {
 
     public void forwardLOtoJaxBParser() {
         JAXBParser.parseXML(learningOpportunities);
-    }
-
-    public void setKoulutusHakutulos(KoulutusHakutulosV1RDTO kh) {
-        this.kh = kh;
-    }
-
-    public void setKoodisto(HashMap<String, String> haetutKoodit) {
-        this.koodisto = haetutKoodit;
     }
 }
