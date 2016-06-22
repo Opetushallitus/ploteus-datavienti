@@ -65,22 +65,16 @@ public class KoulutusController {
     private static final String opitopolkuURI = "https://testi.opintopolku.fi/lo/";
     private static final String koodisto = "https://testi.virkailija.opintopolku.fi/koodisto-service";
     private static final String JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=UTF-8";
+    private static final String FILE_PATH = "generated/lo_full_sample.zip";
 
     private static final Logger log = LoggerFactory.getLogger(KoulutusController.class);
     
-    private ArrayList<KoulutusHakutulosV1RDTO> haetutKoulutukset;
-    private ArrayList<OrganisaatioRDTO> haetutOrganisaatiot;
-    private HashMap<String, String> haetutKoodit;
-    // private KoodistoRyhmaCollectionType haettuKoodisto;
-    // KoodistoVersioListDto
-
+    private List<KoulutusHakutulosV1RDTO> haetutKoulutukset;
+    private List<OrganisaatioRDTO> haetutOrganisaatiot;
+    private Map<String, String> haetutKoodit;
     private WebResource v1KoulutusResource;
     private WebResource v1OrganisaatioResource;
-    // private WebResource koodistoResource;
-
     private KoodistoClient koodistoClient;
-
-    private static final String FILE_PATH = "generated/lo_full_sample.zip";
 
     private double status;
     private StatusObject statusObject;
@@ -89,10 +83,9 @@ public class KoulutusController {
     private double numberOfCurrentOrganisation;
 
     @RequestMapping("koulutus/status")
-    public String getStatus() throws JsonGenerationException, JsonMappingException, IOException {
+    public String getStatus() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        String JsonStatus = mapper.writeValueAsString(statusObject);
-        return JsonStatus;
+        return mapper.writeValueAsString(statusObject);
     }
 
     @GET
@@ -114,54 +107,43 @@ public class KoulutusController {
         statusObject.setDurationEstimate(0.0);
         statusObject.setStatus(status);
         statusObject.setStatusText("Alustetaan...");
-        haetutKoulutukset = new ArrayList<KoulutusHakutulosV1RDTO>();
-        haetutOrganisaatiot = new ArrayList<OrganisaatioRDTO>();
+        haetutKoulutukset = new ArrayList<>();
+        haetutOrganisaatiot = new ArrayList<>();
         haetutKoodit = new HashMap<>();
         KoulutusWrapper kw = new KoulutusWrapper();
-        /*ch.qos.logback.classic.Level level = ch.qos.logback.classic.Level.DEBUG;
-        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(log.ROOT_LOGGER_NAME);
-        root.setLevel(level);*/ //TODO: Is this needed?
-        
+
         koodistoClient = new CachingKoodistoClient(koodisto);
         List<KoodiType> kt = koodistoClient.getAlakoodis("koulutus_731201");
         log.debug("koulutus_731201: " + kt.get(0).getKoodiArvo());
 
-        ObjectMapper mapper = new ObjectMapper(); // Jacksonin mapper ja confaus
+        ObjectMapper mapper = new ObjectMapper();
         JacksonJsonProvider jacksProv = new JacksonJsonProvider(mapper);
         ClientConfig cc = new DefaultClientConfig();
         cc.getSingletons().add(jacksProv);
         Client clientWithJacksonSerializer = Client.create(cc);
-        // tarjonnan koulutus url
         v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI + "v1/koulutus");
-        // organisaatio palvelun url
         v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI + "organisaatio");
-        // koodisto palvelun url
-        // koodistoResource = clientWithJacksonSerializer.resource(koodistoURI);
-        // + "codes/all");
 
         statusObject.setStatusText("Haetaan Koodisto dataa...");
-        // haettuKoodisto = searchAllKoodistoData();
 
-        ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> organisaatioResult = null;
         // Aalto yliopisto 1.2.246.562.10.72985435253
         // 1.2.246.562.10.53642770753
         // tai tyhja kaikille tuloksille
-        organisaatioResult = searchOrganisationsEducations("1.2.246.562.10.72985435253");
-        HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = organisaatioResult.getResult();
+        HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.72985435253").getResult();
+
+
         Iterator<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> iter = hakutulokset.getTulokset().iterator();
         numberOfOrganisations = hakutulokset.getTulokset().size();
         numberOfCurrentOrganisation = 0.0;
-        while (iter.hasNext()) { // iteroidaan kaikki organisaatiot lapi
-                                 // tuloksesta
+        while (iter.hasNext()) {
             TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData = iter.next();
             OrganisaatioRDTO organisaatio = null;
             organisaatio = searchOrganisation(organisaatioData.getOid());
-            haetutOrganisaatiot.add(organisaatio); // lisataan organisaatio
+            haetutOrganisaatiot.add(organisaatio);
             numberOfCurrentOrganisation++;
 
             Iterator<KoulutusHakutulosV1RDTO> iter2 = organisaatioData.getTulokset().iterator();
-            while (iter2.hasNext()) { // iteroidaan kaikki koulukset lapi
-                                      // organisaatiolta
+            while (iter2.hasNext()) {
                 KoulutusHakutulosV1RDTO koulutusData = iter2.next();
                 if (koulutusData != null) {
                     switch (koulutusData.getKoulutusasteTyyppi().value().toUpperCase()) {
@@ -199,14 +181,11 @@ public class KoulutusController {
         statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
 
         Iterator<KoulutusHakutulosV1RDTO> iter3 = haetutKoulutukset.iterator();
-        ArrayList<String> myList = new ArrayList<String>();
-        myList.add("");
         double i = 0.0;
         int skip = 0;
         final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
                 .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
-        while (iter3.hasNext()) { // iteroidaan koulutukset ja luodaan niista
-                                  // LearningOpportunityja KoulutusWrapperilla
+        while (iter3.hasNext()) {
             KoulutusHakutulosV1RDTO kh = iter3.next();
             switch (kh.getKoulutusasteTyyppi().name()) {
             case KoulutusAsteTyyppi.AMMATILLINEN_PERUSKOULUTUS:
@@ -352,20 +331,13 @@ public class KoulutusController {
         }
     }
 
-    /*
-     * //Hakee Koodistosta kaiken datan public KoodistoRyhmaCollectionType
-     * searchAllKoodistoData() throws Exception { return
-     * (KoodistoRyhmaCollectionType) getWithRetries( koodistoResource, new
-     * GenericType<KoodistoRyhmaCollectionType>() { }); }
-     */
-
     // Hakee yhden organisaation julkaistu-tilassa olevat koulutukset
     // tarjonta-rajapinnasta.
     // Jos OrganisationOid on tyhja, metodi palauttaa kaikkien organisaatioiden
     // julkaistut koulutukset
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> searchOrganisationsEducations(String OrganisationOid) throws Exception {
-        if (OrganisationOid == "") {
+        if (OrganisationOid.equals("")) {
             return (ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>) getWithRetries(
                     v1KoulutusResource.path("search").queryParam("tila", "JULKAISTU").queryParam("meta", "true").queryParam("img", "false"),
                     new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>() {
@@ -392,7 +364,7 @@ public class KoulutusController {
                 try {
                     Thread.sleep(2500);
                 } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    log.error("Interrupted", e1);
                 }
             }
         }
@@ -400,7 +372,7 @@ public class KoulutusController {
         try {
             return resource.accept(JSON_UTF8).get(type);
         } catch (Exception e) {
-            log.error("Calling resource failed: " + resource);
+            log.error("Calling resource failed: " + resource, e);
             throw e;
         }
     }
