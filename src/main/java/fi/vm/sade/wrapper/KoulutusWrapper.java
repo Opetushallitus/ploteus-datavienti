@@ -35,6 +35,7 @@ public class KoulutusWrapper {
     public static String LANG_CODE_KIELI_EN = "kieli_en";
     public static String LEARNING_OPPORTUNITY_KEY = "ZDR5HGWBHP0J65P5VZIYEI2ZJJF18WGW";
     public static String XSD_VERSION = "0.5.10";
+    public static String XSD_TYPE = "Learning Opportunity";
     
     private static final Logger log = LoggerFactory.getLogger(KoulutusWrapper.class);
 
@@ -49,7 +50,7 @@ public class KoulutusWrapper {
         of = new ObjectFactory();
         learningOpportunities = of.createLearningOpportunities();
         learningOpportunities.setKey(LEARNING_OPPORTUNITY_KEY);
-        learningOpportunities.setXsdType(XsdTypeType.fromValue("Learning Opportunity"));
+        learningOpportunities.setXsdType(XsdTypeType.fromValue(XSD_TYPE));
         learningOpportunities.setXsdVersion(XSD_VERSION);
         JAXBParser = new JAXBParser();
     }
@@ -258,9 +259,7 @@ public class KoulutusWrapper {
     }
 
     private void setCost(String cost, LearningOpportunity lo) {
-        I18NString temp = of.createI18NString();
-        temp.setValue(cost);
-        lo.getCosts().add(temp);
+        lo.getCosts().add(createI18NString(cost));
     }
 
     private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
