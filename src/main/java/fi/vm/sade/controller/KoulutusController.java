@@ -116,11 +116,7 @@ public class KoulutusController {
         List<KoodiType> kt = koodistoClient.getAlakoodis("koulutus_731201");
         log.debug("koulutus_731201: " + kt.get(0).getKoodiArvo());
 
-        ObjectMapper mapper = new ObjectMapper();
-        JacksonJsonProvider jacksProv = new JacksonJsonProvider(mapper);
-        ClientConfig cc = new DefaultClientConfig();
-        cc.getSingletons().add(jacksProv);
-        Client clientWithJacksonSerializer = Client.create(cc);
+        Client clientWithJacksonSerializer = createClient();
         v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI + "v1/koulutus");
         v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI + "organisaatio");
 
@@ -247,6 +243,14 @@ public class KoulutusController {
         }
         log.info("Request ready");
         return "";
+    }
+
+    private Client createClient() {
+        ObjectMapper mapper = new ObjectMapper();
+        JacksonJsonProvider jacksProv = new JacksonJsonProvider(mapper);
+        ClientConfig cc = new DefaultClientConfig();
+        cc.getSingletons().add(jacksProv);
+        return Client.create(cc);
     }
 
     private void fetchKoodi(KoulutusHakutulosV1RDTO koulutusData) {
