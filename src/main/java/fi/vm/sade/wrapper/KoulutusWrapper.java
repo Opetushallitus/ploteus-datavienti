@@ -215,14 +215,18 @@ public class KoulutusWrapper {
 
     private void setInformationLanguage(Map<String, String> map, LearningOpportunity lo) {
         if (map.get("kieli_en") != null) {
+        	System.out.println("en");
             lo.setInformationLanguage(LanguageCode.EN);
         } else if (map.get("kieli_fi") != null) {
+        	System.out.println("fi");
             lo.setInformationLanguage(LanguageCode.FI);
         } else if (map.get("kieli_sv") != null) {
+        	System.out.println("sv");
             lo.setInformationLanguage(LanguageCode.SV);
         } else {
             for (LanguageCode l : LanguageCode.values()) {
                 if (map.get("kieli_" + l.value().toLowerCase()) != null) {
+                	System.out.println("muu");
                     lo.setInformationLanguage(l);
                 }
             }
@@ -288,10 +292,10 @@ public class KoulutusWrapper {
         if (paikkaList.containsKey("opetuspaikkak_2")) {
             studyTypeList.add(StudyTypeType.DL);
         }
-        if (muotoList.containsKey("opetuspaikkak_3")) {
+        if (muotoList.containsKey("opetusmuotokk_3")) {
             studyTypeList.add(StudyTypeType.BL);
         }
-        if (muotoList.containsKey("opetuspaikkak_4")) {
+        if (muotoList.containsKey("opetusmuotokk_4")) {
             studyTypeList.add(StudyTypeType.ON);
         }
         lo.getStudyType().addAll(studyTypeList);
