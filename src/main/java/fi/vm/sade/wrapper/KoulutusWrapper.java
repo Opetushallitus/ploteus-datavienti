@@ -126,16 +126,16 @@ public class KoulutusWrapper {
         LearningOpportunity lo = of.createLearningOpportunity();
         setDate(koulutuksenAlkamisPvms, lo);
         setCost(hintaString, lo);
-        setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo); //TODO: null
+        setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         setDescription(kuvausKomo, lo);
-        setProviderName(opetusTarjoajat, lo, haetutOrganisaatiot); //TODO: null
+        setProviderName(opetusTarjoajat, lo, haetutOrganisaatiot);
+        setProviderContactInfo(opetusTarjoajat, lo, haetutOrganisaatiot);
         lo.setLearningOpportunityId(kOid);
         lo.setCountryCode(COUNTRY_CODE);
         lo.getUrl().add(createUrl(opitopolkuUrl));
         lo.getTitle().add(createI18NonEmptyString(khNimi.get(TITLE_LANG_CODE_EN)));
-        log.debug("koodisto: " + koodisto.get(koodistoID) + ", koodiID: " + koodistoID);
         lo.setEducationLevel(koodisto.get(koodistoID));
-        setProviderContactInfo(opetusTarjoajat, lo, haetutOrganisaatiot);
+        log.debug("koodisto: " + koodisto.get(koodistoID) + ", koodiID: " + koodistoID);
         return lo;
     }
 
