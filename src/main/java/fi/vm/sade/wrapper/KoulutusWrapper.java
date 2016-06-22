@@ -33,6 +33,8 @@ public class KoulutusWrapper {
     public static String COUNTRY_CODE = "FI";
     public static String TITLE_LANG_CODE_EN = "en";
     public static String LANG_CODE_KIELI_EN = "kieli_en";
+    public static String LEARNING_OPPORTUNITY_KEY = "ZDR5HGWBHP0J65P5VZIYEI2ZJJF18WGW";
+    public static String XSD_VERSION = "0.5.10";
     
     private static final Logger log = LoggerFactory.getLogger(KoulutusWrapper.class);
 
@@ -46,9 +48,9 @@ public class KoulutusWrapper {
     public KoulutusWrapper() {
         of = new ObjectFactory();
         learningOpportunities = of.createLearningOpportunities();
-        learningOpportunities.setKey("ZDR5HGWBHP0J65P5VZIYEI2ZJJF18WGW");
+        learningOpportunities.setKey(LEARNING_OPPORTUNITY_KEY);
         learningOpportunities.setXsdType(XsdTypeType.fromValue("Learning Opportunity"));
-        learningOpportunities.setXsdVersion("0.5.10");
+        learningOpportunities.setXsdVersion(XSD_VERSION);
         JAXBParser = new JAXBParser();
     }
 
@@ -86,8 +88,6 @@ public class KoulutusWrapper {
     }
 
     public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        // TODO: korkeakoulu setInformationLanguage null
-        // TODO: korkeakoulu setProviderName null
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, "https://opintopolku.fi/app/#!/korkeakoulu/" + k.getOid(), kh.getKoulutuskoodi()); //FIXME: kh.getKoulutuskoodi()?
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
@@ -150,6 +150,19 @@ public class KoulutusWrapper {
         url.setValue(src);
         return url;
     }
+    
+    private I18NNonEmptyString createI18NonEmptyString(String title) {
+        final I18NNonEmptyString i18Non = of.createI18NNonEmptyString();
+        i18Non.setValue(title);
+        i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE_EN));
+        return i18Non;
+    }
+    
+    private I18NString createI18NString(String string) {
+        I18NString temp = of.createI18NString();
+        temp.setValue(string);
+        return temp;
+    }
 
     private void setCredits(KoodiV1RDTO laajuusArvo, KoodiV1RDTO laajuusYksikko, LearningOpportunity lo) {
         if (laajuusArvo != null && laajuusYksikko.getMeta() != null) {
@@ -177,7 +190,23 @@ public class KoulutusWrapper {
         this.setQualificationAwardingBody(opetusJarjestajat, qualifications, haetutOrganisaatiot);
         lo.getQualifications().add(qualifications);
     }
+    
+    private void setQualificationAwardingBody(Set<String> set, Qualifications qualifications, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+        for (String s : set) {
+            haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
+                qualifications.getAwardingBody().add(createI18NString(o.getNimi().get("en")));
+            });
+        }
+    }
 
+    private void setQualificationAwarded(Map<String, KoodiV1RDTO> list, Qualifications qualifications) {
+        list.values().stream().forEach(e -> qualifications.getQualificationAwarded().add(createI18NString(e.getNimi())));
+    }
+
+    private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
+        list.values().stream().forEach(e -> qualifications.getQualificationAwardedDescription().add(createI18NString(e)));
+    }
+    
     private void setDurationInformation(String suunniteltuKestoArvo, String suunniteltuNimi, LearningOpportunity lo) {
         if (suunniteltuKestoArvo != null) {
             lo.getDurationInformation().add(createI18NString(suunniteltuKestoArvo + " " + suunniteltuNimi));
@@ -197,14 +226,6 @@ public class KoulutusWrapper {
                     lo.setInformationLanguage(l);
                 }
             }
-        }
-    }
-
-    private void setQualificationAwardingBody(Set<String> set, Qualifications qualifications, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        for (String s : set) {
-            haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
-                qualifications.getAwardingBody().add(createI18NString(o.getNimi().get("en")));
-            });
         }
     }
 
@@ -249,13 +270,6 @@ public class KoulutusWrapper {
         lo.getCosts().add(temp);
     }
 
-    private I18NNonEmptyString createI18NonEmptyString(String title) {
-        final I18NNonEmptyString i18Non = of.createI18NNonEmptyString();
-        i18Non.setValue(title);
-        i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE_EN));
-        return i18Non;
-    }
-
     private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
         descriptions.keySet().stream().filter(e -> e != null && !e.isEmpty())
                 .forEach(e -> lo.getDescription().add(createI18NonEmptyString(descriptions.get(e))));
@@ -283,22 +297,8 @@ public class KoulutusWrapper {
         lo.getStudyType().addAll(studyTypeList);
     }
 
-    private I18NString createI18NString(String string) {
-        I18NString temp = of.createI18NString();
-        temp.setValue(string);
-        return temp;
-    }
-
     private void setDate(Set<Date> dates, LearningOpportunity lo) {
         dates.stream().forEach(e -> lo.getStartDate().add(createI18NString(e.toString())));
-    }
-
-    private void setQualificationAwarded(Map<String, KoodiV1RDTO> list, Qualifications qualifications) {
-        list.values().stream().forEach(e -> qualifications.getQualificationAwarded().add(createI18NString(e.getNimi())));
-    }
-
-    private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
-        list.values().stream().forEach(e -> qualifications.getQualificationAwardedDescription().add(createI18NString(e)));
     }
 
     public void forwardLOtoJaxBParser() {
