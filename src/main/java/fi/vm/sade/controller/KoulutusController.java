@@ -121,7 +121,7 @@ public class KoulutusController {
         v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI + "v1/koulutus");
         v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI + "organisaatio");
 
-        statusObject.setStatusText("Haetaan Koodisto dataa...");
+        statusObject.setStatusText("Haetaan alustavat Koulutukset ja Koodisto data...");
 
         // Aalto yliopisto 1.2.246.562.10.72985435253
         // 1.2.246.562.10.53642770753
@@ -129,8 +129,12 @@ public class KoulutusController {
         HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.72985435253").getResult();
         numberOfOrganisations = hakutulokset.getTulokset().size();
         numberOfCurrentOrganisation = 0.0;
-
-        fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset);
+        
+        int count = 0;
+        for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData: hakutulokset.getTulokset()) {
+            count += organisaatioData.getTulokset().size();
+        }
+        fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset, count);
         // noin 1200 koulutusta minuutissa
         statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
         statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
@@ -157,13 +161,13 @@ public class KoulutusController {
         int skip = 0;
         for (KoulutusHakutulosV1RDTO kh : haetutKoulutukset) {
             switch (kh.getKoulutusasteTyyppi().name()) {
-                case KoulutusAsteTyyppi.AMMATILLINEN_PERUSKOULUTUS:
+                case KoulutusAsteTyyppi.AMMATTITUTKINTO:
                     ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> ammatillinenPerustutkintoResult = searchAmmatillinenPerustutkinto(kh.getOid());
                     KoulutusAmmatillinenPerustutkintoV1RDTO ammatillinenPerustutkintoKoulutus = ammatillinenPerustutkintoResult.getResult();
                     kw.fetchAmmatillinenPerustutkintoInfo(ammatillinenPerustutkintoKoulutus, organisaatioMap, kh, haetutKoodit);
                     break;
 
-                case KoulutusAsteTyyppi.AMMATTITUTKINTO:
+                case KoulutusAsteTyyppi.AMMATILLINEN_PERUSTUTKINTO:
                     ResultV1RDTO<AmmattitutkintoV1RDTO> ammattiResult = searchAmmattitutkinto(kh.getOid());
                     AmmattitutkintoV1RDTO ammattiKoulutus = ammattiResult.getResult();
                     kw.fetchAmmattiInfo(ammattiKoulutus, organisaatioMap, kh, haetutKoodit);
@@ -194,21 +198,22 @@ public class KoulutusController {
                     break;
                 default:
                     log.info("Skipping on data parsing Koulutus: " + kh.getKomoOid() +
-                            ", Type: " + kh.getKoulutusasteTyyppi());
+                            ", Type: " + kh.getKoulutusasteTyyppi() + " : " + kh.getKoulutusmoduuliTyyppi().name() + " : " + kh.getToteutustyyppiEnum().name());
                     skip++;
+                    
             }
             i++;
-            statusObject.setStatusText("Haetaan ja parsitaan Koulutusta " + (int) i + "/" + haetutKoulutukset.size());
-            status = 0.3 + (i / (double) haetutKoulutukset.size() * 0.66);
-            status = (Math.ceil(status * 100.0) / 100.0);
-            statusObject.setStatus(status);
+            String text = "Haetaan ja parsitaan Koulutusta " + (int) i + "/" + haetutKoulutukset.size();
+            status = 0.5 + (i / (double) haetutKoulutukset.size() * 0.50);
             // noin 1200 koulutusta minuutissa
-            statusObject.setDurationEstimate((haetutKoulutukset.size() - i) / 1200);
+            double estimate = (haetutKoulutukset.size() - i) / 1200;
+            setStatusObject(estimate, status, text);
         }
         return skip;
     }
 
-    private void fetchOrganisaatiotAndKoulutuksetAndKoodit(HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset) throws Exception {
+    private void fetchOrganisaatiotAndKoulutuksetAndKoodit(HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset, int count) throws Exception {
+        int current = 0;
         for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData: hakutulokset.getTulokset()) {
             OrganisaatioRDTO organisaatio = searchOrganisation(organisaatioData.getOid());
             haetutOrganisaatiot.add(organisaatio);
@@ -220,25 +225,34 @@ public class KoulutusController {
                         case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
                         case KoulutusAsteTyyppi.LUKIOKOULUTUS:
                         case KoulutusAsteTyyppi.AMMATILLINENPERUSKOULUTUS:
+                            current++;
                             if (checkKoulutusValidnessFromOpintopolku("koulutus/", koulutusData.getOid())) {
-                                addKoulutusToArray(koulutusData);
+                                addKoulutusToArray(koulutusData, count, current);
                                 fetchKoodi(koulutusData);
                             }
                             break;
                         case KoulutusAsteTyyppi.AMMATTITUTKINTO:
                         case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
+                            current++;
                             if (checkKoulutusValidnessFromOpintopolku("adultvocational/", koulutusData.getOid())) {
-                                addKoulutusToArray(koulutusData);
+                                addKoulutusToArray(koulutusData, count, current);
                                 fetchKoodi(koulutusData);
                             }
                             break;
                         case KoulutusAsteTyyppi.KORKEAKOULUTUS:
+                            current++;
                             if (checkKoulutusValidnessFromOpintopolku("highered/", koulutusData.getOid())) {
-                                addKoulutusToArray(koulutusData);
+                                addKoulutusToArray(koulutusData, count, current);
                                 fetchKoodi(koulutusData);
                             }
                             break;
                         default:
+                            current++;
+                            status = (double) current / (double) count * 0.50;
+                            status = (Math.ceil(status * 100.0) / 100.0);
+                            double estimate = (double) current / (double) count / 1200;
+                            String text = "Haetaan alustavat Koulutukset ja Koodisto data " + current + "/" + count;
+                            setStatusObject(estimate, status, text);
                             log.info("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() +
                                     ", Type: " + koulutusData.getKoulutusasteTyyppi());
                             break;
@@ -247,7 +261,13 @@ public class KoulutusController {
             }
         }
     }
-
+    private void setStatusObject(double estimate, double status, String text) {
+        status = (Math.ceil(status * 100.0) / 100.0);
+        statusObject.setDurationEstimate(estimate);
+        statusObject.setStatus(status);
+        statusObject.setStatusText(text);
+    }
+    
     private void createInitialStatusObject() {
         statusObject.setDurationEstimate(0.0);
         statusObject.setStatus(status);
@@ -278,75 +298,81 @@ public class KoulutusController {
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> searchAmmatillinenPerustutkinto(String oid) throws Exception {
-        return (ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid),
+        return (ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>>() {
                 });
     }
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<AmmattitutkintoV1RDTO> searchAmmattitutkinto(String oid) throws Exception {
-        return (ResultV1RDTO<AmmattitutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid),
+        return (ResultV1RDTO<AmmattitutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<AmmattitutkintoV1RDTO>>() {
                 });
     }
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<ErikoisammattitutkintoV1RDTO> searchErikoisammattitutkinto(String oid) throws Exception {
-        return (ResultV1RDTO<ErikoisammattitutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid),
+        return (ResultV1RDTO<ErikoisammattitutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<ErikoisammattitutkintoV1RDTO>>() {
                 });
     }
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<KoulutusKorkeakouluV1RDTO> searchKoulutusKorkeakoulu(String oid) throws Exception {
-        return (ResultV1RDTO<KoulutusKorkeakouluV1RDTO>) getWithRetries(v1KoulutusResource.path(oid),
+        return (ResultV1RDTO<KoulutusKorkeakouluV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<KoulutusKorkeakouluV1RDTO>>() {
                 });
     }
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<ValmistavaKoulutusV1RDTO> searchValmistavaKoulutus(String oid) throws Exception {
-        return (ResultV1RDTO<ValmistavaKoulutusV1RDTO>) getWithRetries(v1KoulutusResource.path(oid),
+        return (ResultV1RDTO<ValmistavaKoulutusV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<ValmistavaKoulutusV1RDTO>>() {
                 });
     }
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<KoulutusLukioV1RDTO> searchKoulutusLukio(String oid) throws Exception {
-        return (ResultV1RDTO<KoulutusLukioV1RDTO>) getWithRetries(v1KoulutusResource.path(oid), new GenericType<ResultV1RDTO<KoulutusLukioV1RDTO>>() {
+        return (ResultV1RDTO<KoulutusLukioV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"), new GenericType<ResultV1RDTO<KoulutusLukioV1RDTO>>() {
         });
     }
 
     // Hakee yhden organisaation tiedot organisaatio-rajapinnasta
     public OrganisaatioRDTO searchOrganisation(String oid) throws Exception {
-        return (OrganisaatioRDTO) getWithRetries(v1OrganisaatioResource.path(oid), new GenericType<OrganisaatioRDTO>() {
+        return (OrganisaatioRDTO) getWithRetries(v1OrganisaatioResource.path(oid).queryParam("meta", "true"), new GenericType<OrganisaatioRDTO>() {
         });
     }
 
     // Hakee yhden organisaation tiedot organisaatio-rajapinnasta
     public boolean checkKoulutusValidnessFromOpintopolku(String type, String oid) throws Exception {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(opitopolkuURI + type + oid).openConnection();
-            // wrap the urlconnection in a bufferedreader
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line = null;
-            StringBuilder content = new StringBuilder();
-            // read from the urlconnection via the bufferedreader
-            while ((line = bufferedReader.readLine()) != null) {
-                content.append(line + "\n");
-            }
-            bufferedReader.close();
-            if (200 <= connection.getResponseCode() && connection.getResponseCode() <= 399) {
-                log.debug("checkKoulutusValidnessFromOpintopolku found: " + opitopolkuURI + type + oid);
-                return true;
-            } else {
+        int retries = 2;
+        while (--retries > 0) {
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL(opitopolkuURI + type + oid).openConnection();
+                if (200 <= connection.getResponseCode() && connection.getResponseCode() <= 399) {
+                    log.debug("checkKoulutusValidnessFromOpintopolku found: " + opitopolkuURI + type + oid);
+                    return true;
+                } else {
+                    log.debug("checkKoulutusValidnessFromOpintopolku didn't find: " + opitopolkuURI + type + oid);
+                    return false;
+                }
+            } catch (IOException exception) {
                 log.debug("checkKoulutusValidnessFromOpintopolku didn't find: " + opitopolkuURI + type + oid);
                 return false;
             }
-        } catch (IOException exception) {
-            log.debug("checkKoulutusValidnessFromOpintopolku didn't find: " + opitopolkuURI + type + oid);
+        }
+        log.warn("Calling resource failed, last retry: " + opitopolkuURI + type + oid);
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(opitopolkuURI + type + oid).openConnection();
+            if (200 <= connection.getResponseCode() && connection.getResponseCode() <= 399) {
+                log.debug("checkKoulutusValidnessFromOpintopolku found: " + opitopolkuURI + type + oid);
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("Calling resource failed: " + opitopolkuURI + type + oid);
             return false;
         }
+        return false;
     }
 
     // Hakee yhden organisaation julkaistu-tilassa olevat koulutukset
@@ -395,11 +421,12 @@ public class KoulutusController {
         }
     }
 
-    private void addKoulutusToArray(KoulutusHakutulosV1RDTO koulutusData) {
+    private void addKoulutusToArray(KoulutusHakutulosV1RDTO koulutusData, int count, int current) {
         log.debug("Adding : " + koulutusData.getOid());
         haetutKoulutukset.add(koulutusData); // lisataan koulutus
-        status = numberOfCurrentOrganisation / numberOfOrganisations * 0.30;
-        status = (Math.ceil(status * 100.0) / 100.0);
-        statusObject.setStatus(status);
+        status = (double) current / (double) count * 0.50;
+        String text = "Haetaan alustavat Koulutukset ja Koodisto data " + current + "/" + count;
+        double estimate = (double) current / (double) count / 1200;
+        setStatusObject(estimate, status, text);
     }
 }
