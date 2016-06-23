@@ -212,7 +212,10 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationAwarded(Map<String, KoodiV1RDTO> list, Qualifications qualifications) {
-        list.values().stream().forEach(e -> qualifications.getQualificationAwarded().add(createI18NString(e.getNimi())));
+        list.values().stream().forEach(e -> {
+            qualifications.getQualificationAwarded().add(createI18NString(e.getNimi()));
+            System.out.println("E nimi: " + e.getNimi());
+        });
     }
 
     private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {

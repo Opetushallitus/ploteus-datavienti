@@ -80,8 +80,6 @@ public class KoulutusController {
     private double status;
     private final StatusObject statusObject = new StatusObject();
 
-    private double numberOfOrganisations;
-    private double numberOfCurrentOrganisation;
 
     @RequestMapping("koulutus/status")
     public String getStatus() throws IOException {
@@ -126,9 +124,7 @@ public class KoulutusController {
         // Aalto yliopisto 1.2.246.562.10.72985435253
         // 1.2.246.562.10.53642770753
         // tai tyhja kaikille tuloksille
-        HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
-        numberOfOrganisations = hakutulokset.getTulokset().size();
-        numberOfCurrentOrganisation = 0.0;
+        HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.53642770753").getResult();
         
         int count = 0;
         for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData: hakutulokset.getTulokset()) {
@@ -160,14 +156,14 @@ public class KoulutusController {
         double i = 0.0;
         int skip = 0;
         for (KoulutusHakutulosV1RDTO kh : haetutKoulutukset) {
-            switch (kh.getKoulutusasteTyyppi().name()) {
-                case KoulutusAsteTyyppi.AMMATTITUTKINTO:
+            switch (kh.getKoulutusasteTyyppi().name().toUpperCase()) {
+                case KoulutusAsteTyyppi.AMMATILLINEN_PERUSTUTKINTO:
                     ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> ammatillinenPerustutkintoResult = searchAmmatillinenPerustutkinto(kh.getOid());
                     KoulutusAmmatillinenPerustutkintoV1RDTO ammatillinenPerustutkintoKoulutus = ammatillinenPerustutkintoResult.getResult();
                     kw.fetchAmmatillinenPerustutkintoInfo(ammatillinenPerustutkintoKoulutus, organisaatioMap, kh, haetutKoodit);
                     break;
 
-                case KoulutusAsteTyyppi.AMMATILLINEN_PERUSTUTKINTO:
+                case KoulutusAsteTyyppi.AMMATTITUTKINTO:
                     ResultV1RDTO<AmmattitutkintoV1RDTO> ammattiResult = searchAmmattitutkinto(kh.getOid());
                     AmmattitutkintoV1RDTO ammattiKoulutus = ammattiResult.getResult();
                     kw.fetchAmmattiInfo(ammattiKoulutus, organisaatioMap, kh, haetutKoodit);
@@ -217,7 +213,6 @@ public class KoulutusController {
         for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData: hakutulokset.getTulokset()) {
             OrganisaatioRDTO organisaatio = searchOrganisation(organisaatioData.getOid());
             haetutOrganisaatiot.add(organisaatio);
-            numberOfCurrentOrganisation++;
 
             for (KoulutusHakutulosV1RDTO koulutusData : organisaatioData.getTulokset()) {
                 if (koulutusData != null) {
