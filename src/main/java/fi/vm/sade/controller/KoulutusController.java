@@ -157,7 +157,7 @@ public class KoulutusController {
         int skip = 0;
         for (KoulutusHakutulosV1RDTO kh : haetutKoulutukset) {
             switch (kh.getKoulutusasteTyyppi().name().toUpperCase()) {
-                case KoulutusAsteTyyppi.AMMATILLINEN_PERUSTUTKINTO:
+                case KoulutusAsteTyyppi.AMMATILLINEN_PERUSKOULUTUS:
                     ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> ammatillinenPerustutkintoResult = searchAmmatillinenPerustutkinto(kh.getOid());
                     KoulutusAmmatillinenPerustutkintoV1RDTO ammatillinenPerustutkintoKoulutus = ammatillinenPerustutkintoResult.getResult();
                     kw.fetchAmmatillinenPerustutkintoInfo(ammatillinenPerustutkintoKoulutus, organisaatioMap, kh, haetutKoodit);
