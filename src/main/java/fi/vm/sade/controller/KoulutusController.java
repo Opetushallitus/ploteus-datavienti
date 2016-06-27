@@ -170,7 +170,8 @@ public class KoulutusController {
                     break;
 
                 case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
-                    if(kh.getOid().equals("1.2.246.562.17.89783192027")){
+                    // FIXME: use KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO.java
+                    if(kh.getOid().equals("1.2.246.562.17.89783192027") || kh.getOid().equals("1.2.246.562.17.170071139910")){ 
                         System.out.println("löytyi: " + kh.getOid());
                     }
                     else{
