@@ -267,9 +267,11 @@ public class KoulutusWrapper {
                 
                 if(haetutOrganisaatiot.get(s).getMetadata() != null){
                     haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().stream().forEach(m -> {
-                        if(m.get("email") != null){
-                            list.add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().get(2).get("email")));
-                        }
+                        haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().forEach(y -> {
+                            if(y.get("email") != null){
+                                list.add(createI18NString(y.get("email")));
+                            }
+                        });
                     }); 
                 }
                 lo.getProviderContactInfo().addAll(list);
