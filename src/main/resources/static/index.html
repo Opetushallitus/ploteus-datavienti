@@ -43,7 +43,7 @@
 		<h2 style="margin-left: 15px;">Koulutustarjonta Ploteukseen -tiedonsiirto</h2>
 		<div>
 			<div id="startDiv">
-				<button type="button" onClick="start()" class="btn btn-default"
+				<button id="startButton" type="button" onClick="start()" class="btn btn-default"
 					aria-label="Left Align">
 					<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
 					Aloita
@@ -60,7 +60,7 @@
 		</div>
 		<div>
 		<div id="downloadButtonDiv">
-			<button id="downloadButton" type="button" onClick="downloadXMLFile()" class="btn btn-default"
+			<button id="downloadButton" type="button" onClick="window.location='/download'" class="btn btn-default"
 				aria-label="Left Align">
 				<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
 				Lataa Tiedosto
@@ -70,45 +70,15 @@
 		<div id="infoTimeDiv"></div>
 		</div>
 	</section>
-	<script type='text/javascript'>
-	var interval;
-	$("#downloadButton").prop("disabled",true);
-
-	function start() {
-		$("#downloadButton").prop("disabled",true);
-		$.ajax({
-			type : "GET",
-			url : "/koulutus/",
-			contentType : "application/json; charset=utf-8",
-			dataType : "json",
-			success : function(data) {
-				console.log("data: " + data);
-			}
-		});
-		interval = setInterval("checkStatus()", 1000);
-	}
-	function checkStatus() {
-		$.ajax({
-			type : "GET",
-			url : "/koulutus/status",
-			contentType : "application/json; charset=utf-8",
-			dataType : "json",
-			success : function(data) {
-				console.log("data: " + data.status);
-				$("#progressbar").css("width", Math.round(data.status * 100) + "%");
-				$("#progressbar").attr('aria-valuenow', Math.round(data.status * 100));
-				$("#progressbar").html(Math.round(data.status * 100) + "%");
-				$("#infoDiv").html("<i>" + data.statusText + "</i>");
-				$("#infoTimeDiv").html("<i>Atvioitu kesto: " + Math.ceil(data.durationEstimate) + " minuuttia</i>");
-				if (data.status >= 1.0) {
-					clearInterval(interval);
-					$("#downloadButton").prop("disabled",false);
-				}
-			}
-		});
-	}
-	function downloadXMLFile(){
-		window.location='/download';
+	
+<script src="javascript.js"></script>
+<script>
+	window.onload = function () { 
+		$("#downloadButton").prop("disabled", true);
+		checkStatus();
+		if(interval == false){
+			interval = setInterval("checkStatus()", 1000);
+		}
 	}
 </script>
 </body>
