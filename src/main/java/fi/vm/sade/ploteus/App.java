@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
 @Configuration
-@ImportResource({ "classpath*:applicationContext.xml" })
+@ImportResource({ "classpath:application-context.xml" })
 @ComponentScan("fi.vm.sade")
 public class App {
     private static final Logger log = LoggerFactory.getLogger(App.class);

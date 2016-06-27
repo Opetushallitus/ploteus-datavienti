@@ -4,37 +4,32 @@
            xmlns:mvc="http://www.springframework.org/schema/mvc"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xmlns:aop="http://www.springframework.org/schema/aop"
-           xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+           xmlns:util="http://www.springframework.org/schema/util"
            xsi:schemaLocation="
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.0.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
-        http://cxf.apache.org/jaxrs-client http://cxf.apache.org/schemas/jaxrs-client.xsd">
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">        
         
+
+    <context:property-placeholder
+    location="classpath:ploteus.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/ploteus.properties"
+    ignore-resource-not-found="true" properties-ref="defaultProps"/>
+    
 	<context:component-scan base-package="fi.vm.sade.ploteus" />
 	<mvc:annotation-driven />
     <cache:annotation-driven />
 	
 	<beans>
 		<bean id="jacksonMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
-		<bean class="fi.vm.sade.valinta.kooste.CasInterceptors" />
-		<bean class="fi.vm.sade.valinta.kooste.KoostepalveluContext" />
-		<jaxrs-client:client id="OrganisaatioResourceClient"
-							address="${valintalaskentakoostepalvelu.organisaatioService.rest.url}"
-							serviceClass="fi.vm.sade.valinta.kooste.tarjonta.api.OrganisaatioResource"
-							inheritHeaders="true">
-			<jaxrs-client:outInterceptors>
-				<ref bean="OrganisaatioResourceClientCasInterceptor"/>
-			</jaxrs-client:outInterceptors>
-			<jaxrs-client:inInterceptors>
-				<ref bean="OrganisaatioResourceClientCasInterceptor"/>
-			</jaxrs-client:inInterceptors>
-			<jaxrs-client:providers>
-				<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
-				<bean class="fi.vm.sade.valinta.kooste.ObjectMapperProvider" />
-			</jaxrs-client:providers>
-		</jaxrs-client:client>
+		<bean id="defaultProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+			<property name="properties">
+			<util:properties local-override="true">
+			<prop key="cas_mode">front</prop>
+			</util:properties>
+			</property>
+		</bean>
 	</beans>
 </beans>
