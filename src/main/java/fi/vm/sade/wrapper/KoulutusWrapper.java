@@ -134,7 +134,9 @@ public class KoulutusWrapper {
         LearningOpportunity lo = of.createLearningOpportunity();
         setDate(koulutuksenAlkamisPvms, lo);
         setCost(hintaString, lo);
-        setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+        if(kuvausKomo.get(KomoTeksti.TAVOITTEET) != null){
+            setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+        }
         setDescription(kuvausKomo, lo);
         setProviderName(opetusTarjoajat, lo, haetutOrganisaatiot);
         setProviderContactInfo(opetusTarjoajat, lo, haetutOrganisaatiot);
@@ -245,37 +247,41 @@ public class KoulutusWrapper {
 
     private void setProviderName(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         set.forEach(s -> {
-        	haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
-                lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en")));
-            });
+            if(haetutOrganisaatiot.get(s) != null){
+                haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
+                    lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en")));
+                });
+            }
         });
     }
 
     private void setProviderContactInfo(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         ArrayList<I18NString> list = new ArrayList<>();
         set.forEach(s -> {
-        	haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> { 
-        		if (p.get("postitoimipaikka") != null && p.get("osoite") != null && p.get("postinumeroUri") != null) {
-                    list.add(createI18NString(p.get("osoite") + ", " + p.get("postinumeroUri").replace("posti_", "") + ", " + p.get("postitoimipaikka")));
-                }
-                if (p.get("numero") != null) {
-                    list.add(createI18NString(p.get("numero")));
-                }
-                if(haetutOrganisaatiot.get(s).getNimi().get("en") != null){
-                	list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en")));
-                }
-                
-                if(haetutOrganisaatiot.get(s).getMetadata() != null){
-                    haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().stream().forEach(m -> {
-                        haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().forEach(y -> {
-                            if(y.get("email") != null){
-                                list.add(createI18NString(y.get("email")));
-                            }
-                        });
-                    }); 
-                }
-                lo.getProviderContactInfo().addAll(list);
-        	});
+            if(haetutOrganisaatiot.get(s) != null){
+            	haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> { 
+            		if (p.get("postitoimipaikka") != null && p.get("osoite") != null && p.get("postinumeroUri") != null) {
+                        list.add(createI18NString(p.get("osoite") + ", " + p.get("postinumeroUri").replace("posti_", "") + ", " + p.get("postitoimipaikka")));
+                    }
+                    if (p.get("numero") != null) {
+                        list.add(createI18NString(p.get("numero")));
+                    }
+                    if(haetutOrganisaatiot.get(s).getNimi().get("en") != null){
+                    	list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en")));
+                    }
+                    
+                    if(haetutOrganisaatiot.get(s).getMetadata() != null){
+                        haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().stream().forEach(m -> {
+                            haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().forEach(y -> {
+                                if(y.get("email") != null){
+                                    list.add(createI18NString(y.get("email")));
+                                }
+                            });
+                        }); 
+                    }
+                    lo.getProviderContactInfo().addAll(list);
+            	});
+            }
         });
     }
     
@@ -288,22 +294,26 @@ public class KoulutusWrapper {
     
     private void setCourseAddress(Set<String> set, CourseLocation co, Map<String, OrganisaatioRDTO> haetutOrganisaatiot){
         set.forEach(s -> {
-            haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
-                if (p.get("postitoimipaikka") != null && p.get("osoite") != null && p.get("postinumeroUri") != null) {
-                    co.getCourseAddress().add(createI18NString(p.get("osoite") + ", " + p.get("postinumeroUri").replace("posti_", "") + ", " + p.get("postitoimipaikka")));
-                }
-            });
+            if(haetutOrganisaatiot.get(s) != null){ //FIXME:
+                haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
+                    if (p.get("postitoimipaikka") != null && p.get("osoite") != null && p.get("postinumeroUri") != null) {
+                        co.getCourseAddress().add(createI18NString(p.get("osoite") + ", " + p.get("postinumeroUri").replace("posti_", "") + ", " + p.get("postitoimipaikka")));
+                    }
+                });
+            }
         });
     }
     
     private void setSpecialArrangements(Set<String> set, CourseLocation co, Map<String, OrganisaatioRDTO> haetutOrganisaatiot){
         set.forEach(s -> {
-            haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
-                if (haetutOrganisaatiot.get(s).getMetadata() != null
-                        && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS") != null) {
-                    co.getSpecialArrangements().add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1")));
-                }
-            });
+            if(haetutOrganisaatiot.get(s) != null){
+                haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
+                    if (haetutOrganisaatiot.get(s).getMetadata() != null
+                            && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS") != null) {
+                        co.getSpecialArrangements().add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1")));
+                    }
+                });
+            }
         });
     }
 
