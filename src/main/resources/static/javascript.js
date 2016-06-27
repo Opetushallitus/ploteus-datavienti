@@ -1,4 +1,4 @@
-var interval;
+var interval = false;
 var processOwner = false;
 var processInProgress = false;
 
@@ -16,7 +16,9 @@ function start() {
 			console.log("data: " + data);
 		}
 	});
-	interval = setInterval("checkStatus()", 1000);
+	if(interval == false){
+		interval = setInterval("checkStatus()", 1000);
+	}
 }
 function checkStatus() {
 	$.ajax({
@@ -45,6 +47,7 @@ function checkStatus() {
 						}
 					if (data.status >= 1.0) {
 						clearInterval(interval);
+						interval = false;
 						$("#startButton").prop("disabled", false);
 						$("#downloadButton").prop("disabled", false);
 					}
