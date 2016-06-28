@@ -9,3 +9,8 @@
 host.cas={{host_cas}}
 host.virkailija={{host_virkailija}}
 host.oppija={{host_oppija}}
+
+cas.service.organisaatio-service =
+cas.callback.ajastuspalvelu =
+cas.service.ajastuspalvelu =
+root.organisaatio.oid =
