@@ -60,7 +60,7 @@ import javax.ws.rs.core.MediaType;
 
 @RestController
 public class KoulutusController {
-    @Value("${user.home.dir}")
+    @Value("${xml.output.dir}")
     private String FILE_PATH;
     private static final String JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=UTF-8";
     private static String tarjontaURI;
@@ -100,8 +100,7 @@ public class KoulutusController {
         return mapper.writeValueAsString(statusObject);
     }
 
-    @GET
-    @RequestMapping("/download")
+    @RequestMapping("download")
     public void download(HttpServletResponse response) throws IOException {
         File file = new File(FILE_PATH + "lo_full_sample.zip");
         InputStream myStream = new FileInputStream(file);

@@ -31,7 +31,7 @@ public class JAXBParser {
     private static final Logger log = LoggerFactory.getLogger(JAXBParser.class);
 
     private static final String OUTPUT_FILE_NAME = "lo_full_sample";
-    @Value("${user.home.dir}")
+    @Value("${xml.output.dir}")
     private String OUTPUT_PATH;
 
     public void parseXML(LearningOpportunities learningOpportunities) {
@@ -66,7 +66,8 @@ public class JAXBParser {
 
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             // poistetaan kommentit kun tarvitaan validointia
-            Schema schema = schemaFactory.newSchema(new StreamSource("src/main/xsd/LearningOpportunities.xsd"));
+            Schema schema = schemaFactory.newSchema(getClass().getClassLoader().getResource("LearningOpportunities.xsd"));
+            //Schema schema = schemaFactory.newSchema(new StreamSource("src/main/xsd/LearningOpportunities.xsd"));
             // jaxbMarshaller.setSchema(schema);
 
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
