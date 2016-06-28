@@ -9,7 +9,7 @@ function start() {
 	$("#startButton").prop("disabled", true);
 	$.ajax({
 		type : "GET",
-		url : "/koulutus/",
+		url : "koulutus/",
 		contentType : "application/json; charset=utf-8",
 		dataType : "json",
 		success : function(data) {
@@ -23,7 +23,7 @@ function start() {
 function checkStatus() {
 	$.ajax({
 		type : "GET",
-		url : "/koulutus/status",
+		url : "koulutus/status",
 		contentType : "application/json; charset=utf-8",
 		dataType : "json",
 		success : function(data) {
