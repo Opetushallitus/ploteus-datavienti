@@ -9,6 +9,7 @@
 host.cas={{host_cas}}
 host.virkailija={{host_virkailija}}
 host.oppija={{host_oppija}}
+xml.output.dir=/data00/oph/ploteus/generated_xml/
 
 cas.service.organisaatio-service =
 cas.callback.ajastuspalvelu =
