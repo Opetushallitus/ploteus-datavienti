@@ -8,3 +8,4 @@
 # Aseta vähintään nämä ympäristökohtaiset arvot
 host.cas={{host_cas}}
 host.virkailija={{host_virkailija}}
+host.oppija={{host_oppija}}

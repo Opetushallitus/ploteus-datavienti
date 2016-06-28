@@ -128,7 +128,7 @@
 
 		<dependency>
 			<groupId>fi.vm.sade.java-utils</groupId>
-			<artifactId>java-properties</artifactId>
+			<artifactId>httpclient</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>

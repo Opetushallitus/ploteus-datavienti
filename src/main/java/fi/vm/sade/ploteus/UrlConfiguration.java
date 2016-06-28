@@ -13,8 +13,9 @@ public class UrlConfiguration extends OphProperties {
     }
 
     public UrlConfiguration(String activeSpringProfile) {
-        addFiles("/ploteus-urls.properties");
-        addOptionalFiles(Paths.get(System.getProperties().getProperty("user.home"), "/deployment/oph-configuration/common.properties").toString());
+        addFiles("/ploteus-oph.properties");
+        addOptionalFiles(Paths.get(System.getProperties().getProperty("user.home"), "/oph-configuration/common.properties").toString());
+        debugMode();
     }
 
 }
