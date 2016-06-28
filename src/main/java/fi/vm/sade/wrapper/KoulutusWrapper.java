@@ -10,6 +10,8 @@ import javax.xml.namespace.QName;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import eu.europa.ec.learningopportunities.v0_5_10.CourseLocation;
 import eu.europa.ec.learningopportunities.v0_5_10.I18NNonEmptyString;
@@ -30,6 +32,7 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.*;
 import fi.vm.sade.tarjonta.shared.types.KomoTeksti;
 
+@Component
 public class KoulutusWrapper {
     public static String COUNTRY_CODE = "FI";
     public static String TITLE_LANG_CODE_EN = "en";
@@ -46,13 +49,14 @@ public class KoulutusWrapper {
     private ObjectFactory of;
     private fi.vm.sade.parser.JAXBParser JAXBParser;
     
-    public KoulutusWrapper() {
+    @Autowired
+    public KoulutusWrapper(JAXBParser jAXBParser ) {
         of = new ObjectFactory();
         learningOpportunities = of.createLearningOpportunities();
         learningOpportunities.setKey(LEARNING_OPPORTUNITY_KEY);
         learningOpportunities.setXsdType(XsdTypeType.fromValue(XSD_TYPE));
         learningOpportunities.setXsdVersion(XSD_VERSION);
-        JAXBParser = new JAXBParser();
+        JAXBParser = jAXBParser;
     }
 
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, Map<String, Koodi> haetutKoodit) {

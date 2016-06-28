@@ -18,19 +18,24 @@ import javax.xml.validation.SchemaFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunities;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
-
+@Component
 public class JAXBParser {
     private static final Logger log = LoggerFactory.getLogger(JAXBParser.class);
 
-    private static final String OUTPUT_PATH = "generated/";
-    private static final String OUTPUT_FILE = "lo_full_sample";
+    private static final String OUTPUT_FILE_NAME = "lo_full_sample";
+    @Value("${user.home.dir}")
+    private String OUTPUT_PATH;
 
     public void parseXML(LearningOpportunities learningOpportunities) {
-        String sourceFile = OUTPUT_PATH + OUTPUT_FILE + ".xml";
+        String sourceFile = OUTPUT_PATH + OUTPUT_FILE_NAME + ".xml";
         File xmlFile = createXMLFile(learningOpportunities, sourceFile);
         zipXMLFile(xmlFile);
     }
@@ -38,8 +43,8 @@ public class JAXBParser {
     private void zipXMLFile(File xmlFile) {
         try {
             FileInputStream in = new FileInputStream(xmlFile);
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(OUTPUT_PATH + OUTPUT_FILE + ".zip"));
-            out.putNextEntry(new ZipEntry(OUTPUT_FILE + ".xml"));
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(OUTPUT_PATH + OUTPUT_FILE_NAME + ".zip"));
+            out.putNextEntry(new ZipEntry(OUTPUT_FILE_NAME + ".xml"));
             byte[] b = new byte[1024];
             int count;
             while ((count = in.read(b)) > 0) {

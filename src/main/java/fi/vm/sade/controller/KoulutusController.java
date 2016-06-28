@@ -18,6 +18,7 @@ import fi.vm.sade.wrapper.KoulutusWrapper;
 import org.apache.cxf.helpers.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
@@ -53,12 +54,14 @@ import static fi.vm.sade.javautils.httpclient.OphHttpClient.JSON;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.xml.xsom.parser.JAXPParser;
 import com.sun.jersey.api.client.Client;
 import javax.ws.rs.core.MediaType;
 
 @RestController
 public class KoulutusController {
-    private static final String FILE_PATH = "generated/lo_full_sample.zip";
+    @Value("${user.home.dir}")
+    private String FILE_PATH;
     private static final String JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=UTF-8";
     private static String tarjontaURI;
     private static String organisaatioURI;
@@ -80,12 +83,15 @@ public class KoulutusController {
     private WebResource v1KoulutusResource;
     private WebResource v1OrganisaatioResource;
     
+    private KoulutusWrapper kw;
+    
     @Autowired
-    public KoulutusController(HttpClient httpclient, UrlConfiguration urlConfiguration, OphProperties urlProperties) {
+    public KoulutusController(HttpClient httpclient, UrlConfiguration urlConfiguration, OphProperties urlProperties, KoulutusWrapper koulutusWrapper) {
         this.httpclient = httpclient.getClient();
         koodistoClient = new CachingKoodistoClient(urlConfiguration.url("koodisto-service.base"));
         tarjontaURI = urlProperties.require("tarjonta-service.koulutus", "");
         organisaatioURI = urlProperties.require("organisaatio-service.byOid", "");
+        kw = koulutusWrapper;
     }
 
     @RequestMapping("koulutus/status")
@@ -97,7 +103,7 @@ public class KoulutusController {
     @GET
     @RequestMapping("/download")
     public void download(HttpServletResponse response) throws IOException {
-        File file = new File(FILE_PATH);
+        File file = new File(FILE_PATH + "lo_full_sample.zip");
         InputStream myStream = new FileInputStream(file);
         response.addHeader("Content-disposition", "attachment;filename=" + file.getName());
         response.setContentType("txt/plain");
@@ -155,7 +161,6 @@ public class KoulutusController {
 
         final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
                 .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
-        KoulutusWrapper kw = new KoulutusWrapper();
         int skipCount = fetchKoulutukset(kw, organisaatioMap);
         kw.forwardLOtoJaxBParser();
 
@@ -190,7 +195,7 @@ public class KoulutusController {
             case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
                 // FIXME: use
                 // KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO.java
-                if (kh.getOid().equals("1.2.246.562.17.89783192027") || kh.getOid().equals("1.2.246.562.17.170071139910")) {
+                if (kh.getOid().equals("1.2.246.562.17.89783192027") || kh.getOid().equals("1.2.246.562.17.170071139910") || kh.getOid().equals("1.2.246.562.17.22671632028")) {
                     System.out.println("löytyi: " + kh.getOid());
                 } else {
                     ResultV1RDTO<ErikoisammattitutkintoV1RDTO> erikoisResult = searchErikoisammattitutkinto(kh.getOid());
