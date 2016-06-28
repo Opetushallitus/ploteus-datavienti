@@ -15,7 +15,7 @@
         
 
     <context:property-placeholder
-    location="classpath:ploteus.properties, file:///${user.home}/oph-configuration/common.properties"
+    location="file:///${user.home}/oph-configuration/common.properties"
     ignore-resource-not-found="true" properties-ref="defaultProps"/>
     
 	<context:component-scan base-package="fi.vm.sade.ploteus" />
