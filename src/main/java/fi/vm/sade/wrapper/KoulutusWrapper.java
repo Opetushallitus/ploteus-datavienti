@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -149,7 +151,7 @@ public class KoulutusWrapper {
         lo.setLearningOpportunityId(kOid);
         lo.setCountryCode(COUNTRY_CODE);
         lo.getUrl().add(createUrl(opitopolkuUrl));
-        lo.getTitle().add(createI18NonEmptyString(khNimi.get(TITLE_LANG_CODE_EN)));
+        lo.getTitle().add(createI18NonEmptyString(khNimi.get(TITLE_LANG_CODE_EN), TITLE_LANG_CODE_EN));
         lo.setEducationLevel(koodisto.get(koodistoID).getIsced2011koulutusaste());
         ThematicAreas areas = of.createThematicAreas();
         areas.getThematicAreas1997OrThematicAreas2013().add(new JAXBElement<String>(new QName("ThematicAreas2013") , String.class, koodisto.get(koodistoID).getIsced2011koulutusalataso3()));
@@ -170,10 +172,10 @@ public class KoulutusWrapper {
         return url;
     }
     
-    private I18NNonEmptyString createI18NonEmptyString(String title) {
+    private I18NNonEmptyString createI18NonEmptyString(String title, String lang) {
         final I18NNonEmptyString i18Non = of.createI18NNonEmptyString();
         i18Non.setValue(title);
-        i18Non.setLanguage(LanguageCode.fromValue(TITLE_LANG_CODE_EN));
+        i18Non.setLanguage(LanguageCode.fromValue(lang));
         return i18Non;
     }
     
@@ -259,9 +261,9 @@ public class KoulutusWrapper {
             if(haetutOrganisaatiot.get(s) != null){
                 haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
                     if(o.getNimi().get("en") != null && !o.getNimi().get("en").isEmpty()){
-                        lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en")));
+                        lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en"), "en"));
                     } else {
-                        lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("fi")));
+                        lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("fi"), "fi"));
                     }
                 });
             }
@@ -365,12 +367,25 @@ public class KoulutusWrapper {
     }
 
     private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
-        descriptions.keySet().stream().filter(e -> e != null && !e.isEmpty())
-                .forEach(e -> {
-                    if(!descriptions.get(e).isEmpty()){
-                        lo.getDescription().add(createI18NonEmptyString(descriptions.get(e))); 
-                    }
-                });
+        lo.getDescription().clear();
+
+        
+        List<String> descs = new ArrayList<String>();
+        descriptions.keySet().stream().filter(e -> e.equals("kieli_en")).forEach(e -> descs.add(descriptions.get(e)));
+        
+        String lang = "en";
+        if(descs.isEmpty()){
+            lang = "fi";
+            descriptions.keySet().stream().filter(e -> e.equals("kieli_fi")).forEach(e -> descs.add(descriptions.get(e)));
+            
+            if(descs.isEmpty()){
+                lang = "sv";
+                descriptions.keySet().stream().filter(e -> e.equals("kieli_sv")).forEach(e -> descs.add(descriptions.get(e)));
+            }
+        }
+       if(!descs.isEmpty()){
+           lo.getDescription().add(createI18NonEmptyString(descs.get(0), lang));
+       }
     }
 
     private void setTeachingLangs(Map<String, KoodiV1RDTO> teachingLangs, LearningOpportunity lo) {
