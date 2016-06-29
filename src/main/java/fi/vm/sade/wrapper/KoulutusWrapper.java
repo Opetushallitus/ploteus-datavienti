@@ -312,11 +312,11 @@ public class KoulutusWrapper {
             	    }
             	    
             	    if(!address.isEmpty()){
-            	        list.add(createI18NString(address));
+            	        list.add(createI18NString(address, "fi"));
             	    }
             	    
                     if (p.get("numero") != null) {
-                        list.add(createI18NString(p.get("numero")));
+                        list.add(createI18NString(p.get("numero"), "fi"));
                     }
                     if(haetutOrganisaatiot.get(s).getNimi().get("en") != null){
                     	list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en"), "en"));
@@ -326,7 +326,7 @@ public class KoulutusWrapper {
                         haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().stream().forEach(m -> {
                             haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().forEach(y -> {
                                 if(y.get("email") != null && list.contains(y.get("email"))){
-                                    list.add(createI18NString(y.get("email")));
+                                    list.add(createI18NString(y.get("email"), "fi"));
                                 }
                             });
                         }); 
@@ -376,7 +376,8 @@ public class KoulutusWrapper {
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
                     if (haetutOrganisaatiot.get(s).getMetadata() != null
                             && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS") != null
-                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").isEmpty()) {
+                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").isEmpty()
+                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETTOMYYS").get("kieli_en#1").isEmpty()) {
                         co.getSpecialArrangements().add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1"), "en"));
                     }
                 });
@@ -385,7 +386,7 @@ public class KoulutusWrapper {
     }
 
     private void setCost(String cost, LearningOpportunity lo) {
-        lo.getCosts().add(createI18NString(cost));
+        lo.getCosts().add(createI18NString(cost, "fi"));
     }
 
     private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
