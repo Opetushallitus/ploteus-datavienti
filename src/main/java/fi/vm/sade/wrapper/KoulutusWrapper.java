@@ -1,5 +1,6 @@
 package fi.vm.sade.wrapper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -195,6 +196,13 @@ public class KoulutusWrapper {
         return i18Non;
     }
     
+    private I18NString createI18NString(String string, String lang) {
+        I18NString temp = of.createI18NString();
+        temp.setValue(string);
+        temp.setLanguage(LanguageCode.fromValue(lang));
+        return temp;
+    }
+    
     private I18NString createI18NString(String string) {
         I18NString temp = of.createI18NString();
         temp.setValue(string);
@@ -203,7 +211,7 @@ public class KoulutusWrapper {
 
     private void setCredits(KoodiV1RDTO laajuusArvo, KoodiV1RDTO laajuusYksikko, LearningOpportunity lo) {
         if (laajuusArvo != null && laajuusYksikko.getMeta() != null) {
-            lo.getCredits().add(createI18NString(laajuusArvo.getArvo() + " " + laajuusYksikko.getMeta().get(LANG_CODE_KIELI_EN).getNimi()));
+            lo.getCredits().add(createI18NString(laajuusArvo.getArvo() + " " + laajuusYksikko.getMeta().get(LANG_CODE_KIELI_EN).getNimi(), "en"));
         }
     }
 
@@ -231,7 +239,7 @@ public class KoulutusWrapper {
     private void setQualificationAwardingBody(Set<String> set, Qualifications qualifications, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
     	set.forEach(s -> {
         	haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
-                qualifications.getAwardingBody().add(createI18NString(o.getNimi().get("en")));
+                qualifications.getAwardingBody().add(createI18NString(o.getNimi().get("en"), "en"));
             });
         });
     }
@@ -313,7 +321,7 @@ public class KoulutusWrapper {
                         list.add(createI18NString(p.get("numero")));
                     }
                     if(haetutOrganisaatiot.get(s).getNimi().get("en") != null){
-                    	list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en")));
+                    	list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en"), "en"));
                     }
                     
                     if(haetutOrganisaatiot.get(s).getMetadata() != null){
@@ -371,7 +379,7 @@ public class KoulutusWrapper {
                     if (haetutOrganisaatiot.get(s).getMetadata() != null
                             && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS") != null
                             && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").isEmpty()) {
-                        co.getSpecialArrangements().add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1")));
+                        co.getSpecialArrangements().add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1"), "en"));
                     }
                 });
             }
@@ -427,7 +435,8 @@ public class KoulutusWrapper {
     }
 
     private void setDate(Set<Date> dates, LearningOpportunity lo) {
-        dates.stream().forEach(e -> lo.getStartDate().add(createI18NString(e.toString())));
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yy");
+        dates.stream().forEach(e -> lo.getStartDate().add(createI18NString(formatter.format(e), "fi")));
     }
 
     public void forwardLOtoJaxBParser() {
