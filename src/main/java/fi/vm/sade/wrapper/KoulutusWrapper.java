@@ -251,10 +251,8 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
-        list.values().stream().forEach(e -> {
-            if(qualifications.getQualificationAwardedDescription().isEmpty()){
-                qualifications.getQualificationAwardedDescription().add(createI18NString(e));
-            }
+        list.keySet().stream().forEach(e -> {
+            qualifications.getQualificationAwardedDescription().add(createI18NString(list.get(e), e.replace("kieli_", "")));
         });
     }
     
