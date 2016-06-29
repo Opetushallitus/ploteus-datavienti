@@ -5,8 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -49,32 +51,29 @@ public class JAXBParser {
     }
 
     private void validateXMLtoSchema(File xmlFile) {
-        List<String> exceptions = new LinkedList<String>();
+        HashMap<String, SAXParseException> exceptions = new HashMap<>();
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            // poistetaan kommentit kun tarvitaan validointia
             Schema schema = schemaFactory.newSchema(getClass().getClassLoader().getResource("LearningOpportunities.xsd"));
-            //Schema schema = schemaFactory.newSchema(new StreamSource("src/main/xsd/LearningOpportunities.xsd"));
-            // jaxbMarshaller.setSchema(schema);
             Validator validator = schema.newValidator();
             ErrorHandler errorHandler = new ErrorHandler()
             {
                 @Override
                 public void warning(SAXParseException exception) throws SAXException
                 {
-                  if(!exceptions.contains(exception.getMessage())){exceptions.add(exception.getMessage());}
+                  if(!exceptions.containsKey(exception.getMessage())){exceptions.put(exception.getMessage(), exception);}
                 }
     
                 @Override
                 public void fatalError(SAXParseException exception) throws SAXException
                 {
-                    if(!exceptions.contains(exception.getMessage())){exceptions.add(exception.getMessage());}
+                    if(!exceptions.containsKey(exception.getMessage())){exceptions.put(exception.getMessage(), exception);}
                 }
     
                 @Override
                 public void error(SAXParseException exception) throws SAXException
                 {
-                    if(!exceptions.contains(exception.getMessage())){exceptions.add(exception.getMessage());}
+                    if(!exceptions.containsKey(exception.getMessage())){exceptions.put(exception.getMessage(), exception);}
                 }
               };
             validator.setErrorHandler(errorHandler);
@@ -83,8 +82,13 @@ public class JAXBParser {
         } catch (SAXException | IOException e) {
             //Custom Errorhandler
         }
-        for(String e : exceptions){
-            log.warn(e);
+        //Logitetaan kaikki virheet, joita validoinnissa tuli
+        for (Map.Entry<String, SAXParseException> entry : exceptions.entrySet())
+        {
+            //if(entry.getValue().getException().) //TODO: parempi error handling
+            log.warn("XSD Validation warning on line: " + entry.getValue().getLineNumber() + " : " + entry.getValue().getMessage());
+            
+            //throw new RuntimeException(entry.getValue());
         }
         
     }
