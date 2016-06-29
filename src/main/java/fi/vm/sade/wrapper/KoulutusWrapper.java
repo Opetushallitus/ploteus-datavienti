@@ -363,7 +363,7 @@ public class KoulutusWrapper {
                     }
                     
                     if(!address.isEmpty()){
-                        co.getCourseAddress().add(createI18NString(address));
+                        co.getCourseAddress().add(createI18NString(address, "fi"));
                     }
                 });
             }
