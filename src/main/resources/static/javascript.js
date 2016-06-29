@@ -37,18 +37,20 @@ function checkStatus() {
 					if(data.statusText != null){
 						$("#infoDiv").html("<i>" + data.statusText + "</i>");
 					}
-						if (data.durationEstimate == 0.0) {
-							$("#infoTimeDiv").html("<i>Arvioitu kesto: - </i>");
-						} else {
-							$("#infoTimeDiv").html(
-									"<i>Arvioitu kesto: "
-											+ Math.ceil(data.durationEstimate)
-											+ " minuuttia</i>");
-						}
+					if (data.durationEstimate == 0.0) {
+						$("#infoTimeDiv").html("<i>Arvioitu kesto: - </i>");
+					} else {
+						$("#infoTimeDiv").html(
+								"<i>Arvioitu kesto: "
+										+ Math.ceil(data.durationEstimate)
+										+ " minuuttia</i>");
+					}
 					if (data.status >= 1.0) {
-						clearInterval(interval);
-						interval = false;
+						/*clearInterval(interval);
+						interval = false;*/
 						$("#downloadButton").prop("disabled", false);
+						processOwner = false;
+						$("#infoDiv").html("<i>" + data.statusText + "</i>");
 					}
 				}
 				else{

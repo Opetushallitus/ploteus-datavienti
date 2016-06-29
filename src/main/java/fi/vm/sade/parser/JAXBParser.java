@@ -5,13 +5,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.xml.validation.Validator;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -22,10 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunities;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
+
 @Component
 public class JAXBParser {
     private static final Logger log = LoggerFactory.getLogger(JAXBParser.class);
@@ -37,7 +44,49 @@ public class JAXBParser {
     public void parseXML(LearningOpportunities learningOpportunities) {
         String sourceFile = OUTPUT_PATH + OUTPUT_FILE_NAME + ".xml";
         File xmlFile = createXMLFile(learningOpportunities, sourceFile);
+        validateXMLtoSchema(xmlFile);
         zipXMLFile(xmlFile);
+    }
+
+    private void validateXMLtoSchema(File xmlFile) {
+        List<String> exceptions = new LinkedList<String>();
+        try {
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            // poistetaan kommentit kun tarvitaan validointia
+            Schema schema = schemaFactory.newSchema(getClass().getClassLoader().getResource("LearningOpportunities.xsd"));
+            //Schema schema = schemaFactory.newSchema(new StreamSource("src/main/xsd/LearningOpportunities.xsd"));
+            // jaxbMarshaller.setSchema(schema);
+            Validator validator = schema.newValidator();
+            ErrorHandler errorHandler = new ErrorHandler()
+            {
+                @Override
+                public void warning(SAXParseException exception) throws SAXException
+                {
+                  if(!exceptions.contains(exception.getMessage())){exceptions.add(exception.getMessage());}
+                }
+    
+                @Override
+                public void fatalError(SAXParseException exception) throws SAXException
+                {
+                    if(!exceptions.contains(exception.getMessage())){exceptions.add(exception.getMessage());}
+                }
+    
+                @Override
+                public void error(SAXParseException exception) throws SAXException
+                {
+                    if(!exceptions.contains(exception.getMessage())){exceptions.add(exception.getMessage());}
+                }
+              };
+            validator.setErrorHandler(errorHandler);
+            
+            validator.validate(new StreamSource(xmlFile));
+        } catch (SAXException | IOException e) {
+            //Custom Errorhandler
+        }
+        for(String e : exceptions){
+            log.warn(e);
+        }
+        
     }
 
     private void zipXMLFile(File xmlFile) {
@@ -64,16 +113,10 @@ public class JAXBParser {
             JAXBContext jaxbContext = JAXBContext.newInstance(LearningOpportunity.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            // poistetaan kommentit kun tarvitaan validointia
-            Schema schema = schemaFactory.newSchema(getClass().getClassLoader().getResource("LearningOpportunities.xsd"));
-            //Schema schema = schemaFactory.newSchema(new StreamSource("src/main/xsd/LearningOpportunities.xsd"));
-            // jaxbMarshaller.setSchema(schema);
-
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             jaxbMarshaller.marshal(learningOpportunities, file);
 
-        } catch (SAXException | JAXBException e) {
+        } catch (JAXBException e) {
             log.error("XML creation error", e);
             throw new RuntimeException(e);
         }
