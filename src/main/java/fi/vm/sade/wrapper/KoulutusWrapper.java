@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.apache.hadoop.mapred.gethistory_jsp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -224,7 +225,11 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
-        list.values().stream().forEach(e -> qualifications.getQualificationAwardedDescription().add(createI18NString(e)));
+        list.values().stream().forEach(e -> {
+            if(qualifications.getQualificationAwardedDescription().isEmpty()){
+                qualifications.getQualificationAwardedDescription().add(createI18NString(e));
+            }
+        });
     }
     
     private void setDurationInformation(String suunniteltuKestoArvo, String suunniteltuNimi, LearningOpportunity lo) {
@@ -253,7 +258,9 @@ public class KoulutusWrapper {
         set.forEach(s -> {
             if(haetutOrganisaatiot.get(s) != null){
                 haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
-                    lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en")));
+                    if(!o.getNimi().get("en").isEmpty()){
+                        lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en")));
+                    }
                 });
             }
         });
@@ -342,7 +349,11 @@ public class KoulutusWrapper {
 
     private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
         descriptions.keySet().stream().filter(e -> e != null && !e.isEmpty())
-                .forEach(e -> lo.getDescription().add(createI18NonEmptyString(descriptions.get(e))));
+                .forEach(e -> {
+                    if(!descriptions.get(e).isEmpty()){
+                        lo.getDescription().add(createI18NonEmptyString(descriptions.get(e))); 
+                    }
+                });
     }
 
     private void setTeachingLangs(Map<String, KoodiV1RDTO> teachingLangs, LearningOpportunity lo) {
