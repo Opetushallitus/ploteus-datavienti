@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.apache.hadoop.mapred.gethistory_jsp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -237,7 +238,11 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
-        list.values().stream().forEach(e -> qualifications.getQualificationAwardedDescription().add(createI18NString(e)));
+        list.values().stream().forEach(e -> {
+            if(qualifications.getQualificationAwardedDescription().isEmpty()){
+                qualifications.getQualificationAwardedDescription().add(createI18NString(e));
+            }
+        });
     }
     
     private void setDurationInformation(String suunniteltuKestoArvo, String suunniteltuNimi, LearningOpportunity lo) {
@@ -266,7 +271,11 @@ public class KoulutusWrapper {
         set.forEach(s -> {
             if(haetutOrganisaatiot.get(s) != null){
                 haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
-                    lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en")));
+                    if(o.getNimi().get("en") != null && !o.getNimi().get("en").isEmpty()){
+                        lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en")));
+                    } else {
+                        lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("fi")));
+                    }
                 });
             }
         });
@@ -328,8 +337,22 @@ public class KoulutusWrapper {
         set.forEach(s -> {
             if(haetutOrganisaatiot.get(s) != null){ //FIXME:
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
-                    if (p.get("postitoimipaikka") != null && p.get("osoite") != null && p.get("postinumeroUri") != null) {
-                        co.getCourseAddress().add(createI18NString(p.get("osoite") + ", " + p.get("postinumeroUri").replace("posti_", "") + ", " + p.get("postitoimipaikka")));
+                    String address = "";
+                    
+                    if(p.get("osoite") != null){
+                        address = address.concat(p.get("osoite"));
+                    }
+                    
+                    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").isEmpty()){
+                        address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
+                    }
+                    
+                    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").isEmpty()){
+                        address = address.concat(", " + p.get("postitoimipaikka"));
+                    }
+                    
+                    if(!address.isEmpty()){
+                        co.getCourseAddress().add(createI18NString(address));
                     }
                 });
             }
@@ -341,7 +364,8 @@ public class KoulutusWrapper {
             if(haetutOrganisaatiot.get(s) != null){
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
                     if (haetutOrganisaatiot.get(s).getMetadata() != null
-                            && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS") != null) {
+                            && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS") != null
+                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").isEmpty()) {
                         co.getSpecialArrangements().add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1")));
                     }
                 });
@@ -355,7 +379,11 @@ public class KoulutusWrapper {
 
     private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
         descriptions.keySet().stream().filter(e -> e != null && !e.isEmpty())
-                .forEach(e -> lo.getDescription().add(createI18NonEmptyString(descriptions.get(e))));
+                .forEach(e -> {
+                    if(!descriptions.get(e).isEmpty()){
+                        lo.getDescription().add(createI18NonEmptyString(descriptions.get(e))); 
+                    }
+                });
     }
 
     private void setTeachingLangs(Map<String, KoodiV1RDTO> teachingLangs, LearningOpportunity lo) {
