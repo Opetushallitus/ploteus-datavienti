@@ -146,7 +146,7 @@ public class KoulutusController {
         // Aalto yliopisto 1.2.246.562.10.72985435253
         // 1.2.246.562.10.53642770753
         // tai tyhja kaikille tuloksille
-        ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> hakutulokset2 = searchOrganisationsEducations("");
+        ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> hakutulokset2 = searchOrganisationsEducations("1.2.246.562.10.53642770753");
         //HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = hakutulokset2.getResult();
         HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = hakutulokset2.getResult();
         
