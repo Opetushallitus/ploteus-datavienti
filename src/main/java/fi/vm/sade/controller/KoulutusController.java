@@ -110,13 +110,6 @@ public class KoulutusController {
         IOUtils.copy(myStream, response.getOutputStream());
         response.flushBuffer();
         myStream.close();
-        resetStatusObject();
-    }
-
-    private void resetStatusObject() {
-        statusObject.setStatus(0.0);
-        statusObject.setStatusText(null);
-        statusObject.setDurationEstimate(0.0);
     }
     
     private Client createClient() {
@@ -146,11 +139,10 @@ public class KoulutusController {
         // Aalto yliopisto 1.2.246.562.10.72985435253
         // 1.2.246.562.10.53642770753
         // tai tyhja kaikille tuloksille
-        ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> hakutulokset2 = searchOrganisationsEducations("1.2.246.562.10.53642770753");
-        //HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = hakutulokset2.getResult();
+
+        ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> hakutulokset2 = searchOrganisationsEducations("");
         HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = hakutulokset2.getResult();
-        
-        
+  
         int count = 0;
         for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
             count += organisaatioData.getTulokset().size();
@@ -165,9 +157,10 @@ public class KoulutusController {
         int skipCount = fetchKoulutukset(kw, organisaatioMap);
         kw.forwardLOtoJaxBParser();
 
+        statusObject.setStatusText("Valmis");
         status = 1.0;
         statusObject.setStatus(status);
-        statusObject.setStatusText("Valmis");
+        
 
         if (skipCount != 0) {
             log.warn("Amount of skipped koulutus: " + skipCount);
@@ -199,8 +192,6 @@ public class KoulutusController {
                 break;
 
             case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
-                // FIXME: use
-                // KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO.java
                 if (kh.getToteutustyyppiEnum().equals(ToteutustyyppiEnum.AMMATILLINEN_PERUSTUTKINTO_NAYTTOTUTKINTONA)) {
                     System.out.println("löytyi: " + kh.getOid());
                 } else {
@@ -235,7 +226,7 @@ public class KoulutusController {
             }
             i++;
             String text = "Haetaan ja parsitaan Koulutusta " + (int) i + "/" + haetutKoulutukset.size();
-            status = 0.5 + (i / (double) haetutKoulutukset.size() * 0.50);
+            status = 0.5 + (i / (double) haetutKoulutukset.size() * 0.45);
             // noin 1200 koulutusta minuutissa
             double estimate = (haetutKoulutukset.size() - i) / 1200;
             setStatusObject(estimate, status, text);
