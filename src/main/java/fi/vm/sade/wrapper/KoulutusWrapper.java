@@ -264,9 +264,24 @@ public class KoulutusWrapper {
         set.forEach(s -> {
             if(haetutOrganisaatiot.get(s) != null){
             	haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> { 
-            		if (p.get("postitoimipaikka") != null && p.get("osoite") != null && p.get("postinumeroUri") != null) {
-                        list.add(createI18NString(p.get("osoite") + ", " + p.get("postinumeroUri").replace("posti_", "") + ", " + p.get("postitoimipaikka")));
-                    }
+            	    String address = "";
+            	    
+            	    if(p.get("osoite") != null){
+            	        address = address.concat(p.get("osoite"));
+            	    }
+            	    
+            	    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").isEmpty()){
+            	        address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
+            	    }
+            	    
+            	    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").isEmpty()){
+            	        address = address.concat(", " + p.get("postitoimipaikka"));
+            	    }
+            	    
+            	    if(!address.isEmpty()){
+            	        list.add(createI18NString(address));
+            	    }
+            	    
                     if (p.get("numero") != null) {
                         list.add(createI18NString(p.get("numero")));
                     }
@@ -277,7 +292,7 @@ public class KoulutusWrapper {
                     if(haetutOrganisaatiot.get(s).getMetadata() != null){
                         haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().stream().forEach(m -> {
                             haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().forEach(y -> {
-                                if(y.get("email") != null){
+                                if(y.get("email") != null && list.contains(y.get("email"))){
                                     list.add(createI18NString(y.get("email")));
                                 }
                             });
