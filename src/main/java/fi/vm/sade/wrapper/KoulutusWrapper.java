@@ -299,15 +299,15 @@ public class KoulutusWrapper {
             	haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> { 
             	    String address = "";
             	    
-            	    if(p.get("osoite") != null){
+            	    if(p.get("osoite") != null && !p.get("osoite").trim().isEmpty()){
             	        address = address.concat(p.get("osoite"));
             	    }
             	    
-            	    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").isEmpty()){
+            	    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty()){
             	        address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
             	    }
             	    
-            	    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").isEmpty()){
+            	    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()){
             	        address = address.concat(", " + p.get("postitoimipaikka"));
             	    }
             	    
@@ -350,15 +350,15 @@ public class KoulutusWrapper {
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
                     String address = "";
                     
-                    if(p.get("osoite") != null){
+                    if(p.get("osoite") != null && !p.get("osoite").trim().isEmpty()){
                         address = address.concat(p.get("osoite"));
                     }
                     
-                    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").isEmpty()){
+                    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty()){
                         address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
                     }
                     
-                    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").isEmpty()){
+                    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()){
                         address = address.concat(", " + p.get("postitoimipaikka"));
                     }
                     
@@ -377,7 +377,8 @@ public class KoulutusWrapper {
                     if (haetutOrganisaatiot.get(s).getMetadata() != null
                             && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS") != null
                             && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").isEmpty()
-                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETTOMYYS").get("kieli_en#1").isEmpty()) {
+                            && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1") != null
+                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1").isEmpty()) {
                         co.getSpecialArrangements().add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1"), "en"));
                     }
                 });
