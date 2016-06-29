@@ -48,7 +48,6 @@ function checkStatus() {
 					if (data.status >= 1.0) {
 						clearInterval(interval);
 						interval = false;
-						$("#startButton").prop("disabled", false);
 						$("#downloadButton").prop("disabled", false);
 					}
 				}

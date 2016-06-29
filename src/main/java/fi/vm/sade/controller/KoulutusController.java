@@ -129,6 +129,7 @@ public class KoulutusController {
 
     @RequestMapping("/koulutus/")
     public String getKoulutukset() throws Exception {
+        if(status == 0 || status == 1){
         status = 0.01;
         haetutKoulutukset = new ArrayList<>();
         haetutOrganisaatiot = new ArrayList<>();
@@ -145,7 +146,7 @@ public class KoulutusController {
         // Aalto yliopisto 1.2.246.562.10.72985435253
         // 1.2.246.562.10.53642770753
         // tai tyhja kaikille tuloksille
-        ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> hakutulokset2 = searchOrganisationsEducations("1.2.246.562.10.76144863909");
+        ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> hakutulokset2 = searchOrganisationsEducations("");
         //HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = hakutulokset2.getResult();
         HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = hakutulokset2.getResult();
         
@@ -172,7 +173,12 @@ public class KoulutusController {
             log.warn("Amount of skipped koulutus: " + skipCount);
         }
         log.info("Request ready");
+        }
+        else{
+            log.error("coincident run");
+        }
         return "";
+        
     }
 
     private int fetchKoulutukset(KoulutusWrapper kw, Map<String, OrganisaatioRDTO> organisaatioMap) throws Exception {
