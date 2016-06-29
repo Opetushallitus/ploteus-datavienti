@@ -191,8 +191,6 @@ public class KoulutusController {
                 break;
 
             case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
-                // FIXME: use
-                // KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO.java
                 if (kh.getToteutustyyppiEnum().equals(ToteutustyyppiEnum.AMMATILLINEN_PERUSTUTKINTO_NAYTTOTUTKINTONA)) {
                     System.out.println("löytyi: " + kh.getOid());
                 } else {
