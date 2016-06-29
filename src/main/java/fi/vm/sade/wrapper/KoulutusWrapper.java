@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -211,6 +212,13 @@ public class KoulutusWrapper {
         return i18Non;
     }
     
+    private I18NString createI18NString(String string, String lang) {
+        I18NString temp = of.createI18NString();
+        temp.setValue(string);
+        temp.setLanguage(LanguageCode.fromValue(lang));
+        return temp;
+    }
+    
     private I18NString createI18NString(String string) {
         I18NString temp = of.createI18NString();
         temp.setValue(string);
@@ -219,7 +227,7 @@ public class KoulutusWrapper {
 
     private void setCredits(KoodiV1RDTO laajuusArvo, KoodiV1RDTO laajuusYksikko, LearningOpportunity lo) {
         if (laajuusArvo != null && laajuusYksikko.getMeta() != null) {
-            lo.getCredits().add(createI18NString(laajuusArvo.getArvo() + " " + laajuusYksikko.getMeta().get(LANG_CODE_KIELI_EN).getNimi()));
+            lo.getCredits().add(createI18NString(laajuusArvo.getArvo() + " " + laajuusYksikko.getMeta().get(LANG_CODE_KIELI_EN).getNimi(), "en"));
         }
     }
 
@@ -247,7 +255,7 @@ public class KoulutusWrapper {
     private void setQualificationAwardingBody(Set<String> set, Qualifications qualifications, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
     	set.forEach(s -> {
         	haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
-                qualifications.getAwardingBody().add(createI18NString(o.getNimi().get("en")));
+                qualifications.getAwardingBody().add(createI18NString(o.getNimi().get("en"), "en"));
             });
         });
     }
@@ -259,10 +267,9 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
-        list.values().stream().forEach(e -> {
-            if(qualifications.getQualificationAwardedDescription().isEmpty()){
-                qualifications.getQualificationAwardedDescription().add(createI18NString(removeUnwantedHTMLTags(e)));
-            }
+
+        list.keySet().stream().forEach(e -> {
+            qualifications.getQualificationAwardedDescription().add(createI18NString(removeUnwantedHTMLTags(list.get(e)), e.replace("kieli_", "")));
         });
     }
     
@@ -309,34 +316,34 @@ public class KoulutusWrapper {
             	haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> { 
             	    String address = "";
             	    
-            	    if(p.get("osoite") != null){
+            	    if(p.get("osoite") != null && !p.get("osoite").trim().isEmpty()){
             	        address = address.concat(p.get("osoite"));
             	    }
             	    
-            	    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").isEmpty()){
+            	    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty()){
             	        address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
             	    }
             	    
-            	    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").isEmpty()){
+            	    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()){
             	        address = address.concat(", " + p.get("postitoimipaikka"));
             	    }
             	    
             	    if(!address.isEmpty()){
-            	        list.add(createI18NString(address));
+            	        list.add(createI18NString(address, "fi"));
             	    }
             	    
                     if (p.get("numero") != null) {
-                        list.add(createI18NString(p.get("numero")));
+                        list.add(createI18NString(p.get("numero"), "fi"));
                     }
                     if(haetutOrganisaatiot.get(s).getNimi().get("en") != null){
-                    	list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en")));
+                    	list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en"), "en"));
                     }
                     
                     if(haetutOrganisaatiot.get(s).getMetadata() != null){
                         haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().stream().forEach(m -> {
                             haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().forEach(y -> {
                                 if(y.get("email") != null && list.contains(y.get("email"))){
-                                    list.add(createI18NString(y.get("email")));
+                                    list.add(createI18NString(y.get("email"), "fi"));
                                 }
                             });
                         }); 
@@ -360,20 +367,20 @@ public class KoulutusWrapper {
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
                     String address = "";
                     
-                    if(p.get("osoite") != null){
+                    if(p.get("osoite") != null && !p.get("osoite").trim().isEmpty()){
                         address = address.concat(p.get("osoite"));
                     }
                     
-                    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").isEmpty()){
+                    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty()){
                         address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
                     }
                     
-                    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").isEmpty()){
+                    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()){
                         address = address.concat(", " + p.get("postitoimipaikka"));
                     }
                     
                     if(!address.isEmpty()){
-                        co.getCourseAddress().add(createI18NString(address));
+                        co.getCourseAddress().add(createI18NString(address, "fi"));
                     }
                 });
             }
@@ -386,8 +393,10 @@ public class KoulutusWrapper {
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
                     if (haetutOrganisaatiot.get(s).getMetadata() != null
                             && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS") != null
-                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").isEmpty()) {
-                        co.getSpecialArrangements().add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1")));
+                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").isEmpty()
+                            && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1") != null
+                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1").isEmpty()) {
+                        co.getSpecialArrangements().add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1"), "en"));
                     }
                 });
             }
@@ -395,7 +404,7 @@ public class KoulutusWrapper {
     }
 
     private void setCost(String cost, LearningOpportunity lo) {
-        lo.getCosts().add(createI18NString(cost));
+        lo.getCosts().add(createI18NString(cost, "fi"));
     }
 
     private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
@@ -443,7 +452,8 @@ public class KoulutusWrapper {
     }
 
     private void setDate(Set<Date> dates, LearningOpportunity lo) {
-        dates.stream().forEach(e -> lo.getStartDate().add(createI18NString(e.toString())));
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yy");
+        dates.stream().forEach(e -> lo.getStartDate().add(createI18NString(formatter.format(e), "fi")));
     }
 
     private String removeUnwantedHTMLTags(String input){
