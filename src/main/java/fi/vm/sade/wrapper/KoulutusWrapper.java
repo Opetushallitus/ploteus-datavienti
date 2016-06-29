@@ -170,7 +170,7 @@ public class KoulutusWrapper {
         lo.getTitle().add(createI18NonEmptyString(khNimi.get(TITLE_LANG_CODE_EN), TITLE_LANG_CODE_EN));
         lo.setEducationLevel(koodisto.get(koodistoID).getIsced2011koulutusaste());
         ThematicAreas areas = of.createThematicAreas();
-        areas.getThematicAreas1997OrThematicAreas2013().add(new JAXBElement<String>(new QName("ThematicAreas2013") , String.class, koodisto.get(koodistoID).getIsced2011koulutusalataso3()));
+        areas.getThematicAreas1997OrThematicAreas2013().add(of.createThematicAreasThematicAreas2013(koodisto.get(koodistoID).getIsced2011koulutusalataso3()));
         lo.getThematicAreas().add(areas);
         log.debug("koodisto: " + koodisto.get(koodistoID) + ", koodiID: " + koodistoID);
         return lo;
