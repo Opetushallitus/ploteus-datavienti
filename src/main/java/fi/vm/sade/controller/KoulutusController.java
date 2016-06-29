@@ -44,9 +44,11 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.TarjoajaHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ErikoisammattitutkintoV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatillinenPerustutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakouluV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.NayttotutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
 import fi.vm.sade.tarjonta.shared.types.ToteutustyyppiEnum;
 
@@ -138,6 +140,7 @@ public class KoulutusController {
 
         // Aalto yliopisto 1.2.246.562.10.72985435253
         // 1.2.246.562.10.53642770753
+        // ongelma tapaus: 1.2.246.562.10.76144863909
         // tai tyhja kaikille tuloksille
 
         HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
@@ -192,7 +195,9 @@ public class KoulutusController {
 
             case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
                 if (kh.getToteutustyyppiEnum().equals(ToteutustyyppiEnum.AMMATILLINEN_PERUSTUTKINTO_NAYTTOTUTKINTONA)) {
-                    System.out.println("löytyi: " + kh.getOid());
+                    ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO> apNayttotutkintonaResult = searchAmmatillinenPerustutkintoNayttotutkintona(kh.getOid());
+                    KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO apNayttotutkintona = apNayttotutkintonaResult.getResult();
+                    kw.fetchAPNayttotutkintonaInfo(apNayttotutkintona, organisaatioMap, kh, haetutKoodit);
                 } else {
                     ResultV1RDTO<ErikoisammattitutkintoV1RDTO> erikoisResult = searchErikoisammattitutkinto(kh.getOid());
                     ErikoisammattitutkintoV1RDTO erikoisKoulutus = erikoisResult.getResult();
@@ -322,41 +327,48 @@ public class KoulutusController {
         return (ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>>() {
                 });
-}
+    }
+    
+    @SuppressWarnings("unchecked")
+    private ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO> searchAmmatillinenPerustutkintoNayttotutkintona(String oid) throws Exception {
+        return (ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
+                new GenericType<ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO>>() {
+                });
+    }
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<AmmattitutkintoV1RDTO> searchAmmattitutkinto(String oid) throws Exception {
         return (ResultV1RDTO<AmmattitutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<AmmattitutkintoV1RDTO>>() {
                 });
-}
+    }
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<ErikoisammattitutkintoV1RDTO> searchErikoisammattitutkinto(String oid) throws Exception {
         return (ResultV1RDTO<ErikoisammattitutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<ErikoisammattitutkintoV1RDTO>>() {
                 });
-}
+    }
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<KoulutusKorkeakouluV1RDTO> searchKoulutusKorkeakoulu(String oid) throws Exception {
         return (ResultV1RDTO<KoulutusKorkeakouluV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<KoulutusKorkeakouluV1RDTO>>() {
                 });
-}
+    }
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<ValmistavaKoulutusV1RDTO> searchValmistavaKoulutus(String oid) throws Exception {
         return (ResultV1RDTO<ValmistavaKoulutusV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<ValmistavaKoulutusV1RDTO>>() {
                 });
-}
+    }
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<KoulutusLukioV1RDTO> searchKoulutusLukio(String oid) throws Exception {
         return (ResultV1RDTO<KoulutusLukioV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"), new GenericType<ResultV1RDTO<KoulutusLukioV1RDTO>>() {
         });
-}
+    }
 
     public OrganisaatioRDTO searchOrganisation(String oid) throws Exception {
         return (OrganisaatioRDTO) getWithRetries(v1OrganisaatioResource.path(oid).queryParam("meta", "true"), new GenericType<OrganisaatioRDTO>() {
@@ -384,7 +396,7 @@ public class KoulutusController {
                     new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>() {
                     });
         }
-}
+    }
     
     @SuppressWarnings("unchecked")
     private Object getWithRetries(WebResource resource, GenericType type) throws Exception {
