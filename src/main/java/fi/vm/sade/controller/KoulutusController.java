@@ -48,6 +48,8 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatilline
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakouluV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
+import fi.vm.sade.tarjonta.shared.types.ToteutustyyppiEnum;
+
 import static fi.vm.sade.javautils.httpclient.OphHttpClient.JSON;
 
 
@@ -65,7 +67,6 @@ public class KoulutusController {
     private static final String JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=UTF-8";
     private static String tarjontaURI;
     private static String organisaatioURI;
-    
 
     private static final Logger log = LoggerFactory.getLogger(KoulutusController.class);
 
@@ -144,7 +145,7 @@ public class KoulutusController {
         // Aalto yliopisto 1.2.246.562.10.72985435253
         // 1.2.246.562.10.53642770753
         // tai tyhja kaikille tuloksille
-        ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> hakutulokset2 = searchOrganisationsEducations("1.2.246.562.10.53642770753");
+        ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> hakutulokset2 = searchOrganisationsEducations("1.2.246.562.10.76144863909");
         //HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = hakutulokset2.getResult();
         HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = hakutulokset2.getResult();
         
@@ -194,7 +195,7 @@ public class KoulutusController {
             case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
                 // FIXME: use
                 // KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO.java
-                if (kh.getOid().equals("1.2.246.562.17.89783192027") || kh.getOid().equals("1.2.246.562.17.170071139910") || kh.getOid().equals("1.2.246.562.17.22671632028")) {
+                if (kh.getToteutustyyppiEnum().equals(ToteutustyyppiEnum.AMMATILLINEN_PERUSTUTKINTO_NAYTTOTUTKINTONA)) {
                     System.out.println("löytyi: " + kh.getOid());
                 } else {
                     ResultV1RDTO<ErikoisammattitutkintoV1RDTO> erikoisResult = searchErikoisammattitutkinto(kh.getOid());
