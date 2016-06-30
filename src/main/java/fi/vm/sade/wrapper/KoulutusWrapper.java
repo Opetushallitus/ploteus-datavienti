@@ -1,5 +1,10 @@
 package fi.vm.sade.wrapper;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,6 +59,8 @@ public class KoulutusWrapper {
     private ObjectFactory of;
     private fi.vm.sade.parser.JAXBParser JAXBParser;
     
+    private String tagString;
+    
     @Autowired
     public KoulutusWrapper(JAXBParser jAXBParser ) {
         of = new ObjectFactory();
@@ -62,6 +69,15 @@ public class KoulutusWrapper {
         learningOpportunities.setXsdType(XsdTypeType.fromValue(XSD_TYPE));
         learningOpportunities.setXsdVersion(XSD_VERSION);
         JAXBParser = jAXBParser;
+        InputStream in = getClass().getResourceAsStream("/HTMLTagsToBeRemoved.txt"); 
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            try {
+                for(String line; (line = br.readLine()) != null; ) {
+                    tagString += "|" + line;
+                }
+            } catch (IOException e) {
+                log.error("Constructor file load failed: " + e);
+            }
     }
 
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, Map<String, Koodi> haetutKoodit) {
@@ -251,8 +267,9 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
+
         list.keySet().stream().forEach(e -> {
-            qualifications.getQualificationAwardedDescription().add(createI18NString(list.get(e), e.replace("kieli_", "")));
+            qualifications.getQualificationAwardedDescription().add(createI18NString(removeUnwantedHTMLTags(list.get(e)), e.replace("kieli_", "")));
         });
     }
     
@@ -392,7 +409,7 @@ public class KoulutusWrapper {
 
     private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
         lo.getDescription().clear();
-
+        
         
         List<String> descs = new ArrayList<String>();
         descriptions.keySet().stream().filter(e -> e.equals("kieli_en")).forEach(e -> descs.add(descriptions.get(e)));
@@ -408,7 +425,7 @@ public class KoulutusWrapper {
             }
         }
        if(!descs.isEmpty()){
-           lo.getDescription().add(createI18NonEmptyString(descs.get(0), lang));
+           lo.getDescription().add(createI18NonEmptyString(removeUnwantedHTMLTags(descs.get(0)), lang));
        }
     }
 
@@ -439,6 +456,12 @@ public class KoulutusWrapper {
         dates.stream().forEach(e -> lo.getStartDate().add(createI18NString(formatter.format(e), "fi")));
     }
 
+    private String removeUnwantedHTMLTags(String input){
+        String stripped = null;
+        stripped = input.replaceAll("</?(" + tagString + "){1}.*?/?>", "");
+        return stripped;
+    }
+    
     public void forwardLOtoJaxBParser() {
         JAXBParser.parseXML(learningOpportunities);
     }
