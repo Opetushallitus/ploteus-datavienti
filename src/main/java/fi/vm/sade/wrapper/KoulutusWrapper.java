@@ -391,8 +391,11 @@ public class KoulutusWrapper {
                             && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS") != null
                             && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").isEmpty()
                             && haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1") != null
-                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1").isEmpty()) {
-                        co.getSpecialArrangements().add(createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1"), "en"));
+                            && !haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1").trim().isEmpty()) {
+                        I18NString esteettomyys = createI18NString(haetutOrganisaatiot.get(s).getMetadata().getData().get("ESTEETOMYYS").get("kieli_en#1"), "en");
+                        if(co.getSpecialArrangements().stream().filter(o -> o.getValue().equals(esteettomyys.getValue())).findFirst().isPresent()){
+                            co.getSpecialArrangements().add(esteettomyys);
+                        }
                     }
                 });
             }
