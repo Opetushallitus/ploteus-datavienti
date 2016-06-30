@@ -61,32 +61,47 @@ public class JAXBParser {
                 @Override
                 public void warning(SAXParseException exception) throws SAXException
                 {
-                  if(!exceptions.containsKey(exception.getMessage())){exceptions.put(exception.getMessage(), exception);}
+                  if(!exceptions.containsKey(exception.getMessage())){
+                      exceptions.put(exception.getMessage(), exception);
+                  }
                 }
     
                 @Override
                 public void fatalError(SAXParseException exception) throws SAXException
                 {
-                    if(!exceptions.containsKey(exception.getMessage())){exceptions.put(exception.getMessage(), exception);}
+                    if(!exceptions.containsKey(exception.getMessage())){
+                        exceptions.put(exception.getMessage(), exception);
+                    }
+                    printErrors(exceptions);
+                    throw new RuntimeException("Validation fatal exception", exception);
                 }
-    
+
                 @Override
                 public void error(SAXParseException exception) throws SAXException
                 {
-                    if(!exceptions.containsKey(exception.getMessage())){exceptions.put(exception.getMessage(), exception);}
+                    if(!exceptions.containsKey(exception.getMessage())){
+                        exceptions.put(exception.getMessage(), exception);
+                    }
                 }
               };
             validator.setErrorHandler(errorHandler);
             
             validator.validate(new StreamSource(xmlFile));
-        } catch (SAXException | IOException e) {
-            //Custom Errorhandler
+        } catch (SAXException e) {
+            log.error("SaxException", e);
+        } catch(IOException e) {
+            log.error("Schema file not found", e);
         }
         //Logitetaan kaikki virheet, joita validoinnissa tuli
-        for (Map.Entry<String, SAXParseException> entry : exceptions.entrySet()){
-             log.warn("XSD Validation warning on line: " + entry.getValue().getLineNumber() + " : " + entry.getValue().getColumnNumber() + " : " +  entry.getValue().getMessage());
-        }
+        printErrors(exceptions);
         
+    }
+    
+    private void printErrors(HashMap<String, SAXParseException> exceptions) {
+        for (Map.Entry<String, SAXParseException> entry : exceptions.entrySet()){
+            log.warn("XSD Validation warning on line: " + entry.getValue().getLineNumber() + 
+                    " : " + entry.getValue().getColumnNumber() + " : " +  entry.getValue().getMessage());
+       }
     }
 
     private void zipXMLFile(File xmlFile) {

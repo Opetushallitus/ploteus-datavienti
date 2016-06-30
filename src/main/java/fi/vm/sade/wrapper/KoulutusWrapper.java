@@ -337,17 +337,17 @@ public class KoulutusWrapper {
                     
                     if(haetutOrganisaatiot.get(s).getMetadata() != null){
                         haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().stream().forEach(m -> {
-                            haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().forEach(y -> { 
-                                if(y.get("email") != null){
-                                    list.add(createI18NString(y.get("email"), "fi"));
+                                if(m.get("email") != null){
+                                    I18NString email = createI18NString(m.get("email").trim(), "fi");
+                                    if(!list.stream().filter(o -> o.getValue().equals(email.getValue())).findFirst().isPresent()){list.add(email);}
                                 }
-                            });
                         }); 
                     }
             	});
-            	lo.getProviderContactInfo().addAll(list);
+            	
             }
         });
+        lo.getProviderContactInfo().addAll(list);
     }
     
     private void setCourseLocation(Set<String> opetusTarjoajat, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot){
