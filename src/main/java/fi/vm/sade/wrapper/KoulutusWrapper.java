@@ -301,14 +301,14 @@ public class KoulutusWrapper {
             	    
             	    if(p.get("osoite") != null && !p.get("osoite").trim().isEmpty()){
             	        address = address.concat(p.get("osoite"));
-            	    }
-            	    
-            	    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty()){
-            	        address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
-            	    }
-            	    
-            	    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()){
-            	        address = address.concat(", " + p.get("postitoimipaikka"));
+            	        
+            	        if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty() && !p.get("postinumeroUri").contains("00000")){
+                            address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
+                            
+                            if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()){
+                                address = address.concat(", " + p.get("postitoimipaikka"));
+                            }
+            	        }
             	    }
             	    
             	    if(!address.isEmpty()){
@@ -331,8 +331,8 @@ public class KoulutusWrapper {
                             });
                         }); 
                     }
-                    lo.getProviderContactInfo().addAll(list);
             	});
+            	lo.getProviderContactInfo().addAll(list);
             }
         });
     }
@@ -350,16 +350,16 @@ public class KoulutusWrapper {
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
                     String address = "";
                     
-                    if(p.get("osoite") != null && !p.get("osoite").trim().isEmpty()){
+                    if(p.get("osoite") != null && !p.get("osoite").trim().isEmpty() && !p.get("osoite").startsWith("PL")){
                         address = address.concat(p.get("osoite"));
-                    }
-                    
-                    if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty()){
-                        address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
-                    }
-                    
-                    if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()){
-                        address = address.concat(", " + p.get("postitoimipaikka"));
+                        
+                        if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty() && !p.get("postinumeroUri").contains("00000")){
+                            address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
+                            
+                            if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()){
+                                address = address.concat(", " + p.get("postitoimipaikka"));
+                            }
+                        }
                     }
                     
                     if(!address.isEmpty()){
