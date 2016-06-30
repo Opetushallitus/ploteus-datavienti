@@ -359,7 +359,7 @@ public class KoulutusWrapper {
     
     private void setCourseAddress(Set<String> set, CourseLocation co, Map<String, OrganisaatioRDTO> haetutOrganisaatiot){
         set.forEach(s -> {
-            if(haetutOrganisaatiot.get(s) != null){ //FIXME:
+            if(haetutOrganisaatiot.get(s) != null){
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
                     String address = "";
                     
