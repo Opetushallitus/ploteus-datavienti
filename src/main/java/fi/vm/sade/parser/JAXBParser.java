@@ -83,12 +83,8 @@ public class JAXBParser {
             //Custom Errorhandler
         }
         //Logitetaan kaikki virheet, joita validoinnissa tuli
-        for (Map.Entry<String, SAXParseException> entry : exceptions.entrySet())
-        {
-            //if(entry.getValue().getException().) //TODO: parempi error handling
-            log.warn("XSD Validation warning on line: " + entry.getValue().getLineNumber() + " : " + entry.getValue().getMessage());
-            
-            //throw new RuntimeException(entry.getValue());
+        for (Map.Entry<String, SAXParseException> entry : exceptions.entrySet()){
+             log.warn("XSD Validation warning on line: " + entry.getValue().getLineNumber() + " : " + entry.getValue().getColumnNumber() + " : " +  entry.getValue().getMessage());
         }
         
     }
