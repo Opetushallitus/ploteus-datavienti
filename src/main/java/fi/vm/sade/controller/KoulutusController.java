@@ -125,51 +125,50 @@ public class KoulutusController {
     @RequestMapping("/koulutus/")
     public String getKoulutukset() throws Exception {
         if(status == 0 || status == 1){
-        status = 0.01;
-        haetutKoulutukset = new ArrayList<>();
-        haetutOrganisaatiot = new ArrayList<>();
-        haetutKoodit = new HashMap<>();
-
-        createInitialStatusObject();
-
-        statusObject.setStatusText("Haetaan alustavat Koulutukset ja Koodisto data...");
-        
-        Client clientWithJacksonSerializer = createClient();
-        v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI);
-        v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI);
-
-        // Aalto yliopisto 1.2.246.562.10.72985435253
-        // 1.2.246.562.10.53642770753
-        // ongelma tapaus: 1.2.246.562.10.76144863909
-        // tai tyhja kaikille tuloksille
-
-        HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.53642770753").getResult();
-  
-        int count = 0;
-        for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
-            count += organisaatioData.getTulokset().size();
-        }
-        fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset, count);
-        // noin 1200 koulutusta minuutissa
-        statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
-        statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
-
-        final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
-                .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
-        int skipCount = fetchKoulutukset(kw, organisaatioMap);
-        kw.forwardLOtoJaxBParser();
-
-        statusObject.setStatusText("Valmis");
-        status = 1.0;
-        statusObject.setStatus(status);
-        
-
-        if (skipCount != 0) {
-            log.warn("Amount of skipped koulutus: " + skipCount);
-        }
-        log.info("Request ready");
-        }
-        else{
+            status = 0.01;
+            haetutKoulutukset = new ArrayList<>();
+            haetutOrganisaatiot = new ArrayList<>();
+            haetutKoodit = new HashMap<>();
+    
+            createInitialStatusObject();
+    
+            statusObject.setStatusText("Haetaan alustavat Koulutukset ja Koodisto data...");
+            
+            Client clientWithJacksonSerializer = createClient();
+            v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI);
+            v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI);
+    
+            // Aalto yliopisto 1.2.246.562.10.72985435253
+            // 1.2.246.562.10.53642770753
+            // ongelma tapaus: 1.2.246.562.10.76144863909
+            // tai tyhja kaikille tuloksille
+    
+            HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
+      
+            int count = 0;
+            for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
+                count += organisaatioData.getTulokset().size();
+            }
+            fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset, count);
+            // noin 1200 koulutusta minuutissa
+            statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
+            statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
+    
+            final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
+                    .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
+            int skipCount = fetchKoulutukset(kw, organisaatioMap);
+            kw.forwardLOtoJaxBParser();
+    
+            statusObject.setStatusText("Valmis");
+            status = 1.0;
+            statusObject.setStatus(status);
+            
+    
+            if (skipCount != 0) {
+                log.info("Amount of skipped koulutus: " + skipCount);
+            }
+            log.info("Request ready");
+        }else{
             log.error("coincident run");
         }
         return "";
