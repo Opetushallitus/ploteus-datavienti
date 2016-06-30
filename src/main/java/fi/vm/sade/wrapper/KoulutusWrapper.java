@@ -314,22 +314,18 @@ public class KoulutusWrapper {
         set.forEach(s -> {
             if(haetutOrganisaatiot.get(s) != null){
             	haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> { 
-            	    String address = "";
+            	    String info = "";
             	    
             	    if(p.get("osoite") != null && !p.get("osoite").trim().isEmpty()){
-            	        address = address.concat(p.get("osoite"));
+            	        info = info.concat(p.get("osoite"));
             	        
             	        if(p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty() && !p.get("postinumeroUri").contains("00000")){
-                            address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
+            	            info = info.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
                             
                             if(p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()){
-                                address = address.concat(", " + p.get("postitoimipaikka"));
+                                info = info.concat(", " + p.get("postitoimipaikka"));
                             }
             	        }
-            	    }
-            	    
-            	    if(!address.isEmpty()){
-            	        list.add(createI18NString(address, "fi"));
             	    }
             	    
                     if (p.get("numero") != null) {
@@ -341,8 +337,8 @@ public class KoulutusWrapper {
                     
                     if(haetutOrganisaatiot.get(s).getMetadata() != null){
                         haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().stream().forEach(m -> {
-                            haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().forEach(y -> {
-                                if(y.get("email") != null && list.contains(y.get("email"))){
+                            haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().forEach(y -> { 
+                                if(y.get("email") != null){
                                     list.add(createI18NString(y.get("email"), "fi"));
                                 }
                             });
