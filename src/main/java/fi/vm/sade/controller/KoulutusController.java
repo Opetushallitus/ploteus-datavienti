@@ -88,6 +88,9 @@ public class KoulutusController {
     
     private KoulutusWrapper kw;
     
+    private List<String> notValidKoodiList = new ArrayList<String>(); // Debuggia varten
+    private List<String> emptyKoodiList = new ArrayList<String>(); // Debuggia varten
+    
     @Autowired
     public KoulutusController(HttpClient httpclient, UrlConfiguration urlConfiguration, OphProperties urlProperties, KoulutusWrapper koulutusWrapper) {
         this.httpclient = httpclient.getClient();
@@ -141,6 +144,8 @@ public class KoulutusController {
             // Aalto yliopisto 1.2.246.562.10.72985435253
             // 1.2.246.562.10.53642770753
             // ongelma tapaus: 1.2.246.562.10.76144863909
+            // ongelma tapaus no. 2: 1.2.246.562.10.34573782876 //koulutus_000001
+            // ongelma tapaus no. 3: 1.2.246.562.10.29631644423 //no thematicarea
             // tai tyhja kaikille tuloksille
     
             HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
@@ -243,7 +248,8 @@ public class KoulutusController {
             OrganisaatioRDTO organisaatio = searchOrganisation(organisaatioData.getOid());
             haetutOrganisaatiot.add(organisaatio);
             for (KoulutusHakutulosV1RDTO koulutusData : organisaatioData.getTulokset()) {
-                if (koulutusData != null) {
+                if (koulutusData != null && koulutusData.getKoulutuskoodi() != null  //Skipataan kaikki koulutukset tuntematon koodilla 
+                    && !koulutusData.getKoulutuskoodi().startsWith("koulutus_0")){   //koulutus_000001 & koulutus_000002 & koulutus_000003)) 
                     switch (koulutusData.getKoulutusasteTyyppi().value().toUpperCase()) {
                     case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
                     case KoulutusAsteTyyppi.LUKIOKOULUTUS:
@@ -270,6 +276,9 @@ public class KoulutusController {
                         log.info("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() + ", Type: " + koulutusData.getKoulutusasteTyyppi());
                         break;
                     }
+                    
+                }
+                if(koulutusData != null){
                     current++;
                     status = (double) current / (double) count * 0.50;
                     status = (Math.ceil(status * 100.0) / 100.0);
@@ -277,8 +286,19 @@ public class KoulutusController {
                     String text = "Haetaan alustavat Koulutukset ja Koodisto data " + current + "/" + count;
                     setStatusObject(estimate, status, text);
                 }
+                if(koulutusData.getKoulutuskoodi() == null ){
+                    emptyKoodiList.add(koulutusData.getOid());
+                }
+                else if(koulutusData.getKoulutuskoodi().startsWith("koulutus_0") ){
+                    notValidKoodiList.add(koulutusData.getOid());
+                }
             }
         }
+        //System.out.println("not Valid");  // Debuggia varten
+        //System.out.println(notValidKoodiList);
+        
+        //System.out.println("empty");  // Debuggia varten
+        //System.out.println(emptyKoodiList);
     }
 
     private void setStatusObject(double estimate, double status, String text) {
@@ -305,8 +325,8 @@ public class KoulutusController {
             if (k.getKoodisto().getKoodistoUri().equals("isced2011koulutusalataso3")) {
                 code.setIsced2011koulutusalataso3(k.getKoodiArvo());
             }
-            haetutKoodit.put(koulutusData.getKoulutuskoodi(), code);
         }
+        haetutKoodit.put(koulutusData.getKoulutuskoodi(), code);
     }
 
     private <T> T execute(OphHttpRequest resource, final GenericType<T> type) {

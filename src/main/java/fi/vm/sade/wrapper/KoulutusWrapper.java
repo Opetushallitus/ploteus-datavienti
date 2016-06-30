@@ -179,17 +179,21 @@ public class KoulutusWrapper {
         setProviderName(opetusTarjoajat, lo, haetutOrganisaatiot);
         setProviderContactInfo(opetusTarjoajat, lo, haetutOrganisaatiot);
         setCourseLocation(opetusTarjoajat, lo, haetutOrganisaatiot);
+        setThematicAreas(koodistoID, koodisto, lo);
         lo.setLearningOpportunityId(kOid);
         lo.setCountryCode(COUNTRY_CODE);
         lo.getUrl().add(createUrl(opitopolkuUrl, "fi"));
         lo.getUrl().add(createUrl(opintopolkuUrlEn, "en"));
         lo.getTitle().add(createI18NonEmptyString(khNimi.get(TITLE_LANG_CODE_EN), TITLE_LANG_CODE_EN));
         lo.setEducationLevel(koodisto.get(koodistoID).getIsced2011koulutusaste());
+        return lo;
+    }
+
+    private void setThematicAreas(String koodistoID, Map<String, Koodi> koodisto, LearningOpportunity lo) {
         ThematicAreas areas = of.createThematicAreas();
         areas.getThematicAreas1997OrThematicAreas2013().add(of.createThematicAreasThematicAreas2013(koodisto.get(koodistoID).getIsced2011koulutusalataso3()));
         lo.getThematicAreas().add(areas);
         log.debug("koodisto: " + koodisto.get(koodistoID) + ", koodiID: " + koodistoID);
-        return lo;
     }
 
     private void setDescription(KuvausV1RDTO<KomoTeksti> kuvausKomo, LearningOpportunity lo) {
@@ -326,7 +330,10 @@ public class KoulutusWrapper {
                                 info = info.concat(", " + p.get("postitoimipaikka"));
                             }
             	        }
+            	        I18NString locationInfo = createI18NString(info, "fi");
+            	        if(!list.stream().filter(o -> o.getValue().equals(locationInfo.getValue())).findFirst().isPresent()){list.add(locationInfo);}
             	    }
+            	    
             	    
                     if (p.get("numero") != null) {
                         list.add(createI18NString(p.get("numero"), "fi"));
