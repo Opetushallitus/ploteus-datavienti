@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -245,7 +246,9 @@ public class KoulutusWrapper {
             setQualificationDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
         setQualificationAwardingBody(opetusJarjestajat, qualifications, haetutOrganisaatiot);
-        lo.getQualifications().add(qualifications);
+        if(qualifications.getQualificationAwarded() != null && !qualifications.getQualificationAwarded().isEmpty()){
+            lo.getQualifications().add(qualifications);
+        }
     }
 
     private void setQualifications(KoodiV1RDTO tutkintoNimike, KuvausV1RDTO<KomoTeksti> kuvausKomo, Set<String> opetusJarjestajat, LearningOpportunity lo,
@@ -255,7 +258,9 @@ public class KoulutusWrapper {
             setQualificationDescription(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), qualifications);
         }
         setQualificationAwardingBody(opetusJarjestajat, qualifications, haetutOrganisaatiot);
-        lo.getQualifications().add(qualifications);
+        if(qualifications.getQualificationAwarded() != null  && !qualifications.getQualificationAwarded().isEmpty()){
+            lo.getQualifications().add(qualifications);
+        }
     }
     
     private void setQualificationAwardingBody(Set<String> set, Qualifications qualifications, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
@@ -267,9 +272,15 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationAwarded(Map<String, KoodiV1RDTO> list, Qualifications qualifications) {
-        list.values().stream().forEach(e -> {
-            qualifications.getQualificationAwarded().add(createI18NString(e.getNimi()));
-        });
+        String qualification = "";
+        for(Entry<String, KoodiV1RDTO> e : list.entrySet()) {
+            if(qualification.equals("")){
+                qualification = qualification.concat(e.getValue().getNimi());
+            }else{
+                qualification = qualification.concat(", " + e.getValue().getNimi());
+            }
+        }
+        qualifications.getQualificationAwarded().add(createI18NString(qualification));
     }
 
     private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
@@ -473,7 +484,16 @@ public class KoulutusWrapper {
 
     private void setDate(Set<Date> dates, LearningOpportunity lo) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yy");
-        dates.stream().forEach(e -> lo.getStartDate().add(createI18NString(formatter.format(e), "fi")));
+        String dateString = "";
+        for(Date e : dates) {
+            if(dateString.equals("")){
+                dateString = formatter.format(e);
+            }else{
+                dateString += ", " + formatter.format(e);
+            }
+            }
+        I18NString dateTemp = createI18NString(dateString, "fi");
+        lo.getStartDate().add(dateTemp);
     }
 
     private String removeUnwantedHTMLTags(String input){
