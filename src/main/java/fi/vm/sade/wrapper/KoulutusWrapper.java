@@ -36,6 +36,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.StudyTypeType;
 import eu.europa.ec.learningopportunities.v0_5_10.ThematicAreas;
 import eu.europa.ec.learningopportunities.v0_5_10.XsdTypeType;
 import fi.vm.sade.model.Koodi;
+import fi.vm.sade.organisaatio.resource.dto.OrganisaatioNimiRDTO;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
 import fi.vm.sade.parser.JAXBParser;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
@@ -313,17 +314,21 @@ public class KoulutusWrapper {
     }
 
     private void setProviderName(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
-        set.forEach(s -> {
+        String tempFi = "";
+        String tempEn = "";
+        ArrayList<I18NNonEmptyString> list = new ArrayList<>();
+        for(String s : set){
             if(haetutOrganisaatiot.get(s) != null){
-                haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
-                    if(o.getNimi().get("en") != null && !o.getNimi().get("en").isEmpty()){
-                        lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("en"), "en"));
-                    } else {
-                        lo.getProviderName().add(createI18NonEmptyString(o.getNimi().get("fi"), "fi"));
-                    }
-                });
+                for(OrganisaatioNimiRDTO o : haetutOrganisaatiot.get(s).getNimet()){
+                        if(o.getNimi().get("en") != null && !o.getNimi().get("en").isEmpty()){
+                            list.add(createI18NonEmptyString(o.getNimi().get("en"), "en"));
+                            tempEn = tempEn.concat(o.getNimi().get("en"));
+                        } else {
+                            list.add(createI18NonEmptyString(o.getNimi().get("fi"), "fi"));
+                        }
+                }
             }
-        });
+        }
     }
 
     private void setProviderContactInfo(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
