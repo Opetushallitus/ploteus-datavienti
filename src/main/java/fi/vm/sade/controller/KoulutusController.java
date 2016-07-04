@@ -255,21 +255,24 @@ public class KoulutusController {
                     case KoulutusAsteTyyppi.LUKIOKOULUTUS:
                     case KoulutusAsteTyyppi.AMMATILLINENPERUSKOULUTUS:
                         if (checkKoulutusValidnessFromOpintopolku("koulutus", koulutusData.getOid())) {
-                            addKoulutusToArray(koulutusData, count, current);
-                            fetchKoodi(koulutusData);
+                            if(fetchKoodi(koulutusData)){
+                                addKoulutusToArray(koulutusData, count, current);
+                            }
                         }
                         break;
                     case KoulutusAsteTyyppi.AMMATTITUTKINTO:
                     case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
                         if (checkKoulutusValidnessFromOpintopolku("adultvocational", koulutusData.getOid())) {
-                            addKoulutusToArray(koulutusData, count, current);
-                            fetchKoodi(koulutusData);
+                            if(fetchKoodi(koulutusData)){
+                                addKoulutusToArray(koulutusData, count, current);
+                            }
                         }
                         break;
                     case KoulutusAsteTyyppi.KORKEAKOULUTUS:
                         if (checkKoulutusValidnessFromOpintopolku("highered", koulutusData.getOid())) {
-                            addKoulutusToArray(koulutusData, count, current);
-                            fetchKoodi(koulutusData);
+                            if(fetchKoodi(koulutusData)){
+                                addKoulutusToArray(koulutusData, count, current);
+                            }
                         }
                         break;
                     default:
@@ -315,7 +318,7 @@ public class KoulutusController {
         statusObject.setStatusText("Alustetaan...");
     }
 
-    private void fetchKoodi(KoulutusHakutulosV1RDTO koulutusData) {
+    private boolean fetchKoodi(KoulutusHakutulosV1RDTO koulutusData) {
         List<KoodiType> kt = koodistoClient.getAlakoodis(koulutusData.getKoulutuskoodi());
         Koodi code = new Koodi();
         for (KoodiType k : kt) {
@@ -323,10 +326,80 @@ public class KoulutusController {
                 code.setIsced2011koulutusaste(k.getKoodiArvo());
             }
             if (k.getKoodisto().getKoodistoUri().equals("isced2011koulutusalataso3")) {
-                code.setIsced2011koulutusalataso3(k.getKoodiArvo());
+                code.setIsced2011koulutusalataso3(changeCodeToIsced2013Value(k.getKoodiArvo()));
             }
         }
-        haetutKoodit.put(koulutusData.getKoulutuskoodi(), code);
+        if(code.getIsced2011koulutusalataso3() == null || code.getIsced2011koulutusalataso3().equals("9999")){
+            return false;
+        }else{
+            haetutKoodit.put(koulutusData.getKoulutuskoodi(), code);
+            return true;
+        }
+    }
+
+    private String changeCodeToIsced2013Value(String koodiArvo) {
+        switch (koodiArvo) {
+        case "0110":
+        case "0118":
+            koodiArvo = "011";
+            break;
+        case "0200":
+        case "0210":
+        case "0218":
+            koodiArvo = "021";
+            break;
+        case "0310":
+        case "0318":
+            koodiArvo = "031";
+            break;
+        case "0410":
+        case "0418":
+            koodiArvo = "041";
+            break;
+        case "0528":
+            koodiArvo = "052";
+            break;
+        case "0618":
+            koodiArvo = "061";
+            break;
+        case "0710":
+        case "0718":
+            koodiArvo = "071";
+            break;
+        case "0728":
+            koodiArvo = "072";
+            break;
+        case "0800":
+        case "0818":
+            koodiArvo = "081";
+            break;
+        case "0820":
+        case "0828":
+            koodiArvo = "082";
+            break;
+        case "0900":
+        case "0918":
+            koodiArvo = "091";
+            break;
+        case "0920":
+        case "0928":
+            koodiArvo = "092";
+            break;
+        case "1000":
+        case "1010":
+        case "1018":
+            koodiArvo = "101";
+            break;
+        case "1030":
+            koodiArvo = "103";
+            break;
+        case "1048":
+            koodiArvo = "104";
+            break;
+        default:
+            break;
+        }
+        return koodiArvo;
     }
 
     private <T> T execute(OphHttpRequest resource, final GenericType<T> type) {
