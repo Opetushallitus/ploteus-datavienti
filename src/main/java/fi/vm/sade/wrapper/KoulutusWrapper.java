@@ -384,7 +384,7 @@ public class KoulutusWrapper {
         setCourseAddress(opetusTarjoajat, co, haetutOrganisaatiot);
         setSpecialArrangements(opetusTarjoajat, co, haetutOrganisaatiot);
         
-        if(!co.getCourseAddress().isEmpty()){
+        if(!co.getCourseAddress().isEmpty() || !co.getCourseLocationInfo().isEmpty()){
             lo.getCourseLocation().add(co);
         }
     }
