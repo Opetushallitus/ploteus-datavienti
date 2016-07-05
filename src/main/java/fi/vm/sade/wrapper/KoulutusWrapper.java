@@ -383,7 +383,10 @@ public class KoulutusWrapper {
         CourseLocation co = of.createCourseLocation();
         setCourseAddress(opetusTarjoajat, co, haetutOrganisaatiot);
         setSpecialArrangements(opetusTarjoajat, co, haetutOrganisaatiot);
-        lo.getCourseLocation().add(co);
+        
+        if(!co.getCourseAddress().isEmpty()){
+            lo.getCourseLocation().add(co);
+        }
     }
     
     private void setCourseAddress(Set<String> set, CourseLocation co, Map<String, OrganisaatioRDTO> haetutOrganisaatiot){
