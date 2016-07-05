@@ -148,7 +148,7 @@ public class KoulutusController {
             // ongelma tapaus no. 3: 1.2.246.562.10.29631644423 //no thematicarea
             // tai tyhja kaikille tuloksille
     
-            HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.22534916725").getResult();
+            HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.88259478563").getResult();
       
             int count = 0;
             for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
@@ -348,6 +348,9 @@ public class KoulutusController {
         case "0218":
             koodiArvo = "021";
             break;
+        case "0220":
+            koodiArvo = "022";
+            break;
         case "0310":
         case "0318":
             koodiArvo = "031";
@@ -355,6 +358,9 @@ public class KoulutusController {
         case "0410":
         case "0418":
             koodiArvo = "041";
+            break;
+        case "0500":
+            koodiArvo = "051";
             break;
         case "0528":
             koodiArvo = "052";
