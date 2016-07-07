@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -90,9 +91,23 @@ public class KoulutusWrapper {
 
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot,
             KoulutusHakutulosV1RDTO kh, Map<String, Koodi> haetutKoodit) {
+        NimiV1RDTO desc = null;
+        NimiV1RDTO kuvauskomoSisalto = null;
+        NimiV1RDTO valmistavaKoututusKuvaus = null;
+        NimiV1RDTO kuvauskomoTavoitteet = null;
+        if (k.getKuvausKomoto() != null && k.getKuvausKomoto().get(KomotoTeksti.SISALTO) != null) {
+            kuvauskomoSisalto = k.getKuvausKomoto().get(KomotoTeksti.SISALTO);
+        }
+        if (k.getKuvausKomo() != null && k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
+            kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
+        }
+        desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
+        if (desc == null) {
+            System.out.println("nullia perkele: " + k.getOid());
+        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "koulutus/" + k.getOid(), URL_PREFIX_EN + "koulutus/" + k.getOid(),
-                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), haetutKoodit, k.getKoulutuskoodi(), k.getKuvausKomoto().get("SISALTO"));
+                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), haetutKoodit, k.getKoulutuskoodi(), desc);
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -104,12 +119,28 @@ public class KoulutusWrapper {
 
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
             Map<String, Koodi> koodisto) {
-        KuvausV1RDTO<KomotoTeksti> kuvaus = k.getValmistavaKoulutus().getKuvaus();
-        NimiV1RDTO kuvausTeksti = kuvaus.get("SISALTO"); //TODO: miksi? debugerilla data saatavilla
+        NimiV1RDTO desc = null;
+        NimiV1RDTO kuvauskomoSisalto = null;
+        NimiV1RDTO valmistavaKoututusKuvaus = null;
+        NimiV1RDTO kuvauskomoTavoitteet = null;
+        if (k.getKuvausKomoto() != null && k.getKuvausKomoto().get(KomotoTeksti.SISALTO) != null) {
+            kuvauskomoSisalto = k.getKuvausKomoto().get(KomotoTeksti.SISALTO);
+        }
+        if (k.getValmistavaKoulutus() != null && k.getValmistavaKoulutus().getKuvaus() != null
+                && k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO) != null) {
+            valmistavaKoututusKuvaus = k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO);
+        }
+        if (k.getKuvausKomo() != null && k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
+            kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
+        }
+        desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
+        if (desc == null) {
+            System.out.println("nullia perkele: " + k.getOid());
+        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "ammatillinenaikuiskoulutus/" + k.getOid(),
                 URL_PREFIX_EN + "ammatillinenaikuiskoulutus/" + k.getOid(), URL_PREFIX_SV + "ammatillinenaikuiskoulutus/" + k.getOid(),
-                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), kuvausTeksti);
+                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -121,10 +152,28 @@ public class KoulutusWrapper {
 
     public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
             Map<String, Koodi> koodisto) {
+        NimiV1RDTO desc = null;
+        NimiV1RDTO kuvauskomoSisalto = null;
+        NimiV1RDTO valmistavaKoututusKuvaus = null;
+        NimiV1RDTO kuvauskomoTavoitteet = null;
+        if (k.getKuvausKomoto() != null && k.getKuvausKomoto().get(KomotoTeksti.SISALTO) != null) {
+            kuvauskomoSisalto = k.getKuvausKomoto().get(KomotoTeksti.SISALTO);
+        }
+        if (k.getValmistavaKoulutus() != null && k.getValmistavaKoulutus().getKuvaus() != null
+                && k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO) != null) {
+            valmistavaKoututusKuvaus = k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO);
+        }
+        if (k.getKuvausKomo() != null && k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
+            kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
+        }
+        desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
+        if (desc == null) {
+            System.out.println("nullia perkele: " + k.getOid());
+        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "ammatillinenaikuiskoulutus/" + k.getOid(),
                 URL_PREFIX_EN + "ammatillinenaikuiskoulutus/" + k.getOid(), URL_PREFIX_SV + "ammatillinenaikuiskoulutus/" + k.getOid(),
-                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), k.getKuvausKomoto().get("SISALTO"));
+                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -136,24 +185,51 @@ public class KoulutusWrapper {
 
     public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
             Map<String, Koodi> koodisto) {
+        NimiV1RDTO desc = null;
+        NimiV1RDTO kuvauskomoSisalto = null;
+        NimiV1RDTO valmistavaKoututusKuvaus = null;
+        NimiV1RDTO kuvauskomoTavoitteet = null;
+        if (k.getKuvausKomoto() != null && k.getKuvausKomoto().get(KomotoTeksti.SISALTO) != null) {
+            kuvauskomoSisalto = k.getKuvausKomoto().get(KomotoTeksti.SISALTO);
+        }
+        if (k.getKuvausKomo() != null && k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
+            kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
+        }
+        desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
+        if (desc == null) {
+            System.out.println("nullia perkele: " + k.getOid());
+        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "korkeakoulu/" + k.getOid(), URL_PREFIX_EN + "korkeakoulu/" + k.getOid(),
-                URL_PREFIX_SV + "korkeakoulu/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), k.getKuvausKomoto().get("SISALTO"));
+                URL_PREFIX_SV + "korkeakoulu/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
             setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
-
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
     public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
             Map<String, Koodi> koodisto) {
+        NimiV1RDTO desc = null;
+        NimiV1RDTO kuvauskomoSisalto = null;
+        NimiV1RDTO valmistavaKoututusKuvaus = null;
+        NimiV1RDTO kuvauskomoTavoitteet = null;
+        if (k.getKuvausKomoto() != null && k.getKuvausKomoto().get(KomotoTeksti.SISALTO) != null) {
+            kuvauskomoSisalto = k.getKuvausKomoto().get(KomotoTeksti.SISALTO);
+        }
+        if (k.getKuvausKomo() != null && k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
+            kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
+        }
+        desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
+        if (desc == null) {
+            System.out.println("nullia perkele: " + k.getOid());
+        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "koulutus/" + k.getOid(), URL_PREFIX_EN + "koulutus/" + k.getOid(),
-                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), k.getKuvausKomoto().get("SISALTO"));
+                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -165,9 +241,23 @@ public class KoulutusWrapper {
 
     public void fetchLukioInfo(KoulutusLukioV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
             Map<String, Koodi> koodisto) {
+        NimiV1RDTO desc = null;
+        NimiV1RDTO kuvauskomoSisalto = null;
+        NimiV1RDTO valmistavaKoututusKuvaus = null;
+        NimiV1RDTO kuvauskomoTavoitteet = null;
+        if (k.getKuvausKomoto() != null && k.getKuvausKomoto().get(KomotoTeksti.SISALTO) != null) {
+            kuvauskomoSisalto = k.getKuvausKomoto().get(KomotoTeksti.SISALTO);
+        }
+        if (k.getKuvausKomo() != null && k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
+            kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
+        }
+        desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
+        if (desc == null) {
+            System.out.println("Nullia perkele: " + k.getOid());
+        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "koulutus/" + k.getOid(), URL_PREFIX_EN + "koulutus/" + k.getOid(),
-                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), k.getKuvausKomoto().get("SISALTO"));
+                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -179,10 +269,28 @@ public class KoulutusWrapper {
 
     public void fetchAPNayttotutkintonaInfo(KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO k,
             Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, Map<String, Koodi> koodisto) {
+        NimiV1RDTO desc = null;
+        NimiV1RDTO kuvauskomoSisalto = null;
+        NimiV1RDTO valmistavaKoututusKuvaus = null;
+        NimiV1RDTO kuvauskomoTavoitteet = null;
+        if (k.getKuvausKomoto() != null && k.getKuvausKomoto().get(KomotoTeksti.SISALTO) != null) {
+            kuvauskomoSisalto = k.getKuvausKomoto().get(KomotoTeksti.SISALTO);
+        }
+        if (k.getValmistavaKoulutus() != null && k.getValmistavaKoulutus().getKuvaus() != null
+                && k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO) != null) {
+            valmistavaKoututusKuvaus = k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO);
+        }
+        if (k.getKuvausKomo() != null && k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
+            kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
+        }
+        desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
+        if (desc == null) {
+            System.out.println("Nullia perkele: " + k.getOid());
+        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "ammatillinenaikuiskoulutus/" + k.getOid(),
                 URL_PREFIX_EN + "ammatillinenaikuiskoulutus/" + k.getOid(), URL_PREFIX_SV + "ammatillinenaikuiskoulutus/" + k.getOid(),
-                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), k.getKuvausKomoto().get("SISALTO"));
+                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -202,42 +310,91 @@ public class KoulutusWrapper {
         if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
             setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         }
-        setDescription(nimiV1RDTO, lo);
+        setDescription(nimiV1RDTO.getTekstis(), lo);
         setProviderName(opetusTarjoajat, lo, haetutOrganisaatiot);
         setProviderContactInfo(opetusTarjoajat, lo, haetutOrganisaatiot);
         setCourseLocation(opetusTarjoajat, lo, haetutOrganisaatiot);
         setThematicAreas(koodistoID, koodisto, lo);
+        setTitle(koulutusohjelma, lo, koulutuskoodi);
         lo.setLearningOpportunityId(kOid);
         lo.setCountryCode(COUNTRY_CODE);
         lo.getUrl().add(createUrl(opitopolkuUrl, "fi"));
         lo.getUrl().add(createUrl(opintopolkuUrlEn, "en"));
         lo.getUrl().add(createUrl(opintopolkuUrlSv, "sv"));
-        setTitle(koulutusohjelma, lo, koulutuskoodi);
         lo.setEducationLevel(koodisto.get(koodistoID).getIsced2011koulutusaste());
         return lo;
     }
 
+    private NimiV1RDTO findDescription(NimiV1RDTO nimiV1RDTO, NimiV1RDTO nimiV1RDTO2, NimiV1RDTO nimiV1RDTO3) {
+        NimiV1RDTO desc = null;
+        if (nimiV1RDTO != null && nimiV1RDTO.getTekstis() != null) {
+            if (nimiV1RDTO.getTekstis().get("kieli_en") != null && !nimiV1RDTO.getTekstis().get("kieli_en").trim().equals("")) {
+                desc = nimiV1RDTO;
+            } else if (nimiV1RDTO.getTekstis().get("kieli_fi") != null && !nimiV1RDTO.getTekstis().get("kieli_fi").trim().equals("")) {
+                desc = nimiV1RDTO;
+            } else if (nimiV1RDTO.getTekstis().get("kieli_sv") != null && !nimiV1RDTO.getTekstis().get("kieli_sv").trim().equals("")) {
+                desc = nimiV1RDTO;
+            }
+        }
+        if (desc == null && nimiV1RDTO2 != null && nimiV1RDTO2.getTekstis() != null) {
+            if (nimiV1RDTO2.getTekstis() != null && nimiV1RDTO2.getTekstis().get("kieli_en") != null
+                    && !nimiV1RDTO2.getTekstis().get("kieli_en").trim().equals("")) {
+                desc = nimiV1RDTO2;
+            } else if (nimiV1RDTO2.getTekstis() != null && nimiV1RDTO2.getTekstis().get("kieli_fi") != null
+                    && !nimiV1RDTO2.getTekstis().get("kieli_fi").trim().equals("")) {
+                desc = nimiV1RDTO2;
+            } else if (nimiV1RDTO2.getTekstis() != null && nimiV1RDTO2.getTekstis().get("kieli_sv") != null
+                    && !nimiV1RDTO2.getTekstis().get("kieli_sv").trim().equals("")) {
+                desc = nimiV1RDTO2;
+            }
+        }
+        if (desc == null && nimiV1RDTO3 != null && nimiV1RDTO3.getTekstis() != null){
+            if (nimiV1RDTO3.getTekstis() != null && nimiV1RDTO3.getTekstis().get("kieli_en") != null
+                    && !nimiV1RDTO3.getTekstis().get("kieli_en").trim().equals("")) {
+                desc = nimiV1RDTO3;
+            } else if (nimiV1RDTO3.getTekstis() != null && nimiV1RDTO3.getTekstis().get("kieli_fi") != null
+                    && !nimiV1RDTO3.getTekstis().get("kieli_fi").trim().equals("")) {
+                desc = nimiV1RDTO3;
+            } else if (nimiV1RDTO3.getTekstis() != null && nimiV1RDTO3.getTekstis().get("kieli_sv") != null
+                    && !nimiV1RDTO3.getTekstis().get("kieli_sv").trim().equals("")) {
+                desc = nimiV1RDTO3;
+            }
+        }
+        if (desc == null) {
+            desc = new NimiV1RDTO();
+            desc.setTekstis(new HashMap<String, String>());
+            desc.getTekstis().put("kieli_en", "No description available");
+        }
+        return desc;
+    }
+
     private void setTitle(NimiV1RDTO koulutusohjelma, LearningOpportunity lo, KoodiV1RDTO koulutuskoodi) {
         if (!koulutusohjelma.getTekstis().isEmpty()) {
-            if (koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_EN) != null && !koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_EN).trim().equals("")) {
+            if (koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_EN) != null
+                    && !koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_EN).trim().equals("")) {
                 lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_EN), TITLE_LANG_CODE_EN));
-            } else if (koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_FI) != null && !koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_FI).trim().equals("")) {
+            } else if (koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_FI) != null
+                    && !koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_FI).trim().equals("")) {
                 lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_FI), TITLE_LANG_CODE_FI));
             } else {
                 lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_SV), TITLE_LANG_CODE_SV));
             }
         } else if (koulutusohjelma.getMeta() != null && !koulutusohjelma.getMeta().isEmpty()) {
-            if (koulutusohjelma.getMeta().get(LANG_CODE_KIELI_EN) != null && !koulutusohjelma.getMeta().get(LANG_CODE_KIELI_EN).getNimi().trim().equals("")) {
+            if (koulutusohjelma.getMeta().get(LANG_CODE_KIELI_EN) != null
+                    && !koulutusohjelma.getMeta().get(LANG_CODE_KIELI_EN).getNimi().trim().equals("")) {
                 lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getMeta().get(LANG_CODE_KIELI_EN).getNimi(), TITLE_LANG_CODE_EN));
-            } else if (koulutusohjelma.getMeta().get(LANG_CODE_KIELI_FI) != null && !koulutusohjelma.getMeta().get(LANG_CODE_KIELI_FI).getNimi().trim().equals("")) {
+            } else if (koulutusohjelma.getMeta().get(LANG_CODE_KIELI_FI) != null
+                    && !koulutusohjelma.getMeta().get(LANG_CODE_KIELI_FI).getNimi().trim().equals("")) {
                 lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getMeta().get(LANG_CODE_KIELI_FI).getNimi(), TITLE_LANG_CODE_FI));
             } else {
                 lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getMeta().get(LANG_CODE_KIELI_SV).getNimi(), TITLE_LANG_CODE_SV));
             }
         } else {
-            if (koulutuskoodi.getMeta().get(LANG_CODE_KIELI_EN) != null && !koulutuskoodi.getMeta().get(LANG_CODE_KIELI_EN).getNimi().trim().equals("")) {
+            if (koulutuskoodi.getMeta().get(LANG_CODE_KIELI_EN) != null
+                    && !koulutuskoodi.getMeta().get(LANG_CODE_KIELI_EN).getNimi().trim().equals("")) {
                 lo.getTitle().add(createI18NonEmptyString(koulutuskoodi.getMeta().get(LANG_CODE_KIELI_EN).getNimi(), TITLE_LANG_CODE_EN));
-            } else if (koulutuskoodi.getMeta().get(LANG_CODE_KIELI_FI) != null && !koulutuskoodi.getMeta().get(LANG_CODE_KIELI_FI).getNimi().trim().equals("")) {
+            } else if (koulutuskoodi.getMeta().get(LANG_CODE_KIELI_FI) != null
+                    && !koulutuskoodi.getMeta().get(LANG_CODE_KIELI_FI).getNimi().trim().equals("")) {
                 lo.getTitle().add(createI18NonEmptyString(koulutuskoodi.getMeta().get(LANG_CODE_KIELI_FI).getNimi(), TITLE_LANG_CODE_FI));
             } else {
                 lo.getTitle().add(createI18NonEmptyString(koulutuskoodi.getMeta().get(LANG_CODE_KIELI_SV).getNimi(), TITLE_LANG_CODE_SV));
@@ -253,38 +410,34 @@ public class KoulutusWrapper {
         log.debug("koodisto: " + koodisto.get(koodistoID) + ", koodiID: " + koodistoID);
     }
 
-    private void setDescription(NimiV1RDTO nimiV1RDTO, LearningOpportunity lo) {
-       // if (nimiV1RDTO != null ) {
-            System.out.println(nimiV1RDTO);
-            Map<String, String> descriptions = nimiV1RDTO.getTekstis();
-            lo.getDescription().clear();
-            List<String> descs = new ArrayList<String>();
-            descriptions.keySet().stream().filter(e -> e.equals("kieli_en")).forEach(e -> {
+    private void setDescription(Map<String, String> descriptions, LearningOpportunity lo) {
+        lo.getDescription().clear();
+        List<String> descs = new ArrayList<String>();
+        descriptions.keySet().stream().filter(e -> e.equals("kieli_en")).forEach(e -> {
+            if (!descriptions.get(e).trim().equals("")) {
+                descs.add(descriptions.get(e));
+            }
+        });
+        String lang = "en";
+        if (descs.isEmpty()) {
+            lang = "fi";
+            descriptions.keySet().stream().filter(e -> e.equals("kieli_fi")).forEach(e -> {
                 if (!descriptions.get(e).trim().equals("")) {
                     descs.add(descriptions.get(e));
                 }
             });
-            String lang = "en";
             if (descs.isEmpty()) {
-                lang = "fi";
-                descriptions.keySet().stream().filter(e -> e.equals("kieli_fi")).forEach(e -> {
+                lang = "sv";
+                descriptions.keySet().stream().filter(e -> e.equals("kieli_sv")).forEach(e -> {
                     if (!descriptions.get(e).trim().equals("")) {
                         descs.add(descriptions.get(e));
                     }
                 });
-                if (descs.isEmpty()) {
-                    lang = "sv";
-                    descriptions.keySet().stream().filter(e -> e.equals("kieli_sv")).forEach(e -> {
-                        if (!descriptions.get(e).trim().equals("")) {
-                            descs.add(descriptions.get(e));
-                        }
-                    });
-                }
             }
-            if (!descs.isEmpty()) {
-                lo.getDescription().add(createI18NonEmptyString(removeUnwantedHTMLTags(descs.get(0)), lang));
-            }
-        //}
+        }
+        if (!descs.isEmpty()) {
+            lo.getDescription().add(createI18NonEmptyString(removeUnwantedHTMLTags(descs.get(0)), lang));
+        }
     }
 
     private I18NUrl createUrl(String src, String lang) {
@@ -366,7 +519,6 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
-
         list.keySet().stream().forEach(e -> {
             qualifications.getQualificationAwardedDescription().add(createI18NString(removeUnwantedHTMLTags(list.get(e)), e.replace("kieli_", "")));
         });
@@ -385,6 +537,8 @@ public class KoulutusWrapper {
             lo.setInformationLanguage(LanguageCode.FI);
         } else if (map.get("kieli_sv") != null) {
             lo.setInformationLanguage(LanguageCode.SV);
+        } else if (map.get("kieli_la") != null) {
+            lo.setInformationLanguage(LanguageCode.FI); //TODO: Latina?
         } else {
             for (LanguageCode l : LanguageCode.values()) {
                 if (map.get("kieli_" + l.value().toLowerCase()) != null) {
@@ -397,7 +551,6 @@ public class KoulutusWrapper {
     private void setProviderName(Set<String> set, LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         set.forEach(s -> {
             if (haetutOrganisaatiot.get(s) != null) {
-
                 haetutOrganisaatiot.get(s).getNimet().stream().forEach((o) -> {
                     if (lo.getProviderName().isEmpty()) {
                         if (o.getNimi().get("en") != null && !o.getNimi().get("en").isEmpty()) {
@@ -409,7 +562,6 @@ public class KoulutusWrapper {
                         }
                     }
                 });
-
             }
         });
     }
@@ -420,14 +572,11 @@ public class KoulutusWrapper {
             if (haetutOrganisaatiot.get(s) != null) {
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
                     String info = "";
-
                     if (p.get("osoite") != null && !p.get("osoite").trim().isEmpty()) {
                         info = info.concat(p.get("osoite"));
-
                         if (p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty()
                                 && !p.get("postinumeroUri").contains("00000")) {
                             info = info.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
-
                             if (p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()) {
                                 info = info.concat(", " + p.get("postitoimipaikka"));
                             }
@@ -437,14 +586,12 @@ public class KoulutusWrapper {
                             list.add(locationInfo);
                         }
                     }
-
                     if (p.get("numero") != null) {
                         list.add(createI18NString(p.get("numero"), "fi"));
                     }
                     if (haetutOrganisaatiot.get(s).getNimi().get("en") != null) {
                         list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en"), "en"));
                     }
-
                     if (haetutOrganisaatiot.get(s).getMetadata() != null) {
                         haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().stream().forEach(m -> {
                             if (m.get("email") != null) {
@@ -456,7 +603,6 @@ public class KoulutusWrapper {
                         });
                     }
                 });
-
             }
         });
         String providerContactInfo = "";
@@ -470,7 +616,6 @@ public class KoulutusWrapper {
         CourseLocation co = of.createCourseLocation();
         setCourseAddress(opetusTarjoajat, co, haetutOrganisaatiot);
         setSpecialArrangements(opetusTarjoajat, co, haetutOrganisaatiot);
-
         if (!co.getCourseAddress().isEmpty() || !co.getCourseLocationInfo().isEmpty()) {
             lo.getCourseLocation().add(co);
         }
@@ -481,14 +626,11 @@ public class KoulutusWrapper {
             if (haetutOrganisaatiot.get(s) != null) {
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
                     String address = "";
-
                     if (p.get("osoite") != null && !p.get("osoite").trim().isEmpty() && !p.get("osoite").startsWith("PL")) {
                         address = address.concat(p.get("osoite"));
-
                         if (p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty()
                                 && !p.get("postinumeroUri").contains("00000")) {
                             address = address.concat(", " + p.get("postinumeroUri").replace("posti_", ""));
-
                             if (p.get("postitoimipaikka") != null && !p.get("postitoimipaikka").trim().isEmpty()) {
                                 address = address.concat(", " + p.get("postitoimipaikka"));
                             }
@@ -534,7 +676,6 @@ public class KoulutusWrapper {
     private void setCost(String cost, LearningOpportunity lo) {
         lo.getCosts().add(createI18NString(cost, "fi"));
     }
-
 
     private void setTeachingLangs(Map<String, KoodiV1RDTO> teachingLangs, LearningOpportunity lo) {
         teachingLangs.values().stream().filter(e -> !e.getArvo().toLowerCase().equals("la"))

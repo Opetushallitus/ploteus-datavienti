@@ -6,26 +6,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
+import javax.ws.rs.core.MediaType;
 
-import fi.vm.sade.wrapper.KoulutusWrapper;
 import org.apache.cxf.helpers.IOUtils;
+import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 import fi.vm.sade.javautils.httpclient.OphHttpClient;
 import fi.vm.sade.javautils.httpclient.OphHttpRequest;
@@ -48,19 +50,9 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatilline
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatillinenPerustutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakouluV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.NayttotutkintoV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
 import fi.vm.sade.tarjonta.shared.types.ToteutustyyppiEnum;
-
-import static fi.vm.sade.javautils.httpclient.OphHttpClient.JSON;
-
-
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.xml.xsom.parser.JAXPParser;
-import com.sun.jersey.api.client.Client;
-import javax.ws.rs.core.MediaType;
+import fi.vm.sade.wrapper.KoulutusWrapper;
 
 @RestController
 public class KoulutusController {
@@ -125,51 +117,57 @@ public class KoulutusController {
         return Client.create(cc);
 }
 
-    @RequestMapping("/koulutus/")
+    @RequestMapping("/koulutus/") //TODO: UI logging
     public String getKoulutukset() throws Exception {
-        if(status == 0 || status == 1){
-            status = 0.01;
-            haetutKoulutukset = new ArrayList<>();
-            haetutOrganisaatiot = new ArrayList<>();
-            haetutKoodit = new HashMap<>();
-    
-            createInitialStatusObject();
-    
-            statusObject.setStatusText("Haetaan alustavat Koulutukset ja Koodisto data...");
-            
-            Client clientWithJacksonSerializer = createClient();
-            v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI);
-            v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI);
-    
-            // Aalto yliopisto 1.2.246.562.10.72985435253
-            // 1.2.246.562.10.53642770753
-            // ongelma tapaus: 1.2.246.562.10.76144863909
-            // ongelma tapaus no. 2: 1.2.246.562.10.34573782876 //koulutus_000001
-            // ongelma tapaus no. 3: 1.2.246.562.10.29631644423 //no thematicarea
-            // ongelma tapaus no. 4: 1.2.246.562.10.91599019014 //no title
-            // tai tyhja kaikille tuloksille
-    
-            HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.53642770753").getResult();
-      
-            int count = 0;
-            for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
-                count += organisaatioData.getTulokset().size();
+        if(status == 0.00 || status == 1.00){
+            int skipCount = 0;
+            try{
+                status = 0.01;
+                haetutKoulutukset = new ArrayList<>();
+                haetutOrganisaatiot = new ArrayList<>();
+                haetutKoodit = new HashMap<>();
+        
+                createInitialStatusObject();
+        
+                statusObject.setStatusText("Haetaan alustavat Koulutukset ja Koodisto data...");
+                
+                Client clientWithJacksonSerializer = createClient();
+                v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI);
+                v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI);
+        
+                // Aalto yliopisto 1.2.246.562.10.72985435253
+                // 1.2.246.562.10.53642770753
+                // ongelma tapaus: 1.2.246.562.10.76144863909
+                // ongelma tapaus no. 2: 1.2.246.562.10.34573782876 //koulutus_000001
+                // ongelma tapaus no. 3: 1.2.246.562.10.29631644423 //no thematicarea
+                // ongelma tapaus no. 4: 1.2.246.562.10.91599019014 //no title
+                // ongelma tapaus no. 5: 1.2.246.562.10.48791047698 //no desc
+                // tai tyhja kaikille tuloksille
+        
+                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
+          
+                int count = 0;
+                for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
+                    count += organisaatioData.getTulokset().size();
+                }
+                fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset, count);
+                // noin 1200 koulutusta minuutissa
+                statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
+                statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
+        
+                final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
+                        .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
+                skipCount = fetchKoulutukset(kw, organisaatioMap);
+                kw.forwardLOtoJaxBParser();
+        
+                statusObject.setStatusText("Valmis");
+                status = 1.0;
+                statusObject.setStatus(status);
+                
+            }catch(Exception e){
+                setStatusObject(0.0, 0.00, "");
+                log.error("Error: " + e);
             }
-            fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset, count);
-            // noin 1200 koulutusta minuutissa
-            statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
-            statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
-    
-            final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
-                    .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
-            int skipCount = fetchKoulutukset(kw, organisaatioMap);
-            kw.forwardLOtoJaxBParser();
-    
-            statusObject.setStatusText("Valmis");
-            status = 1.0;
-            statusObject.setStatus(status);
-            
-    
             if (skipCount != 0) {
                 log.info("Amount of skipped koulutus: " + skipCount);
             }
@@ -320,7 +318,7 @@ public class KoulutusController {
     }
 
     private boolean fetchKoodi(KoulutusHakutulosV1RDTO koulutusData) {
-        List<KoodiType> kt = koodistoClient.getAlakoodis(koulutusData.getKoulutuskoodi());
+        List<KoodiType> kt = koodistoClient.getAlakoodis(koulutusData.getKoulutuskoodi()); //TODO: retries
         Koodi code = new Koodi();
         for (KoodiType k : kt) {
             if (k.getKoodisto().getKoodistoUri().equals("isced2011koulutusaste")) {
