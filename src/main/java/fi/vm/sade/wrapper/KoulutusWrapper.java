@@ -107,7 +107,8 @@ public class KoulutusWrapper {
         }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "koulutus/" + k.getOid(), URL_PREFIX_EN + "koulutus/" + k.getOid(),
-                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), haetutKoodit, k.getKoulutuskoodi(), desc);
+                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), haetutKoodit, k.getKoulutuskoodi(), desc,
+                k.getOpetuskielis().getMeta());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -140,7 +141,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "ammatillinenaikuiskoulutus/" + k.getOid(),
                 URL_PREFIX_EN + "ammatillinenaikuiskoulutus/" + k.getOid(), URL_PREFIX_SV + "ammatillinenaikuiskoulutus/" + k.getOid(),
-                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
+                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc, k.getOpetuskielis().getMeta());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -173,7 +174,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "ammatillinenaikuiskoulutus/" + k.getOid(),
                 URL_PREFIX_EN + "ammatillinenaikuiskoulutus/" + k.getOid(), URL_PREFIX_SV + "ammatillinenaikuiskoulutus/" + k.getOid(),
-                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
+                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc, k.getOpetuskielis().getMeta());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -201,7 +202,8 @@ public class KoulutusWrapper {
         }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "korkeakoulu/" + k.getOid(), URL_PREFIX_EN + "korkeakoulu/" + k.getOid(),
-                URL_PREFIX_SV + "korkeakoulu/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
+                URL_PREFIX_SV + "korkeakoulu/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc,
+                k.getOpetuskielis().getMeta());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -229,7 +231,8 @@ public class KoulutusWrapper {
         }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "koulutus/" + k.getOid(), URL_PREFIX_EN + "koulutus/" + k.getOid(),
-                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
+                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc,
+                k.getOpetuskielis().getMeta());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -257,7 +260,8 @@ public class KoulutusWrapper {
         }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "koulutus/" + k.getOid(), URL_PREFIX_EN + "koulutus/" + k.getOid(),
-                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
+                URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc,
+                k.getOpetuskielis().getMeta());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -290,7 +294,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "ammatillinenaikuiskoulutus/" + k.getOid(),
                 URL_PREFIX_EN + "ammatillinenaikuiskoulutus/" + k.getOid(), URL_PREFIX_SV + "ammatillinenaikuiskoulutus/" + k.getOid(),
-                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc);
+                kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc, k.getOpetuskielis().getMeta());
         setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
         setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
         if (k.getSuunniteltuKestoTyyppi() != null)
@@ -303,12 +307,18 @@ public class KoulutusWrapper {
     private LearningOpportunity initLearningOpportunity(String kOid, Set<Date> koulutuksenAlkamisPvms, String hintaString,
             Set<String> opetusTarjoajat, KuvausV1RDTO<KomoTeksti> kuvausKomo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, String opitopolkuUrl,
             String opintopolkuUrlEn, String opintopolkuUrlSv, String koodistoID, NimiV1RDTO koulutusohjelma, Map<String, Koodi> koodisto,
-            KoodiV1RDTO koulutuskoodi, NimiV1RDTO nimiV1RDTO) {
+            KoodiV1RDTO koulutuskoodi, NimiV1RDTO nimiV1RDTO, Map<String, KoodiV1RDTO> opetuskielis) {
         LearningOpportunity lo = of.createLearningOpportunity();
         setDate(koulutuksenAlkamisPvms, lo);
         setCost(hintaString, lo);
         if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
             setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+        } else if (opetuskielis != null) {
+            Map<String, String> newMap = new HashMap<>();
+            for (String key : opetuskielis.keySet()) {
+                newMap.put(key, opetuskielis.get(key).getNimi());
+            }
+            setInformationLanguage(newMap, lo);
         }
         setDescription(nimiV1RDTO.getTekstis(), lo);
         setProviderName(opetusTarjoajat, lo, haetutOrganisaatiot);
@@ -348,7 +358,7 @@ public class KoulutusWrapper {
                 desc = nimiV1RDTO2;
             }
         }
-        if (desc == null && nimiV1RDTO3 != null && nimiV1RDTO3.getTekstis() != null){
+        if (desc == null && nimiV1RDTO3 != null && nimiV1RDTO3.getTekstis() != null) {
             if (nimiV1RDTO3.getTekstis() != null && nimiV1RDTO3.getTekstis().get("kieli_en") != null
                     && !nimiV1RDTO3.getTekstis().get("kieli_en").trim().equals("")) {
                 desc = nimiV1RDTO3;
@@ -538,7 +548,7 @@ public class KoulutusWrapper {
         } else if (map.get("kieli_sv") != null) {
             lo.setInformationLanguage(LanguageCode.SV);
         } else if (map.get("kieli_la") != null) {
-            lo.setInformationLanguage(LanguageCode.FI); //TODO: Latina?
+            lo.setInformationLanguage(LanguageCode.FI); // TODO: Latina?
         } else {
             for (LanguageCode l : LanguageCode.values()) {
                 if (map.get("kieli_" + l.value().toLowerCase()) != null) {
