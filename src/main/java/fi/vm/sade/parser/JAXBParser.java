@@ -30,7 +30,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunities;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 
 @Component
-public class JAXBParser { //TODO: better logging //TODO: UI logging
+public class JAXBParser { // TODO: better logging //TODO: UI logging
     private static final Logger log = LoggerFactory.getLogger(JAXBParser.class);
 
     private static final String OUTPUT_FILE_NAME = "lo_full_sample";
@@ -50,20 +50,17 @@ public class JAXBParser { //TODO: better logging //TODO: UI logging
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = schemaFactory.newSchema(getClass().getClassLoader().getResource("LearningOpportunities.xsd"));
             Validator validator = schema.newValidator();
-            ErrorHandler errorHandler = new ErrorHandler()
-            {
+            ErrorHandler errorHandler = new ErrorHandler() {
                 @Override
-                public void warning(SAXParseException exception) throws SAXException
-                {
-                  if(!exceptions.containsKey(exception.getMessage())){
-                      exceptions.put(exception.getMessage(), exception);
-                  }
+                public void warning(SAXParseException exception) throws SAXException {
+                    if (!exceptions.containsKey(exception.getMessage())) {
+                        exceptions.put(exception.getMessage(), exception);
+                    }
                 }
-    
+
                 @Override
-                public void fatalError(SAXParseException exception) throws SAXException
-                {
-                    if(!exceptions.containsKey(exception.getMessage())){
+                public void fatalError(SAXParseException exception) throws SAXException {
+                    if (!exceptions.containsKey(exception.getMessage())) {
                         exceptions.put(exception.getMessage(), exception);
                     }
                     printErrors(exceptions);
@@ -71,31 +68,30 @@ public class JAXBParser { //TODO: better logging //TODO: UI logging
                 }
 
                 @Override
-                public void error(SAXParseException exception) throws SAXException
-                {
-                    if(!exceptions.containsKey(exception.getMessage())){
+                public void error(SAXParseException exception) throws SAXException {
+                    if (!exceptions.containsKey(exception.getMessage())) {
                         exceptions.put(exception.getMessage(), exception);
                     }
                 }
-              };
+            };
             validator.setErrorHandler(errorHandler);
-            
+
             validator.validate(new StreamSource(xmlFile));
         } catch (SAXException e) {
             log.error("SaxException", e);
-        } catch(IOException e) {
+        } catch (IOException e) {
             log.error("Schema file not found", e);
         }
-        //Logitetaan kaikki virheet, joita validoinnissa tuli
+        // Logitetaan kaikki virheet, joita validoinnissa tuli
         printErrors(exceptions);
-        
+
     }
-    
+
     private void printErrors(HashMap<String, SAXParseException> exceptions) {
-        for (Map.Entry<String, SAXParseException> entry : exceptions.entrySet()){
-            log.warn("XSD Validation warning on line: " + entry.getValue().getLineNumber() + 
-                    " : " + entry.getValue().getColumnNumber() + " : " +  entry.getValue().getMessage());
-       }
+        for (Map.Entry<String, SAXParseException> entry : exceptions.entrySet()) {
+            log.warn("XSD Validation warning on line: " + entry.getValue().getLineNumber() + " : " + entry.getValue().getColumnNumber() + " : "
+                    + entry.getValue().getMessage());
+        }
     }
 
     private void zipXMLFile(File xmlFile) {
@@ -121,10 +117,8 @@ public class JAXBParser { //TODO: better logging //TODO: UI logging
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(LearningOpportunity.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             jaxbMarshaller.marshal(learningOpportunities, file);
-
         } catch (JAXBException e) {
             log.error("XML creation error", e);
             throw new RuntimeException(e);

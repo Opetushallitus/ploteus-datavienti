@@ -77,14 +77,16 @@ public class KoulutusController {
 
     private WebResource v1KoulutusResource;
     private WebResource v1OrganisaatioResource;
-    
+
     private KoulutusWrapper kw;
-    
-    private List<String> notValidKoodiList = new ArrayList<String>(); // Debuggia varten
-    private List<String> emptyKoodiList = new ArrayList<String>(); // Debuggia varten
-    
+
+    // Debuggia varten
+    private List<String> notValidKoodiList = new ArrayList<String>();
+    private List<String> emptyKoodiList = new ArrayList<String>();
+
     @Autowired
-    public KoulutusController(HttpClient httpclient, UrlConfiguration urlConfiguration, OphProperties urlProperties, KoulutusWrapper koulutusWrapper) {
+    public KoulutusController(HttpClient httpclient, UrlConfiguration urlConfiguration, OphProperties urlProperties,
+            KoulutusWrapper koulutusWrapper) {
         this.httpclient = httpclient.getClient();
         koodistoClient = new CachingKoodistoClient(urlConfiguration.url("koodisto-service.base"));
         tarjontaURI = urlProperties.require("tarjonta-service.koulutus", "");
@@ -108,44 +110,42 @@ public class KoulutusController {
         response.flushBuffer();
         myStream.close();
     }
-    
+
     private Client createClient() {
         ObjectMapper mapper = new ObjectMapper();
         JacksonJsonProvider jacksProv = new JacksonJsonProvider(mapper);
         ClientConfig cc = new DefaultClientConfig();
         cc.getSingletons().add(jacksProv);
         return Client.create(cc);
-}
+    }
 
-    @RequestMapping("/koulutus/") //TODO: UI logging
+    @RequestMapping("/koulutus/") // TODO: UI logging
     public String getKoulutukset() throws Exception {
-        if(status == 0.00 || status == 1.00){
+        if (status == 0.00 || status == 1.00) {
             int skipCount = 0;
-            try{
+            try {
                 status = 0.01;
                 haetutKoulutukset = new ArrayList<>();
                 haetutOrganisaatiot = new ArrayList<>();
                 haetutKoodit = new HashMap<>();
-        
                 createInitialStatusObject();
-        
                 statusObject.setStatusText("Haetaan alustavat Koulutukset ja Koodisto data...");
-                
                 Client clientWithJacksonSerializer = createClient();
                 v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI);
                 v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI);
-        
                 // Aalto yliopisto 1.2.246.562.10.72985435253
                 // 1.2.246.562.10.53642770753
                 // ongelma tapaus: 1.2.246.562.10.76144863909
-                // ongelma tapaus no. 2: 1.2.246.562.10.34573782876 //koulutus_000001
-                // ongelma tapaus no. 3: 1.2.246.562.10.29631644423 //no thematicarea
-                // ongelma tapaus no. 4: 1.2.246.562.10.91599019014 //no title
-                // ongelma tapaus no. 5: 1.2.246.562.10.48791047698 //no desc
+                // koulutus_000001
+                // ongelma tapaus no. 2: 1.2.246.562.10.34573782876
+                // no thematicarea
+                // ongelma tapaus no. 3: 1.2.246.562.10.29631644423
+                // no title
+                // ongelma tapaus no. 4: 1.2.246.562.10.91599019014
+                // no desc
+                // ongelma tapaus no. 5: 1.2.246.562.10.48791047698
                 // tai tyhja kaikille tuloksille
-        
                 HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
-          
                 int count = 0;
                 for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
                     count += organisaatioData.getTulokset().size();
@@ -154,17 +154,17 @@ public class KoulutusController {
                 // noin 1200 koulutusta minuutissa
                 statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
                 statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
-        
+
                 final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
                         .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
                 skipCount = fetchKoulutukset(kw, organisaatioMap);
                 kw.forwardLOtoJaxBParser();
-        
+
                 statusObject.setStatusText("Valmis");
                 status = 1.0;
                 statusObject.setStatus(status);
-                
-            }catch(Exception e){
+
+            } catch (Exception e) {
                 setStatusObject(0.0, 0.00, "");
                 log.error("Error: " + e);
             }
@@ -172,11 +172,11 @@ public class KoulutusController {
                 log.info("Amount of skipped koulutus: " + skipCount);
             }
             log.info("Request ready");
-        }else{
+        } else {
             log.error("coincident run");
         }
         return "";
-        
+
     }
 
     private int fetchKoulutukset(KoulutusWrapper kw, Map<String, OrganisaatioRDTO> organisaatioMap) throws Exception {
@@ -198,7 +198,8 @@ public class KoulutusController {
 
             case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
                 if (kh.getToteutustyyppiEnum().equals(ToteutustyyppiEnum.AMMATILLINEN_PERUSTUTKINTO_NAYTTOTUTKINTONA)) {
-                    ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO> apNayttotutkintonaResult = searchAmmatillinenPerustutkintoNayttotutkintona(kh.getOid());
+                    ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO> apNayttotutkintonaResult = searchAmmatillinenPerustutkintoNayttotutkintona(
+                            kh.getOid());
                     KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO apNayttotutkintona = apNayttotutkintonaResult.getResult();
                     kw.fetchAPNayttotutkintonaInfo(apNayttotutkintona, organisaatioMap, kh, haetutKoodit);
                 } else {
@@ -229,7 +230,6 @@ public class KoulutusController {
                 log.info("Skipping on data parsing Koulutus: " + kh.getKomoOid() + ", Type: " + kh.getKoulutusasteTyyppi() + " : "
                         + kh.getKoulutusmoduuliTyyppi().name() + " : " + kh.getToteutustyyppiEnum().name());
                 skip++;
-
             }
             i++;
             String text = "Haetaan ja parsitaan Koulutusta " + (int) i + "/" + haetutKoulutukset.size();
@@ -247,14 +247,15 @@ public class KoulutusController {
             OrganisaatioRDTO organisaatio = searchOrganisation(organisaatioData.getOid());
             haetutOrganisaatiot.add(organisaatio);
             for (KoulutusHakutulosV1RDTO koulutusData : organisaatioData.getTulokset()) {
-                if (koulutusData != null && koulutusData.getKoulutuskoodi() != null  //Skipataan kaikki koulutukset tuntematon koodilla 
-                    && !koulutusData.getKoulutuskoodi().startsWith("koulutus_0")){   //koulutus_000001 & koulutus_000002 & koulutus_000003)) 
+                // Skipataan kaikki koulutukset tuntematon koodilla,
+                // koulutus_000001 & koulutus_000002 & koulutus_000003
+                if (koulutusData != null && koulutusData.getKoulutuskoodi() != null && !koulutusData.getKoulutuskoodi().startsWith("koulutus_0")) {
                     switch (koulutusData.getKoulutusasteTyyppi().value().toUpperCase()) {
                     case KoulutusAsteTyyppi.AMM_OHJAAVA_JA_VALMISTAVA_KOULUTUS:
                     case KoulutusAsteTyyppi.LUKIOKOULUTUS:
                     case KoulutusAsteTyyppi.AMMATILLINENPERUSKOULUTUS:
                         if (checkKoulutusValidnessFromOpintopolku("koulutus", koulutusData.getOid())) {
-                            if(fetchKoodi(koulutusData)){
+                            if (fetchKoodi(koulutusData)) {
                                 addKoulutusToArray(koulutusData, count, current);
                             }
                         }
@@ -262,14 +263,14 @@ public class KoulutusController {
                     case KoulutusAsteTyyppi.AMMATTITUTKINTO:
                     case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
                         if (checkKoulutusValidnessFromOpintopolku("adultvocational", koulutusData.getOid())) {
-                            if(fetchKoodi(koulutusData)){
+                            if (fetchKoodi(koulutusData)) {
                                 addKoulutusToArray(koulutusData, count, current);
                             }
                         }
                         break;
                     case KoulutusAsteTyyppi.KORKEAKOULUTUS:
                         if (checkKoulutusValidnessFromOpintopolku("highered", koulutusData.getOid())) {
-                            if(fetchKoodi(koulutusData)){
+                            if (fetchKoodi(koulutusData)) {
                                 addKoulutusToArray(koulutusData, count, current);
                             }
                         }
@@ -278,9 +279,8 @@ public class KoulutusController {
                         log.info("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() + ", Type: " + koulutusData.getKoulutusasteTyyppi());
                         break;
                     }
-                    
                 }
-                if(koulutusData != null){
+                if (koulutusData != null) {
                     current++;
                     status = (double) current / (double) count * 0.50;
                     status = (Math.ceil(status * 100.0) / 100.0);
@@ -288,19 +288,18 @@ public class KoulutusController {
                     String text = "Haetaan alustavat Koulutukset ja Koodisto data " + current + "/" + count;
                     setStatusObject(estimate, status, text);
                 }
-                if(koulutusData.getKoulutuskoodi() == null ){
+                if (koulutusData.getKoulutuskoodi() == null) {
                     emptyKoodiList.add(koulutusData.getOid());
-                }
-                else if(koulutusData.getKoulutuskoodi().startsWith("koulutus_0") ){
+                } else if (koulutusData.getKoulutuskoodi().startsWith("koulutus_0")) {
                     notValidKoodiList.add(koulutusData.getOid());
                 }
             }
         }
-        //System.out.println("not Valid");  // Debuggia varten
-        //System.out.println(notValidKoodiList);
-        
-        //System.out.println("empty");  // Debuggia varten
-        //System.out.println(emptyKoodiList);
+        // Debuggia varten
+        // System.out.println("not Valid");
+        // System.out.println(notValidKoodiList);
+        // System.out.println("empty");
+        // System.out.println(emptyKoodiList);
     }
 
     private void setStatusObject(double estimate, double status, String text) {
@@ -318,7 +317,8 @@ public class KoulutusController {
     }
 
     private boolean fetchKoodi(KoulutusHakutulosV1RDTO koulutusData) {
-        List<KoodiType> kt = koodistoClient.getAlakoodis(koulutusData.getKoulutuskoodi()); //TODO: retries
+        // TODO: retries
+        List<KoodiType> kt = koodistoClient.getAlakoodis(koulutusData.getKoulutuskoodi());
         Koodi code = new Koodi();
         for (KoodiType k : kt) {
             if (k.getKoodisto().getKoodistoUri().equals("isced2011koulutusaste")) {
@@ -328,9 +328,9 @@ public class KoulutusController {
                 code.setIsced2011koulutusalataso3(changeCodeToIsced2013Value(k.getKoodiArvo()));
             }
         }
-        if(code.getIsced2011koulutusalataso3() == null || code.getIsced2011koulutusalataso3().equals("9999")){
+        if (code.getIsced2011koulutusalataso3() == null || code.getIsced2011koulutusalataso3().equals("9999")) {
             return false;
-        }else{
+        } else {
             haetutKoodit.put(koulutusData.getKoulutuskoodi(), code);
             return true;
         }
@@ -425,10 +425,12 @@ public class KoulutusController {
                 new GenericType<ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>>() {
                 });
     }
-    
+
     @SuppressWarnings("unchecked")
-    private ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO> searchAmmatillinenPerustutkintoNayttotutkintona(String oid) throws Exception {
-        return (ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
+    private ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO> searchAmmatillinenPerustutkintoNayttotutkintona(String oid)
+            throws Exception {
+        return (ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO>) getWithRetries(
+                v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO>>() {
                 });
     }
@@ -463,8 +465,9 @@ public class KoulutusController {
 
     @SuppressWarnings("unchecked")
     public ResultV1RDTO<KoulutusLukioV1RDTO> searchKoulutusLukio(String oid) throws Exception {
-        return (ResultV1RDTO<KoulutusLukioV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"), new GenericType<ResultV1RDTO<KoulutusLukioV1RDTO>>() {
-        });
+        return (ResultV1RDTO<KoulutusLukioV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
+                new GenericType<ResultV1RDTO<KoulutusLukioV1RDTO>>() {
+                });
     }
 
     public OrganisaatioRDTO searchOrganisation(String oid) throws Exception {
@@ -473,10 +476,8 @@ public class KoulutusController {
     }
 
     public boolean checkKoulutusValidnessFromOpintopolku(String type, String oid) {
-        return get("koulutusinformaatio.validoid", type, oid).
-                retryOnError(6, 2500).
-                skipResponseAssertions().
-                execute( response -> response.getStatusCode() == 200);
+        return get("koulutusinformaatio.validoid", type, oid).retryOnError(6, 2500).skipResponseAssertions()
+                .execute(response -> response.getStatusCode() == 200);
     }
 
     @SuppressWarnings("unchecked")
@@ -494,7 +495,7 @@ public class KoulutusController {
                     });
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private Object getWithRetries(WebResource resource, GenericType type) throws Exception {
         int retries = 5;
@@ -519,7 +520,6 @@ public class KoulutusController {
             throw e;
         }
     }
-
 
     private void addKoulutusToArray(KoulutusHakutulosV1RDTO koulutusData, int count, int current) {
         log.debug("Adding : " + koulutusData.getOid());
