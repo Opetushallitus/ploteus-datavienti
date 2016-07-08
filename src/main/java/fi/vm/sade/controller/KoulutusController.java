@@ -323,6 +323,8 @@ public class KoulutusController {
         for (KoodiType k : kt) {
             if (k.getKoodisto().getKoodistoUri().equals("isced2011koulutusaste")) {
                 code.setIsced2011koulutusaste(k.getKoodiArvo());
+            }else if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusastetaso1")){
+                code.setIsced2011koulutusaste(k.getKoodiArvo());
             }
             if (k.getKoodisto().getKoodistoUri().equals("isced2011koulutusalataso3")) {
                 code.setIsced2011koulutusalataso3(changeCodeToIsced2013Value(k.getKoodiArvo()));
