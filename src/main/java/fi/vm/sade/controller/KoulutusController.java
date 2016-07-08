@@ -145,7 +145,7 @@ public class KoulutusController {
                 // no desc
                 // ongelma tapaus no. 5: 1.2.246.562.10.48791047698
                 // tai tyhja kaikille tuloksille
-                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
+                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.53642770753").getResult();
                 int count = 0;
                 for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
                     count += organisaatioData.getTulokset().size();
@@ -323,11 +323,17 @@ public class KoulutusController {
         for (KoodiType k : kt) {
             if (k.getKoodisto().getKoodistoUri().equals("isced2011koulutusaste")) {
                 code.setIsced2011koulutusaste(k.getKoodiArvo());
-            }else if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusastetaso1")){
-                code.setIsced2011koulutusaste(k.getKoodiArvo());
             }
             if (k.getKoodisto().getKoodistoUri().equals("isced2011koulutusalataso3")) {
                 code.setIsced2011koulutusalataso3(changeCodeToIsced2013Value(k.getKoodiArvo()));
+            }
+        }
+        if(code.getIsced2011koulutusaste() == null){
+            for (KoodiType k : kt) {
+                if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusastetaso1")){
+                    System.out.println("isced2011koulutusaste skip, " + k.getKoodiArvo());
+                    code.setIsced2011koulutusaste(k.getKoodiArvo());
+                }
             }
         }
         if (code.getIsced2011koulutusalataso3() == null || code.getIsced2011koulutusalataso3().equals("9999")) {
