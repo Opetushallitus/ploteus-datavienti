@@ -37,6 +37,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.StudyTypeType;
 import eu.europa.ec.learningopportunities.v0_5_10.ThematicAreas;
 import eu.europa.ec.learningopportunities.v0_5_10.XsdTypeType;
 import fi.vm.sade.model.Koodi;
+import fi.vm.sade.model.StatusObject;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioNimiRDTO;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
 import fi.vm.sade.parser.JAXBParser;
@@ -69,6 +70,7 @@ public class KoulutusWrapper {
     private fi.vm.sade.parser.JAXBParser JAXBParser;
 
     private String tagString;
+    private StatusObject statusObject;
 
     @Autowired
     public KoulutusWrapper(JAXBParser jAXBParser) {
@@ -102,9 +104,6 @@ public class KoulutusWrapper {
             kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
         }
         desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
-        if (desc == null) {
-            System.out.println("nullia perkele: " + k.getOid());
-        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "koulutus/" + k.getOid(), URL_PREFIX_EN + "koulutus/" + k.getOid(),
                 URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), haetutKoodit, k.getKoulutuskoodi(), desc,
@@ -135,9 +134,6 @@ public class KoulutusWrapper {
             kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
         }
         desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
-        if (desc == null) {
-            System.out.println("nullia perkele: " + k.getOid());
-        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "ammatillinenaikuiskoulutus/" + k.getOid(),
                 URL_PREFIX_EN + "ammatillinenaikuiskoulutus/" + k.getOid(), URL_PREFIX_SV + "ammatillinenaikuiskoulutus/" + k.getOid(),
@@ -168,9 +164,6 @@ public class KoulutusWrapper {
             kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
         }
         desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
-        if (desc == null) {
-            System.out.println("nullia perkele: " + k.getOid());
-        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "ammatillinenaikuiskoulutus/" + k.getOid(),
                 URL_PREFIX_EN + "ammatillinenaikuiskoulutus/" + k.getOid(), URL_PREFIX_SV + "ammatillinenaikuiskoulutus/" + k.getOid(),
@@ -197,9 +190,6 @@ public class KoulutusWrapper {
             kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
         }
         desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
-        if (desc == null) {
-            System.out.println("nullia perkele: " + k.getOid());
-        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "korkeakoulu/" + k.getOid(), URL_PREFIX_EN + "korkeakoulu/" + k.getOid(),
                 URL_PREFIX_SV + "korkeakoulu/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc,
@@ -226,9 +216,6 @@ public class KoulutusWrapper {
             kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
         }
         desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
-        if (desc == null) {
-            System.out.println("nullia perkele: " + k.getOid());
-        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "koulutus/" + k.getOid(), URL_PREFIX_EN + "koulutus/" + k.getOid(),
                 URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc,
@@ -255,9 +242,6 @@ public class KoulutusWrapper {
             kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
         }
         desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
-        if (desc == null) {
-            System.out.println("Nullia perkele: " + k.getOid());
-        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "koulutus/" + k.getOid(), URL_PREFIX_EN + "koulutus/" + k.getOid(),
                 URL_PREFIX_SV + "koulutus/" + k.getOid(), kh.getKoulutuskoodi(), k.getKoulutusohjelma(), koodisto, k.getKoulutuskoodi(), desc,
@@ -288,9 +272,6 @@ public class KoulutusWrapper {
             kuvauskomoTavoitteet = k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
         }
         desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
-        if (desc == null) {
-            System.out.println("Nullia perkele: " + k.getOid());
-        }
         LearningOpportunity lo = initLearningOpportunity(k.getOid(), k.getKoulutuksenAlkamisPvms(), k.getHintaString(), k.getOpetusTarjoajat(),
                 k.getKuvausKomo(), haetutOrganisaatiot, URL_PREFIX_FIN + "ammatillinenaikuiskoulutus/" + k.getOid(),
                 URL_PREFIX_EN + "ammatillinenaikuiskoulutus/" + k.getOid(), URL_PREFIX_SV + "ammatillinenaikuiskoulutus/" + k.getOid(),
@@ -731,8 +712,13 @@ public class KoulutusWrapper {
         return stripped;
     }
 
-    public void forwardLOtoJaxBParser() {
-        JAXBParser.parseXML(learningOpportunities);
+    public boolean forwardLOtoJaxBParser() {
+        return JAXBParser.parseXML(learningOpportunities);
+    }
+
+    public void forwardStatusObject(StatusObject statusObject) {
+        this.statusObject = statusObject;
+        JAXBParser.forwardStatusObject(statusObject);
     }
 
 }

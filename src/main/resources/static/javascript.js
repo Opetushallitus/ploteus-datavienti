@@ -29,10 +29,10 @@ function checkStatus() {
 		success : function(data) {
 			if (processOwner || data.status == 0.0 || data.status == 1.0) {
 				if(processOwner){
-					$("#progressbar").css("width",
-							Math.round(data.status * 100) + "%");
-					$("#progressbar").attr('aria-valuenow',
-							Math.round(data.status * 100));
+					$("#outputTextarea").html(data.frontendOutput);
+					document.getElementById("outputTextarea").scrollTop = document.getElementById("outputTextarea").scrollHeight;
+					$("#progressbar").css("width",Math.round(data.status * 100) + "%");
+					$("#progressbar").attr('aria-valuenow', Math.round(data.status * 100));
 					$("#progressbar").html(Math.round(data.status * 100) + "%");
 					if(data.statusText != null){
 						$("#infoDiv").html("<i>" + data.statusText + "</i>");
@@ -40,23 +40,22 @@ function checkStatus() {
 					if (data.durationEstimate == 0.0) {
 						$("#infoTimeDiv").html("<i>Arvioitu kesto: - </i>");
 					} else {
-						$("#infoTimeDiv").html(
-								"<i>Arvioitu kesto: "
-										+ Math.ceil(data.durationEstimate)
-										+ " minuuttia</i>");
+						$("#infoTimeDiv").html("<i>Arvioitu kesto: " + Math.ceil(data.durationEstimate) + " minuuttia</i>");
 					}
-					if (data.status >= 1.0) {
+					if (data.status == 1.00) {
 						/*clearInterval(interval);
 						interval = false;*/
 						$("#downloadButton").prop("disabled", false);
+						processOwner = false;
+						$("#infoDiv").html("<i>" + data.statusText + "</i>");
+					}else if(data.status == 0.00){
 						processOwner = false;
 						$("#infoDiv").html("<i>" + data.statusText + "</i>");
 					}
 				}
 				else{
 					if(processInProgress){
-						$("#infoTimeDiv").html(
-								"<i>" + Math.round(data.status * 100) + "%" + "</i>");
+						$("#infoTimeDiv").html("<i>" + Math.round(data.status * 100) + "%" + "</i>");
 						$("#infoDiv").html("<i>Prosessi valmis, päivittäkää sivu</i>");
 					}
 				}
@@ -67,8 +66,7 @@ function checkStatus() {
 				$("#progressbar").attr('aria-valuenow', Math.round(0 * 100));
 				$("#progressbar").html(Math.round(data.status * 100) + "%");
 				$("#infoDiv").html("<i>Prosessi kesken, odottakaa vuoroa</i>");
-				$("#infoTimeDiv").html(
-						"<i>" + Math.round(data.status * 100) + "%" + "</i>");
+				$("#infoTimeDiv").html("<i>" + Math.round(data.status * 100) + "%" + "</i>");
 			}
 		}
 	});

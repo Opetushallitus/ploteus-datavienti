@@ -28,23 +28,40 @@ import org.xml.sax.SAXParseException;
 
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunities;
 import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
+import fi.vm.sade.model.StatusObject;
 
 @Component
 public class JAXBParser { // TODO: better logging //TODO: UI logging
     private static final Logger log = LoggerFactory.getLogger(JAXBParser.class);
-
+    private StatusObject statusObject;
     private static final String OUTPUT_FILE_NAME = "lo_full_sample";
     @Value("${xml.output.dir}")
     private String OUTPUT_PATH;
 
-    public void parseXML(LearningOpportunities learningOpportunities) {
+    public boolean parseXML(LearningOpportunities learningOpportunities) {
+        statusObject.addFrontendOutput("Luodaan XML tiedosto haetuista koulutuksista...");
+        statusObject.setStatusText("Luodaan XML tiedosto haetuista koulutuksista...");
         String sourceFile = OUTPUT_PATH + OUTPUT_FILE_NAME + ".xml";
         File xmlFile = createXMLFile(learningOpportunities, sourceFile);
-        validateXMLtoSchema(xmlFile);
-        zipXMLFile(xmlFile);
+        statusObject.setStatus(0.96);
+        statusObject.addFrontendOutput("XML tiedosto luotu.");
+        statusObject.addFrontendOutput("Validoidaan XML tiedosto schema tiedostoa vasten...");
+        statusObject.setStatusText("Validoidaan XML...");
+        if(validateXMLtoSchema(xmlFile)){
+            statusObject.setStatus(0.97);
+            statusObject.setStatusText("Pakataan XML...");
+            statusObject.addFrontendOutput("XML tiedosto validoitu.");
+            statusObject.addFrontendOutput("Pakataan XML ZIP-tiedostoksi...");
+            zipXMLFile(xmlFile);
+            statusObject.setStatus(0.99);
+            statusObject.addFrontendOutput("XML tiedosto pakattu.");
+            return true;
+        }else{
+            return false;
+        }
     }
 
-    private void validateXMLtoSchema(File xmlFile) {
+    private boolean validateXMLtoSchema(File xmlFile) {
         HashMap<String, SAXParseException> exceptions = new HashMap<>();
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -64,6 +81,7 @@ public class JAXBParser { // TODO: better logging //TODO: UI logging
                         exceptions.put(exception.getMessage(), exception);
                     }
                     printErrors(exceptions);
+                    statusObject.addFrontendOutput("Validation fatal exception");
                     throw new RuntimeException("Validation fatal exception", exception);
                 }
 
@@ -75,23 +93,31 @@ public class JAXBParser { // TODO: better logging //TODO: UI logging
                 }
             };
             validator.setErrorHandler(errorHandler);
-
             validator.validate(new StreamSource(xmlFile));
         } catch (SAXException e) {
             log.error("SaxException", e);
+            statusObject.addFrontendOutput("XML:ää ei voitu tarkistaa schema tiedostoa vasten. Ota yhteyttä järjestelmä vastaavaan.");
+            return false;
         } catch (IOException e) {
             log.error("Schema file not found", e);
+            statusObject.addFrontendOutput("XML:ää ei voitu tarkistaa schema tiedostoa vasten. Ota yhteyttä järjestelmä vastaavaan.");
+            return false;
         }
         // Logitetaan kaikki virheet, joita validoinnissa tuli
-        printErrors(exceptions);
-
-    }
-
-    private void printErrors(HashMap<String, SAXParseException> exceptions) {
-        for (Map.Entry<String, SAXParseException> entry : exceptions.entrySet()) {
-            log.warn("XSD Validation warning on line: " + entry.getValue().getLineNumber() + " : " + entry.getValue().getColumnNumber() + " : "
-                    + entry.getValue().getMessage());
+        return (printErrors(exceptions));
         }
+
+    private boolean printErrors(HashMap<String, SAXParseException> exceptions) {
+        if(!exceptions.isEmpty()){
+            statusObject.addFrontendOutput("XML tiedoston validoinnissa esiintyi virhe/virheitä. Ota yhteyttä järjestelmä vastaavaan.");
+            for (Map.Entry<String, SAXParseException> entry : exceptions.entrySet()) {
+                log.warn("XSD Validation warning on line: " + entry.getValue().getLineNumber() + " : " + entry.getValue().getColumnNumber() + " : "
+                        + entry.getValue().getMessage());
+                statusObject.addFrontendOutput(entry.getValue().getLineNumber() + " : " + entry.getValue().getColumnNumber() + " : " + entry.getValue().getMessage());
+            }
+            return false;
+        }
+        return true;
     }
 
     private void zipXMLFile(File xmlFile) {
@@ -107,7 +133,8 @@ public class JAXBParser { // TODO: better logging //TODO: UI logging
             out.close();
             in.close();
         } catch (IOException e) {
-            log.error("XML creation error", e);
+            log.error("ZIP error", e);
+            statusObject.addFrontendOutput("XML tiedoston pakkauksessa tapahtui virhe.");
             throw new RuntimeException(e);
         }
     }
@@ -121,8 +148,13 @@ public class JAXBParser { // TODO: better logging //TODO: UI logging
             jaxbMarshaller.marshal(learningOpportunities, file);
         } catch (JAXBException e) {
             log.error("XML creation error", e);
+            statusObject.addFrontendOutput("XML tiedoston luonnissa tapahtui virhe.");
             throw new RuntimeException(e);
         }
         return file;
+    }
+    
+    public void forwardStatusObject(StatusObject so){
+        this.statusObject = so;
     }
 }

@@ -69,8 +69,10 @@
 		<div id="infoDiv"></div>
 		<div id="infoTimeDiv"></div>
 		</div>
+		<div>
+			<textarea id="outputTextarea" readonly></textarea> 
+		</div>
 	</section>
-	
 <script src="javascript.js"></script>
 <script>
 	window.onload = function () { 
@@ -79,6 +81,7 @@
 		if(interval == false){
 			interval = setInterval("checkStatus()", 1000);
 		}
+		document.getElementById("outputTextarea").scrollTop = document.getElementById("outputTextarea").scrollHeight;
 	}
 </script>
 </body>

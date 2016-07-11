@@ -69,7 +69,6 @@ public class KoulutusController {
     private Map<String, Koodi> haetutKoodit;
     private KoodistoClient koodistoClient;
 
-    private double status;
     private final StatusObject statusObject = new StatusObject();
 
     private ObjectMapper mapper = new ObjectMapper();
@@ -92,6 +91,7 @@ public class KoulutusController {
         tarjontaURI = urlProperties.require("tarjonta-service.koulutus", "");
         organisaatioURI = urlProperties.require("organisaatio-service.byOid", "");
         kw = koulutusWrapper;
+        kw.forwardStatusObject(statusObject);
     }
 
     @RequestMapping("koulutus/status")
@@ -121,15 +121,15 @@ public class KoulutusController {
 
     @RequestMapping("/koulutus/") // TODO: UI logging
     public String getKoulutukset() throws Exception {
-        if (status == 0.00 || status == 1.00) {
+        if (statusObject.getStatus() == 0.00 || statusObject.getStatus() == 1.00) {
             int skipCount = 0;
             try {
-                status = 0.01;
                 haetutKoulutukset = new ArrayList<>();
                 haetutOrganisaatiot = new ArrayList<>();
                 haetutKoodit = new HashMap<>();
                 createInitialStatusObject();
                 statusObject.setStatusText("Haetaan alustavat Koulutukset ja Koodisto data...");
+                statusObject.setFrontendOutput("Haetaan alustavat Koulutukset ja Koodisto data...");
                 Client clientWithJacksonSerializer = createClient();
                 v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI);
                 v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI);
@@ -145,7 +145,7 @@ public class KoulutusController {
                 // no desc
                 // ongelma tapaus no. 5: 1.2.246.562.10.48791047698
                 // tai tyhja kaikille tuloksille
-                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
+                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.53642770753").getResult();
                 int count = 0;
                 for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
                     count += organisaatioData.getTulokset().size();
@@ -153,19 +153,25 @@ public class KoulutusController {
                 fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset, count);
                 // noin 1200 koulutusta minuutissa
                 statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
+                statusObject.addFrontendOutput("Alustava Koulutus ja Koodisto data haettu");
                 statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
+                statusObject.addFrontendOutput("Haetaan ja parsitaan Koulutus dataa...");
 
                 final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
                         .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
                 skipCount = fetchKoulutukset(kw, organisaatioMap);
-                kw.forwardLOtoJaxBParser();
-
-                statusObject.setStatusText("Valmis");
-                status = 1.0;
-                statusObject.setStatus(status);
-
+                statusObject.addFrontendOutput("Koulutus data valmis.");
+                if(kw.forwardLOtoJaxBParser()){
+                    statusObject.setStatusText("Valmis");
+                    statusObject.addFrontendOutput("Valmis");
+                    statusObject.setStatus(1.00);
+                }else{
+                    statusObject.setStatusText("Valmis");
+                    statusObject.setStatus(0.00);
+                }
             } catch (Exception e) {
-                setStatusObject(0.0, 0.00, "");
+                setStatusObject(0.00, 0.00, "");
+                statusObject.addFrontendOutput("Prosessissa tapahtui virhe!");
                 log.error("Error: " + e);
             }
             if (skipCount != 0) {
@@ -173,14 +179,15 @@ public class KoulutusController {
             }
             log.info("Request ready");
         } else {
-            log.error("coincident run");
+            statusObject.setFrontendOutput("Yhdenaikaiset ajot eivät ole mahdollisia, ole hyvä ja odota vuoroa.");
+            log.error("Coincident run");
         }
         return "";
 
     }
 
     private int fetchKoulutukset(KoulutusWrapper kw, Map<String, OrganisaatioRDTO> organisaatioMap) throws Exception {
-        double i = 0.0;
+        double i = 0.00;
         int skip = 0;
         for (KoulutusHakutulosV1RDTO kh : haetutKoulutukset) {
             switch (kh.getKoulutusasteTyyppi().name().toUpperCase()) {
@@ -233,7 +240,7 @@ public class KoulutusController {
             }
             i++;
             String text = "Haetaan ja parsitaan Koulutusta " + (int) i + "/" + haetutKoulutukset.size();
-            status = 0.5 + (i / (double) haetutKoulutukset.size() * 0.45);
+            double status = 0.5 + (i / (double) haetutKoulutukset.size() * 0.45);
             // noin 1200 koulutusta minuutissa
             double estimate = (haetutKoulutukset.size() - i) / 1200;
             setStatusObject(estimate, status, text);
@@ -282,7 +289,7 @@ public class KoulutusController {
                 }
                 if (koulutusData != null) {
                     current++;
-                    status = (double) current / (double) count * 0.50;
+                    double status = (double) current / (double) count * 0.50;
                     status = (Math.ceil(status * 100.0) / 100.0);
                     double estimate = (double) (count - current) / (double) 1200;
                     String text = "Haetaan alustavat Koulutukset ja Koodisto data " + current + "/" + count;
@@ -312,8 +319,9 @@ public class KoulutusController {
 
     private void createInitialStatusObject() {
         statusObject.setDurationEstimate(0.0);
-        statusObject.setStatus(status);
+        statusObject.setStatus(0.01);
         statusObject.setStatusText("Alustetaan...");
+        statusObject.addFrontendOutput("Alustetaan...");
     }
 
     private boolean fetchKoodi(KoulutusHakutulosV1RDTO koulutusData) {
@@ -331,7 +339,6 @@ public class KoulutusController {
         if(code.getIsced2011koulutusaste() == null){
             for (KoodiType k : kt) {
                 if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusastetaso1")){
-                    System.out.println("isced2011koulutusaste skip, " + k.getKoodiArvo());
                     code.setIsced2011koulutusaste(k.getKoodiArvo());
                 }
             }
@@ -525,6 +532,7 @@ public class KoulutusController {
             return resource.accept(JSON_UTF8).get(type);
         } catch (Exception e) {
             log.error("Calling resource failed: " + resource, e);
+            statusObject.addFrontendOutput("Prosessi kaatui tiedonhakuun. Palvelussa saattaa olla ruuhkaa, ole hyvä ja kokeile myöhemmin uudelleen.");
             throw e;
         }
     }
