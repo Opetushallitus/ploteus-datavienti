@@ -145,7 +145,7 @@ public class KoulutusController {
                 // no desc
                 // ongelma tapaus no. 5: 1.2.246.562.10.48791047698
                 // tai tyhja kaikille tuloksille
-                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.53642770753").getResult();
+                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
                 int count = 0;
                 for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
                     count += organisaatioData.getTulokset().size();
