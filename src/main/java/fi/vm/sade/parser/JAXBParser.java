@@ -82,6 +82,7 @@ public class JAXBParser { // TODO: better logging //TODO: UI logging
                     }
                     printErrors(exceptions);
                     statusObject.addFrontendOutput("Validation fatal exception");
+                    statusObject.setStatus(0.00);
                     throw new RuntimeException("Validation fatal exception", exception);
                 }
 
@@ -96,10 +97,12 @@ public class JAXBParser { // TODO: better logging //TODO: UI logging
             validator.validate(new StreamSource(xmlFile));
         } catch (SAXException e) {
             log.error("SaxException", e);
+            statusObject.setStatus(0.00);
             statusObject.addFrontendOutput("XML:ää ei voitu tarkistaa schema tiedostoa vasten. Ota yhteyttä järjestelmä vastaavaan.");
             return false;
         } catch (IOException e) {
             log.error("Schema file not found", e);
+            statusObject.setStatus(0.00);
             statusObject.addFrontendOutput("XML:ää ei voitu tarkistaa schema tiedostoa vasten. Ota yhteyttä järjestelmä vastaavaan.");
             return false;
         }
@@ -134,6 +137,7 @@ public class JAXBParser { // TODO: better logging //TODO: UI logging
             in.close();
         } catch (IOException e) {
             log.error("ZIP error", e);
+            statusObject.setStatus(0.00);
             statusObject.addFrontendOutput("XML tiedoston pakkauksessa tapahtui virhe.");
             throw new RuntimeException(e);
         }
@@ -148,6 +152,7 @@ public class JAXBParser { // TODO: better logging //TODO: UI logging
             jaxbMarshaller.marshal(learningOpportunities, file);
         } catch (JAXBException e) {
             log.error("XML creation error", e);
+            statusObject.setStatus(0.00);
             statusObject.addFrontendOutput("XML tiedoston luonnissa tapahtui virhe.");
             throw new RuntimeException(e);
         }

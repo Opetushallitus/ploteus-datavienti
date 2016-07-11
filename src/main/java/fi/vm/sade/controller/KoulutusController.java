@@ -128,8 +128,7 @@ public class KoulutusController {
                 haetutOrganisaatiot = new ArrayList<>();
                 haetutKoodit = new HashMap<>();
                 createInitialStatusObject();
-                statusObject.setStatusText("Haetaan alustavat Koulutukset ja Koodisto data...");
-                statusObject.setFrontendOutput("Haetaan alustavat Koulutukset ja Koodisto data...");
+                statusObject.setStatusText("Haetaan alustavat Koulutukset ja Koodistodata...");
                 Client clientWithJacksonSerializer = createClient();
                 v1KoulutusResource = clientWithJacksonSerializer.resource(tarjontaURI);
                 v1OrganisaatioResource = clientWithJacksonSerializer.resource(organisaatioURI);
@@ -153,9 +152,8 @@ public class KoulutusController {
                 fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset, count);
                 // noin 1200 koulutusta minuutissa
                 statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
-                statusObject.addFrontendOutput("Alustava Koulutus ja Koodisto data haettu");
+                statusObject.addFrontendOutput("Alustava Koulutus ja Koodistodata haettu");
                 statusObject.setStatusText("Haetaan ja parsitaan Koulutus dataa...");
-                statusObject.addFrontendOutput("Haetaan ja parsitaan Koulutus dataa...");
 
                 final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
                         .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
@@ -309,19 +307,19 @@ public class KoulutusController {
         // System.out.println(emptyKoodiList);
     }
 
-    private void setStatusObject(double estimate, double status, String text) {
+    private void setStatusObject(double estimate, double status, String statusText) {
         status = (Math.ceil(status * 100.0) / 100.0);
         estimate = Math.ceil(estimate);
         statusObject.setDurationEstimate(estimate);
         statusObject.setStatus(status);
-        statusObject.setStatusText(text);
+        statusObject.setStatusText(statusText);
     }
 
     private void createInitialStatusObject() {
         statusObject.setDurationEstimate(0.0);
         statusObject.setStatus(0.01);
         statusObject.setStatusText("Alustetaan...");
-        statusObject.addFrontendOutput("Alustetaan...");
+        statusObject.setFrontendOutput("Alustetaan...");
     }
 
     private boolean fetchKoodi(KoulutusHakutulosV1RDTO koulutusData) {
