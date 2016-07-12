@@ -70,7 +70,6 @@ public class KoulutusWrapper {
     private fi.vm.sade.parser.JAXBParser JAXBParser;
 
     private String tagString;
-    private StatusObject statusObject;
 
     @Autowired
     public KoulutusWrapper(JAXBParser jAXBParser) {
@@ -89,6 +88,9 @@ public class KoulutusWrapper {
         } catch (IOException e) {
             log.error("Constructor file load failed: " + e);
         }
+    }
+    public void createNewLearningOpportunities(){
+        learningOpportunities = of.createLearningOpportunities();
     }
 
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot,
@@ -717,7 +719,6 @@ public class KoulutusWrapper {
     }
 
     public void forwardStatusObject(StatusObject statusObject) {
-        this.statusObject = statusObject;
         JAXBParser.forwardStatusObject(statusObject);
     }
 

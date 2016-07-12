@@ -144,7 +144,7 @@ public class KoulutusController {
                 // no desc
                 // ongelma tapaus no. 5: 1.2.246.562.10.48791047698
                 // tai tyhja kaikille tuloksille
-                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
+                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("1.2.246.562.10.53642770753").getResult();
                 int count = 0;
                 for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
                     count += organisaatioData.getTulokset().size();
@@ -157,6 +157,7 @@ public class KoulutusController {
 
                 final Map<String, OrganisaatioRDTO> organisaatioMap = haetutOrganisaatiot.stream()
                         .collect(Collectors.toMap(OrganisaatioRDTO::getOid, s -> s));
+                kw.createNewLearningOpportunities();
                 skipCount = fetchKoulutukset(kw, organisaatioMap);
                 statusObject.addFrontendOutput("Koulutus data valmis.");
                 if(kw.forwardLOtoJaxBParser()){
