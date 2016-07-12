@@ -74,10 +74,6 @@ public class KoulutusWrapper {
     @Autowired
     public KoulutusWrapper(JAXBParser jAXBParser) {
         of = new ObjectFactory();
-        learningOpportunities = of.createLearningOpportunities();
-        learningOpportunities.setKey(LEARNING_OPPORTUNITY_KEY);
-        learningOpportunities.setXsdType(XsdTypeType.fromValue(XSD_TYPE));
-        learningOpportunities.setXsdVersion(XSD_VERSION);
         JAXBParser = jAXBParser;
         InputStream in = getClass().getResourceAsStream("/HTMLTagsToBeRemoved.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -91,6 +87,9 @@ public class KoulutusWrapper {
     }
     public void createNewLearningOpportunities(){
         learningOpportunities = of.createLearningOpportunities();
+        learningOpportunities.setKey(LEARNING_OPPORTUNITY_KEY);
+        learningOpportunities.setXsdType(XsdTypeType.fromValue(XSD_TYPE));
+        learningOpportunities.setXsdVersion(XSD_VERSION);
     }
 
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot,
