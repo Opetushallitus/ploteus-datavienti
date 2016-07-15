@@ -1,7 +1,6 @@
 package fi.vm.sade.wrapper;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,12 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
-import org.apache.hadoop.mapred.gethistory_jsp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +32,20 @@ import eu.europa.ec.learningopportunities.v0_5_10.ThematicAreas;
 import eu.europa.ec.learningopportunities.v0_5_10.XsdTypeType;
 import fi.vm.sade.model.Koodi;
 import fi.vm.sade.model.StatusObject;
-import fi.vm.sade.organisaatio.resource.dto.OrganisaatioNimiRDTO;
 import fi.vm.sade.organisaatio.resource.dto.OrganisaatioRDTO;
 import fi.vm.sade.parser.JAXBParser;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.*;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ErikoisammattitutkintoV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoodiUrisV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoodiV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatillinenPerustutkintoV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakouluV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KuvausV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.NimiV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
 import fi.vm.sade.tarjonta.shared.types.KomoTeksti;
 import fi.vm.sade.tarjonta.shared.types.KomotoTeksti;
 
@@ -294,7 +297,7 @@ public class KoulutusWrapper {
         setDate(koulutuksenAlkamisPvms, lo);
         setCost(hintaString, lo);
         if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
-            setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
+            setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo); //FIXME: voidaanko kayttaa
         } else if (opetuskielis != null) {
             Map<String, String> newMap = new HashMap<>();
             for (String key : opetuskielis.keySet()) {
@@ -317,7 +320,7 @@ public class KoulutusWrapper {
         return lo;
     }
 
-    private NimiV1RDTO findDescription(NimiV1RDTO nimiV1RDTO, NimiV1RDTO nimiV1RDTO2, NimiV1RDTO nimiV1RDTO3) {
+    private NimiV1RDTO findDescription(NimiV1RDTO nimiV1RDTO, NimiV1RDTO nimiV1RDTO2, NimiV1RDTO nimiV1RDTO3) { //FIXME: voidaanko kayttaa
         NimiV1RDTO desc = null;
         if (nimiV1RDTO != null && nimiV1RDTO.getTekstis() != null) {
             if (nimiV1RDTO.getTekstis().get("kieli_en") != null && !nimiV1RDTO.getTekstis().get("kieli_en").trim().equals("")) {
@@ -530,7 +533,7 @@ public class KoulutusWrapper {
         } else if (map.get("kieli_sv") != null) {
             lo.setInformationLanguage(LanguageCode.SV);
         } else if (map.get("kieli_la") != null) {
-            lo.setInformationLanguage(LanguageCode.FI); // TODO: Latina?
+            lo.setInformationLanguage(LanguageCode.FI); // TODO: Latina? //FIXME: voidaanko kayttaa
         } else {
             for (LanguageCode l : LanguageCode.values()) {
                 if (map.get("kieli_" + l.value().toLowerCase()) != null) {

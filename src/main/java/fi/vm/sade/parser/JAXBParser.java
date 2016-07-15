@@ -31,7 +31,7 @@ import eu.europa.ec.learningopportunities.v0_5_10.LearningOpportunity;
 import fi.vm.sade.model.StatusObject;
 
 @Component
-public class JAXBParser { // TODO: better logging //TODO: UI logging
+public class JAXBParser {
     private static final Logger log = LoggerFactory.getLogger(JAXBParser.class);
     private StatusObject statusObject;
     private static final String OUTPUT_FILE_NAME = "lo_full_sample";

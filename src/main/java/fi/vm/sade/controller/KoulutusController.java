@@ -71,7 +71,6 @@ public class KoulutusController {
 
     private final StatusObject statusObject = new StatusObject();
 
-    private ObjectMapper mapper = new ObjectMapper();
     private final OphHttpClient httpclient;
 
     private WebResource v1KoulutusResource;
@@ -119,7 +118,7 @@ public class KoulutusController {
         return Client.create(cc);
     }
 
-    @RequestMapping("/koulutus/") // TODO: UI logging
+    @RequestMapping("/koulutus/")
     public String getKoulutukset() throws Exception {
         if (statusObject.getStatus() == 0.00 || statusObject.getStatus() == 1.00) {
             int skipCount = 0;
@@ -171,7 +170,7 @@ public class KoulutusController {
             } catch (Exception e) {
                 setStatusObject(0.00, 0.00, "");
                 statusObject.addFrontendOutput("Prosessissa tapahtui virhe!");
-                log.error("Error: " + e);
+                log.error("Error: ", e);
             }
             if (skipCount != 0) {
                 log.info("Amount of skipped koulutus: " + skipCount);
@@ -291,7 +290,7 @@ public class KoulutusController {
                     double status = (double) current / (double) count * 0.50;
                     status = (Math.ceil(status * 100.0) / 100.0);
                     double estimate = (double) (count - current) / (double) 1200;
-                    String text = "Haetaan alustavat Koulutukset ja Koodisto data " + current + "/" + count;
+                    String text = "Haetaan alustavat Koulutukset ja Koodistodata " + current + "/" + count;
                     setStatusObject(estimate, status, text);
                 }
                 if (koulutusData.getKoulutuskoodi() == null) {
@@ -337,7 +336,7 @@ public class KoulutusController {
         }
         if(code.getIsced2011koulutusaste() == null){
             for (KoodiType k : kt) {
-                if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusastetaso1")){
+                if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusastetaso1")){ //FIXME: voidaanko kayttaa
                     code.setIsced2011koulutusaste(k.getKoodiArvo());
                 }
             }
@@ -421,16 +420,8 @@ public class KoulutusController {
         return koodiArvo;
     }
 
-    private <T> T execute(OphHttpRequest resource, final GenericType<T> type) {
-        return resource.execute(response -> mapper.readValue(response.asInputStream(), type.getRawClass()));
-    }
-
     private OphHttpRequest get(String key, String... params) {
         return httpclient.get(key, params);
-    }
-
-    private <T> T executeWithRetries(OphHttpRequest resource, final GenericType<T> type) {
-        return execute(resource.retryOnError(5, 2500), type);
     }
 
     @SuppressWarnings("unchecked")
