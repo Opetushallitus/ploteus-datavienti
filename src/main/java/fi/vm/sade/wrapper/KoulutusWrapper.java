@@ -70,146 +70,59 @@ public class KoulutusWrapper {
 
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot,
             KoulutusHakutulosV1RDTO kh, Map<String, Koodi> haetutKoodit) {
-        NimiV1RDTO kuvauskomoSisalto = getKuvausKomoSisalto(k);
-        NimiV1RDTO kuvauskomoTavoitteet = getKuvausKomoTavoitteet(k);
-        NimiV1RDTO desc = findDescription(kuvauskomoSisalto, kuvauskomoTavoitteet);
-
+        NimiV1RDTO desc = getKoulutusDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), haetutKoodit, desc);
-
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        if (k.getSuunniteltuKestoTyyppi() != null)
-            setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
-        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
+        setQualificationsWithTutkintonimikes(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
-    }
-
-    private NimiV1RDTO getKuvausKomoSisalto(KoulutusV1RDTO k) {
-        if (k != null && k.getKuvausKomoto() != null && k.getKuvausKomoto().get(KomotoTeksti.SISALTO) != null) {
-            return k.getKuvausKomoto().get(KomotoTeksti.SISALTO);
-        }
-        return null;
-    }
-    private NimiV1RDTO getValmistavaKoututusKuvaus(NayttotutkintoV1RDTO k) {
-        if (k != null && k.getValmistavaKoulutus() != null && k.getValmistavaKoulutus().getKuvaus() != null
-                && k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO) != null) {
-            return k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO);
-        }
-        return null;
-    }
-    private NimiV1RDTO getKuvausKomoTavoitteet(KoulutusV1RDTO k) {
-        if (k != null && k.getKuvausKomo() != null && k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
-             return k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
-        }
-        return null;
     }
 
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
             Map<String, Koodi> koodisto) {
-        NimiV1RDTO kuvauskomoSisalto = getKuvausKomoSisalto(k);
-        NimiV1RDTO valmistavaKoututusKuvaus = getValmistavaKoututusKuvaus(k);
-        NimiV1RDTO kuvauskomoTavoitteet = getKuvausKomoTavoitteet(k);
-        NimiV1RDTO desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
-
+        NimiV1RDTO desc = getNayttotutkintoDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
-
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        if (k.getSuunniteltuKestoTyyppi() != null)
-            setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
-        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
     public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
             Map<String, Koodi> koodisto) {
-        NimiV1RDTO kuvauskomoSisalto = getKuvausKomoSisalto(k);
-        NimiV1RDTO valmistavaKoututusKuvaus = getValmistavaKoututusKuvaus(k);
-        NimiV1RDTO kuvauskomoTavoitteet = getKuvausKomoTavoitteet(k);
-        NimiV1RDTO desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
-
+        NimiV1RDTO desc = getNayttotutkintoDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
-
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        if (k.getSuunniteltuKestoTyyppi() != null)
-            setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
-        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
     public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
             Map<String, Koodi> koodisto) {
-        NimiV1RDTO kuvauskomoSisalto = getKuvausKomoSisalto(k);
-        NimiV1RDTO kuvauskomoTavoitteet = getKuvausKomoTavoitteet(k);
-        NimiV1RDTO desc = findDescription(kuvauskomoSisalto, kuvauskomoTavoitteet);
-
+        NimiV1RDTO desc = getKoulutusDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "korkeakoulu", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
-
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        if (k.getSuunniteltuKestoTyyppi() != null)
-            setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
-        setQualifications(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
-        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
+        setQualificationsWithTutkintonimikes(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
     public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
             Map<String, Koodi> koodisto) {
-        NimiV1RDTO kuvauskomoSisalto = getKuvausKomoSisalto(k);
-        NimiV1RDTO kuvauskomoTavoitteet = getKuvausKomoTavoitteet(k);
-        NimiV1RDTO desc = findDescription(kuvauskomoSisalto, kuvauskomoTavoitteet);
-
+        NimiV1RDTO desc = getKoulutusDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
-
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        if (k.getSuunniteltuKestoTyyppi() != null)
-            setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
-        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
     public void fetchLukioInfo(KoulutusLukioV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
             Map<String, Koodi> koodisto) {
-        NimiV1RDTO kuvauskomoSisalto = getKuvausKomoSisalto(k);
-        NimiV1RDTO kuvauskomoTavoitteet = getKuvausKomoTavoitteet(k);
-        NimiV1RDTO desc = findDescription(kuvauskomoSisalto, kuvauskomoTavoitteet);
-
+        NimiV1RDTO desc = getKoulutusDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
-
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        if (k.getSuunniteltuKestoTyyppi() != null)
-            setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
-        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
 
     public void fetchAPNayttotutkintonaInfo(KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO k,
             Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, Map<String, Koodi> koodisto) {
-        NimiV1RDTO kuvauskomoSisalto = getKuvausKomoSisalto(k);
-        NimiV1RDTO valmistavaKoututusKuvaus = getValmistavaKoututusKuvaus(k);
-        NimiV1RDTO kuvauskomoTavoitteet = getKuvausKomoTavoitteet(k);
-        NimiV1RDTO desc = findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
-
+        NimiV1RDTO desc = getNayttotutkintoDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
-
-        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
-        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
-        if (k.getSuunniteltuKestoTyyppi() != null)
-            setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
-        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
         learningOpportunities.getLearningOpportunity().add(lo);
     }
-
 
     private LearningOpportunity initLearningOpportunity(KoulutusV1RDTO k, String koulutustypeForURL, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, String koulutusohjelma, Map<String, Koodi> haetutKoodit, NimiV1RDTO desc) {
         Set<String> opetusTarjoajat = k.getOpetusTarjoajat();
@@ -239,7 +152,49 @@ public class KoulutusWrapper {
         lo.getUrl().add(createUrl(URL_PREFIX_EN + koulutustypeForURL + "/" + k.getOid(), "en"));
         lo.getUrl().add(createUrl(URL_PREFIX_SV + koulutustypeForURL + "/" + k.getOid(), "sv"));
         lo.setEducationLevel(haetutKoodit.get(koulutusohjelma).getIsced2011koulutusaste());
+
+        setTeachingLangs(k.getOpetuskielis().getMeta(), lo);
+        setStudyType(k.getOpetusPaikkas().getUris(), k.getOpetusmuodos().getUris(), lo);
+        if (k.getSuunniteltuKestoTyyppi() != null)
+            setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
+        setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
+
         return lo;
+    }
+
+
+    //// Common helpers
+    private NimiV1RDTO getNayttotutkintoDesc(NayttotutkintoV1RDTO k) {
+        NimiV1RDTO kuvauskomoSisalto = getKuvausKomoSisalto(k);
+        NimiV1RDTO valmistavaKoututusKuvaus = getValmistavaKoututusKuvaus(k);
+        NimiV1RDTO kuvauskomoTavoitteet = getKuvausKomoTavoitteet(k);
+        return findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
+    }
+
+    private NimiV1RDTO getKoulutusDesc(KoulutusV1RDTO k) {
+        NimiV1RDTO kuvauskomoSisalto = getKuvausKomoSisalto(k);
+        NimiV1RDTO kuvauskomoTavoitteet = getKuvausKomoTavoitteet(k);
+        return findDescription(kuvauskomoSisalto, kuvauskomoTavoitteet);
+    }
+
+    private NimiV1RDTO getKuvausKomoSisalto(KoulutusV1RDTO k) {
+        if (k != null && k.getKuvausKomoto() != null && k.getKuvausKomoto().get(KomotoTeksti.SISALTO) != null) {
+            return k.getKuvausKomoto().get(KomotoTeksti.SISALTO);
+        }
+        return null;
+    }
+    private NimiV1RDTO getValmistavaKoututusKuvaus(NayttotutkintoV1RDTO k) {
+        if (k != null && k.getValmistavaKoulutus() != null && k.getValmistavaKoulutus().getKuvaus() != null
+                && k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO) != null) {
+            return k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO);
+        }
+        return null;
+    }
+    private NimiV1RDTO getKuvausKomoTavoitteet(KoulutusV1RDTO k) {
+        if (k != null && k.getKuvausKomo() != null && k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
+            return k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
+        }
+        return null;
     }
 
     private NimiV1RDTO findDescription(NimiV1RDTO... nimiV1RDTOs) { //FIXME: voidaanko kayttaa
@@ -367,8 +322,8 @@ public class KoulutusWrapper {
         }
     }
 
-    private void setQualifications(KoodiUrisV1RDTO tutkintonimikes, KuvausV1RDTO<KomoTeksti> kuvausKomo, Set<String> opetusJarjestajat,
-            LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
+    private void setQualificationsWithTutkintonimikes(KoodiUrisV1RDTO tutkintonimikes, KuvausV1RDTO<KomoTeksti> kuvausKomo, Set<String> opetusJarjestajat,
+                                                      LearningOpportunity lo, Map<String, OrganisaatioRDTO> haetutOrganisaatiot) {
         Qualifications qualifications = of.createQualifications();
         setQualificationAwarded(tutkintonimikes.getMeta(), qualifications);
         if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
