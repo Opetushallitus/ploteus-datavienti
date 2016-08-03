@@ -54,14 +54,15 @@ public class KoulutusWrapper {
         InputStream in = getClass().getResourceAsStream("/HTMLTagsToBeRemoved.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         try {
-            for (String line; (line = br.readLine()) != null;) {
+            for (String line; (line = br.readLine()) != null; ) {
                 tagString += "|" + line;
             }
         } catch (IOException e) {
             log.error("Constructor file load failed: " + e);
         }
     }
-    public void createNewLearningOpportunities(){
+
+    public void createNewLearningOpportunities() {
         learningOpportunities = of.createLearningOpportunities();
         learningOpportunities.setKey(LEARNING_OPPORTUNITY_KEY);
         learningOpportunities.setXsdType(XsdTypeType.fromValue(XSD_TYPE));
@@ -69,7 +70,7 @@ public class KoulutusWrapper {
     }
 
     public void fetchAmmatillinenPerustutkintoInfo(KoulutusAmmatillinenPerustutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot,
-            KoulutusHakutulosV1RDTO kh, Map<String, Koodi> haetutKoodit) {
+                                                   KoulutusHakutulosV1RDTO kh, Map<String, Koodi> haetutKoodit) {
         NimiV1RDTO desc = getKoulutusDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), haetutKoodit, desc);
         setQualificationsWithTutkintonimikes(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
@@ -77,7 +78,7 @@ public class KoulutusWrapper {
     }
 
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
-            Map<String, Koodi> koodisto) {
+                                 Map<String, Koodi> koodisto) {
         NimiV1RDTO desc = getNayttotutkintoDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
@@ -85,7 +86,7 @@ public class KoulutusWrapper {
     }
 
     public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
-            Map<String, Koodi> koodisto) {
+                                 Map<String, Koodi> koodisto) {
         NimiV1RDTO desc = getNayttotutkintoDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
@@ -93,7 +94,7 @@ public class KoulutusWrapper {
     }
 
     public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
-            Map<String, Koodi> koodisto) {
+                                Map<String, Koodi> koodisto) {
         NimiV1RDTO desc = getKoulutusDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "korkeakoulu", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualificationsWithTutkintonimikes(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
@@ -101,7 +102,7 @@ public class KoulutusWrapper {
     }
 
     public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
-            Map<String, Koodi> koodisto) {
+                                    Map<String, Koodi> koodisto) {
         NimiV1RDTO desc = getKoulutusDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
@@ -109,7 +110,7 @@ public class KoulutusWrapper {
     }
 
     public void fetchLukioInfo(KoulutusLukioV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
-            Map<String, Koodi> koodisto) {
+                               Map<String, Koodi> koodisto) {
         NimiV1RDTO desc = getKoulutusDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
@@ -117,7 +118,7 @@ public class KoulutusWrapper {
     }
 
     public void fetchAPNayttotutkintonaInfo(KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO k,
-            Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, Map<String, Koodi> koodisto) {
+                                            Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh, Map<String, Koodi> koodisto) {
         NimiV1RDTO desc = getNayttotutkintoDesc(k);
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
@@ -183,6 +184,7 @@ public class KoulutusWrapper {
         }
         return null;
     }
+
     private NimiV1RDTO getValmistavaKoututusKuvaus(NayttotutkintoV1RDTO k) {
         if (k != null && k.getValmistavaKoulutus() != null && k.getValmistavaKoulutus().getKuvaus() != null
                 && k.getValmistavaKoulutus().getKuvaus().get(KomotoTeksti.SISALTO) != null) {
@@ -190,6 +192,7 @@ public class KoulutusWrapper {
         }
         return null;
     }
+
     private NimiV1RDTO getKuvausKomoTavoitteet(KoulutusV1RDTO k) {
         if (k != null && k.getKuvausKomo() != null && k.getKuvausKomo().get(KomoTeksti.TAVOITTEET) != null) {
             return k.getKuvausKomo().get(KomoTeksti.TAVOITTEET);
@@ -199,11 +202,11 @@ public class KoulutusWrapper {
 
     private NimiV1RDTO findDescription(NimiV1RDTO... nimiV1RDTOs) { //FIXME: voidaanko kayttaa
         for (NimiV1RDTO n : nimiV1RDTOs) {
-            if(isNotEmpty(n, LANG_CODE_KIELI_EN)){
+            if (isNotEmpty(n, LANG_CODE_KIELI_EN)) {
                 return n;
-            } else if(isNotEmpty(n, LANG_CODE_KIELI_FI)){
+            } else if (isNotEmpty(n, LANG_CODE_KIELI_FI)) {
                 return n;
-            } else if(isNotEmpty(n, LANG_CODE_KIELI_SV)){
+            } else if (isNotEmpty(n, LANG_CODE_KIELI_SV)) {
                 return n;
             }
         }
@@ -217,37 +220,42 @@ public class KoulutusWrapper {
         return n != null && n.getTekstis() != null && n.getTekstis().get(lang) != null && !n.getTekstis().get(lang).trim().equals("");
     }
 
+    private boolean isNotEmptyMeta(NimiV1RDTO n, String lang) {
+        return n != null && n.getMeta().get(lang) != null
+                && !n.getMeta().get(lang).getNimi().trim().equals("");
+    }
+
+    private boolean isNotEmpty(KoodiV1RDTO k, String lang) {
+        return k != null && k.getMeta().get(lang) != null
+                && !k.getMeta().get(lang).getNimi().trim().equals("");
+    }
+
+
     private void setTitle(NimiV1RDTO koulutusohjelma, LearningOpportunity lo, KoodiV1RDTO koulutuskoodi) {
-        if (!koulutusohjelma.getTekstis().isEmpty()) {
-            if (koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_EN) != null
-                    && !koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_EN).trim().equals("")) {
-                lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_EN), TITLE_LANG_CODE_EN));
-            } else if (koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_FI) != null
-                    && !koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_FI).trim().equals("")) {
-                lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_FI), TITLE_LANG_CODE_FI));
-            } else {
-                lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_SV), TITLE_LANG_CODE_SV));
-            }
-        } else if (koulutusohjelma.getMeta() != null && !koulutusohjelma.getMeta().isEmpty()) {
-            if (koulutusohjelma.getMeta().get(LANG_CODE_KIELI_EN) != null
-                    && !koulutusohjelma.getMeta().get(LANG_CODE_KIELI_EN).getNimi().trim().equals("")) {
-                lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getMeta().get(LANG_CODE_KIELI_EN).getNimi(), TITLE_LANG_CODE_EN));
-            } else if (koulutusohjelma.getMeta().get(LANG_CODE_KIELI_FI) != null
-                    && !koulutusohjelma.getMeta().get(LANG_CODE_KIELI_FI).getNimi().trim().equals("")) {
-                lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getMeta().get(LANG_CODE_KIELI_FI).getNimi(), TITLE_LANG_CODE_FI));
-            } else {
-                lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getMeta().get(LANG_CODE_KIELI_SV).getNimi(), TITLE_LANG_CODE_SV));
-            }
+
+        if (isNotEmpty(koulutusohjelma, LANG_CODE_KIELI_EN)) {
+            lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_EN), TITLE_LANG_CODE_EN));
+        } else if (isNotEmpty(koulutusohjelma, LANG_CODE_KIELI_FI)) {
+            lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_FI), TITLE_LANG_CODE_FI));
+        } else if (isNotEmpty(koulutusohjelma, LANG_CODE_KIELI_SV)) {
+            lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getTekstis().get(LANG_CODE_KIELI_SV), TITLE_LANG_CODE_SV));
+
+        } else if (isNotEmptyMeta(koulutusohjelma, LANG_CODE_KIELI_EN)) {
+            lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getMeta().get(LANG_CODE_KIELI_EN).getNimi(), TITLE_LANG_CODE_EN));
+        } else if (isNotEmptyMeta(koulutusohjelma, LANG_CODE_KIELI_FI)) {
+            lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getMeta().get(LANG_CODE_KIELI_FI).getNimi(), TITLE_LANG_CODE_FI));
+        } else if (isNotEmptyMeta(koulutusohjelma, LANG_CODE_KIELI_SV)) {
+            lo.getTitle().add(createI18NonEmptyString(koulutusohjelma.getMeta().get(LANG_CODE_KIELI_SV).getNimi(), TITLE_LANG_CODE_SV));
+
+        } else if (isNotEmpty(koulutuskoodi, LANG_CODE_KIELI_EN)) {
+            lo.getTitle().add(createI18NonEmptyString(koulutuskoodi.getMeta().get(LANG_CODE_KIELI_EN).getNimi(), TITLE_LANG_CODE_EN));
+        } else if (isNotEmpty(koulutuskoodi, LANG_CODE_KIELI_FI)) {
+            lo.getTitle().add(createI18NonEmptyString(koulutuskoodi.getMeta().get(LANG_CODE_KIELI_FI).getNimi(), TITLE_LANG_CODE_FI));
+        } else if (isNotEmpty(koulutuskoodi, LANG_CODE_KIELI_FI)) {
+            lo.getTitle().add(createI18NonEmptyString(koulutuskoodi.getMeta().get(LANG_CODE_KIELI_SV).getNimi(), TITLE_LANG_CODE_SV));
+
         } else {
-            if (koulutuskoodi.getMeta().get(LANG_CODE_KIELI_EN) != null
-                    && !koulutuskoodi.getMeta().get(LANG_CODE_KIELI_EN).getNimi().trim().equals("")) {
-                lo.getTitle().add(createI18NonEmptyString(koulutuskoodi.getMeta().get(LANG_CODE_KIELI_EN).getNimi(), TITLE_LANG_CODE_EN));
-            } else if (koulutuskoodi.getMeta().get(LANG_CODE_KIELI_FI) != null
-                    && !koulutuskoodi.getMeta().get(LANG_CODE_KIELI_FI).getNimi().trim().equals("")) {
-                lo.getTitle().add(createI18NonEmptyString(koulutuskoodi.getMeta().get(LANG_CODE_KIELI_FI).getNimi(), TITLE_LANG_CODE_FI));
-            } else {
-                lo.getTitle().add(createI18NonEmptyString(koulutuskoodi.getMeta().get(LANG_CODE_KIELI_SV).getNimi(), TITLE_LANG_CODE_SV));
-            }
+            throw new RuntimeException("No title for lo " + lo.getLearningOpportunityId());
         }
     }
 
