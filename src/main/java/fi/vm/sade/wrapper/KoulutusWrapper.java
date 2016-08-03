@@ -604,7 +604,7 @@ public class KoulutusWrapper {
     private String removeUnwantedHTMLTags(String input) {
         String stripped = null;
         if (input != null) {
-            stripped = input.replaceAll("</?(" + tagString + "){1}.*?/?>", "");
+            stripped = input.replaceAll("</?(" + tagString + ").*?/?>", "");
         }
         return stripped;
     }
