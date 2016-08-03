@@ -289,47 +289,26 @@ public class KoulutusWrapper {
         return lo;
     }
 
-    private NimiV1RDTO findDescription(NimiV1RDTO nimiV1RDTO, NimiV1RDTO nimiV1RDTO2, NimiV1RDTO nimiV1RDTO3) { //FIXME: voidaanko kayttaa
-        NimiV1RDTO desc = null;
-        if (nimiV1RDTO != null && nimiV1RDTO.getTekstis() != null) {
-            if (nimiV1RDTO.getTekstis().get("kieli_en") != null && !nimiV1RDTO.getTekstis().get("kieli_en").trim().equals("")) {
-                desc = nimiV1RDTO;
-            } else if (nimiV1RDTO.getTekstis().get("kieli_fi") != null && !nimiV1RDTO.getTekstis().get("kieli_fi").trim().equals("")) {
-                desc = nimiV1RDTO;
-            } else if (nimiV1RDTO.getTekstis().get("kieli_sv") != null && !nimiV1RDTO.getTekstis().get("kieli_sv").trim().equals("")) {
-                desc = nimiV1RDTO;
+    private NimiV1RDTO findDescription(NimiV1RDTO... nimiV1RDTOs) { //FIXME: voidaanko kayttaa
+        for (NimiV1RDTO n : nimiV1RDTOs) {
+            if(isNotEmpty(n, LANG_CODE_KIELI_EN)){
+                return n;
+            }
+            if(isNotEmpty(n, LANG_CODE_KIELI_FI)){
+                return n;
+            }
+            if(isNotEmpty(n, LANG_CODE_KIELI_SV)){
+                return n;
             }
         }
-        if (desc == null && nimiV1RDTO2 != null && nimiV1RDTO2.getTekstis() != null) {
-            if (nimiV1RDTO2.getTekstis() != null && nimiV1RDTO2.getTekstis().get("kieli_en") != null
-                    && !nimiV1RDTO2.getTekstis().get("kieli_en").trim().equals("")) {
-                desc = nimiV1RDTO2;
-            } else if (nimiV1RDTO2.getTekstis() != null && nimiV1RDTO2.getTekstis().get("kieli_fi") != null
-                    && !nimiV1RDTO2.getTekstis().get("kieli_fi").trim().equals("")) {
-                desc = nimiV1RDTO2;
-            } else if (nimiV1RDTO2.getTekstis() != null && nimiV1RDTO2.getTekstis().get("kieli_sv") != null
-                    && !nimiV1RDTO2.getTekstis().get("kieli_sv").trim().equals("")) {
-                desc = nimiV1RDTO2;
-            }
-        }
-        if (desc == null && nimiV1RDTO3 != null && nimiV1RDTO3.getTekstis() != null) {
-            if (nimiV1RDTO3.getTekstis() != null && nimiV1RDTO3.getTekstis().get("kieli_en") != null
-                    && !nimiV1RDTO3.getTekstis().get("kieli_en").trim().equals("")) {
-                desc = nimiV1RDTO3;
-            } else if (nimiV1RDTO3.getTekstis() != null && nimiV1RDTO3.getTekstis().get("kieli_fi") != null
-                    && !nimiV1RDTO3.getTekstis().get("kieli_fi").trim().equals("")) {
-                desc = nimiV1RDTO3;
-            } else if (nimiV1RDTO3.getTekstis() != null && nimiV1RDTO3.getTekstis().get("kieli_sv") != null
-                    && !nimiV1RDTO3.getTekstis().get("kieli_sv").trim().equals("")) {
-                desc = nimiV1RDTO3;
-            }
-        }
-        if (desc == null) {
-            desc = new NimiV1RDTO();
-            desc.setTekstis(new HashMap<>());
-            desc.getTekstis().put("kieli_en", "No description available");
-        }
+        NimiV1RDTO desc = new NimiV1RDTO();
+        desc.setTekstis(new HashMap<>());
+        desc.getTekstis().put("kieli_en", "No description available");
         return desc;
+    }
+
+    private boolean isNotEmpty(NimiV1RDTO n, String lang) {
+        return n != null && n.getTekstis() != null && n.getTekstis().get(lang) != null && !n.getTekstis().get(lang).trim().equals("");
     }
 
     private void setTitle(NimiV1RDTO koulutusohjelma, LearningOpportunity lo, KoodiV1RDTO koulutuskoodi) {
