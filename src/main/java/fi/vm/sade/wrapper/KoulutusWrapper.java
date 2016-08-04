@@ -221,12 +221,12 @@ public class KoulutusWrapper {
     }
 
     private boolean isNotEmptyMeta(NimiV1RDTO n, String lang) {
-        return n != null && n.getMeta().get(lang) != null
+        return n != null && n.getMeta() != null && n.getMeta().get(lang) != null
                 && !n.getMeta().get(lang).getNimi().trim().equals("");
     }
 
     private boolean isNotEmpty(KoodiV1RDTO k, String lang) {
-        return k != null && k.getMeta().get(lang) != null
+        return k != null && k.getMeta() != null && k.getMeta().get(lang) != null
                 && !k.getMeta().get(lang).getNimi().trim().equals("");
     }
 
@@ -529,8 +529,12 @@ public class KoulutusWrapper {
     }
 
     private void setTeachingLangs(Map<String, KoodiV1RDTO> teachingLangs, LearningOpportunity lo) {
-        teachingLangs.values().stream().filter(e -> !e.getArvo().toLowerCase().equals("la"))
-                .forEach(e -> lo.getTeachingLanguage().add(LanguageCode.fromValue(e.getArvo().toLowerCase())));
+        teachingLangs
+                .values()
+                .stream()
+                .filter(e -> !e.getArvo().toLowerCase().equals("la"))
+                .forEach(e ->
+                        lo.getTeachingLanguage().add(LanguageCode.fromValue(e.getArvo().toLowerCase())));
     }
 
     private void setStudyType(Map<String, Integer> paikkaList, Map<String, Integer> muotoList, LearningOpportunity lo) {
