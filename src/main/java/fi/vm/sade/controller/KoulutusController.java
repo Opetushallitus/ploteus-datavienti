@@ -1,34 +1,10 @@
 package fi.vm.sade.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.cxf.helpers.IOUtils;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-
 import fi.vm.sade.javautils.httpclient.OphHttpClient;
 import fi.vm.sade.javautils.httpclient.OphHttpRequest;
 import fi.vm.sade.koodisto.service.types.common.KoodiType;
@@ -44,15 +20,30 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.HakutuloksetV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.TarjoajaHakutulosV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.AmmattitutkintoV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ErikoisammattitutkintoV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusAmmatillinenPerustutkintoV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusKorkeakouluV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.KoulutusLukioV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.ValmistavaKoulutusV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.*;
 import fi.vm.sade.tarjonta.shared.types.ToteutustyyppiEnum;
 import fi.vm.sade.wrapper.KoulutusWrapper;
+import org.apache.cxf.helpers.IOUtils;
+import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class KoulutusController {
@@ -77,10 +68,6 @@ public class KoulutusController {
     private WebResource v1OrganisaatioResource;
 
     private KoulutusWrapper kw;
-
-    // Debuggia varten
-    private List<String> notValidKoodiList = new ArrayList<String>();
-    private List<String> emptyKoodiList = new ArrayList<String>();
 
     @Autowired
     public KoulutusController(HttpClient httpclient, UrlConfiguration urlConfiguration, OphProperties urlProperties,
@@ -143,7 +130,7 @@ public class KoulutusController {
                 // no desc
                 // ongelma tapaus no. 5: 1.2.246.562.10.48791047698
                 // tai tyhja kaikille tuloksille
-                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations("").getResult();
+                HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset = searchOrganisationsEducations().getResult();
                 int count = 0;
                 for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
                     count += organisaatioData.getTulokset().size();
@@ -261,7 +248,7 @@ public class KoulutusController {
                     case KoulutusAsteTyyppi.AMMATILLINENPERUSKOULUTUS:
                         if (checkKoulutusValidnessFromOpintopolku("koulutus", koulutusData.getOid())) {
                             if (fetchKoodi(koulutusData)) {
-                                addKoulutusToArray(koulutusData, count, current);
+                                addKoulutusToArray(koulutusData);
                             }
                         }
                         break;
@@ -269,14 +256,14 @@ public class KoulutusController {
                     case KoulutusAsteTyyppi.ERIKOISAMMATTITUTKINTO:
                         if (checkKoulutusValidnessFromOpintopolku("adultvocational", koulutusData.getOid())) {
                             if (fetchKoodi(koulutusData)) {
-                                addKoulutusToArray(koulutusData, count, current);
+                                addKoulutusToArray(koulutusData);
                             }
                         }
                         break;
                     case KoulutusAsteTyyppi.KORKEAKOULUTUS:
                         if (checkKoulutusValidnessFromOpintopolku("highered", koulutusData.getOid())) {
                             if (fetchKoodi(koulutusData)) {
-                                addKoulutusToArray(koulutusData, count, current);
+                                addKoulutusToArray(koulutusData);
                             }
                         }
                         break;
@@ -292,19 +279,14 @@ public class KoulutusController {
                     double estimate = (double) (count - current) / (double) 1200;
                     String text = "Haetaan alustavat Koulutukset ja Koodistodata " + current + "/" + count;
                     setStatusObject(estimate, status, text);
-                }
-                if (koulutusData.getKoulutuskoodi() == null) {
-                    emptyKoodiList.add(koulutusData.getOid());
-                } else if (koulutusData.getKoulutuskoodi().startsWith("koulutus_0")) {
-                    notValidKoodiList.add(koulutusData.getOid());
+                    if (koulutusData.getKoulutuskoodi() == null) {
+                        log.debug("Koulutuskooditon {}", koulutusData.getOid());
+                    } else if (koulutusData.getKoulutuskoodi().startsWith("koulutus_0")) {
+                        log.debug("0-alkiuinen koulutuskoodi {}", koulutusData.getOid());
+                    }
                 }
             }
         }
-        // Debuggia varten
-        // System.out.println("not Valid");
-        // System.out.println(notValidKoodiList);
-        // System.out.println("empty");
-        // System.out.println(emptyKoodiList);
     }
 
     private void setStatusObject(double estimate, double status, String statusText) {
@@ -421,11 +403,11 @@ public class KoulutusController {
     }
 
     private OphHttpRequest get(String key, String... params) {
-        return httpclient.get(key, params);
+        return httpclient.get(key, (Object[]) params);
     }
 
     @SuppressWarnings("unchecked")
-    public ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> searchAmmatillinenPerustutkinto(String oid) throws Exception {
+    private ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO> searchAmmatillinenPerustutkinto(String oid) throws Exception {
         return (ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<KoulutusAmmatillinenPerustutkintoV1RDTO>>() {
                 });
@@ -441,64 +423,56 @@ public class KoulutusController {
     }
 
     @SuppressWarnings("unchecked")
-    public ResultV1RDTO<AmmattitutkintoV1RDTO> searchAmmattitutkinto(String oid) throws Exception {
+    private ResultV1RDTO<AmmattitutkintoV1RDTO> searchAmmattitutkinto(String oid) throws Exception {
         return (ResultV1RDTO<AmmattitutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<AmmattitutkintoV1RDTO>>() {
                 });
     }
 
     @SuppressWarnings("unchecked")
-    public ResultV1RDTO<ErikoisammattitutkintoV1RDTO> searchErikoisammattitutkinto(String oid) throws Exception {
+    private ResultV1RDTO<ErikoisammattitutkintoV1RDTO> searchErikoisammattitutkinto(String oid) throws Exception {
         return (ResultV1RDTO<ErikoisammattitutkintoV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<ErikoisammattitutkintoV1RDTO>>() {
                 });
     }
 
     @SuppressWarnings("unchecked")
-    public ResultV1RDTO<KoulutusKorkeakouluV1RDTO> searchKoulutusKorkeakoulu(String oid) throws Exception {
+    private ResultV1RDTO<KoulutusKorkeakouluV1RDTO> searchKoulutusKorkeakoulu(String oid) throws Exception {
         return (ResultV1RDTO<KoulutusKorkeakouluV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<KoulutusKorkeakouluV1RDTO>>() {
                 });
     }
 
     @SuppressWarnings("unchecked")
-    public ResultV1RDTO<ValmistavaKoulutusV1RDTO> searchValmistavaKoulutus(String oid) throws Exception {
+    private ResultV1RDTO<ValmistavaKoulutusV1RDTO> searchValmistavaKoulutus(String oid) throws Exception {
         return (ResultV1RDTO<ValmistavaKoulutusV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<ValmistavaKoulutusV1RDTO>>() {
                 });
     }
 
     @SuppressWarnings("unchecked")
-    public ResultV1RDTO<KoulutusLukioV1RDTO> searchKoulutusLukio(String oid) throws Exception {
+    private ResultV1RDTO<KoulutusLukioV1RDTO> searchKoulutusLukio(String oid) throws Exception {
         return (ResultV1RDTO<KoulutusLukioV1RDTO>) getWithRetries(v1KoulutusResource.path(oid).queryParam("meta", "true"),
                 new GenericType<ResultV1RDTO<KoulutusLukioV1RDTO>>() {
                 });
     }
 
-    public OrganisaatioRDTO searchOrganisation(String oid) throws Exception {
+    private OrganisaatioRDTO searchOrganisation(String oid) throws Exception {
         return (OrganisaatioRDTO) getWithRetries(v1OrganisaatioResource.path(oid).queryParam("meta", "true"), new GenericType<OrganisaatioRDTO>() {
         });
     }
 
-    public boolean checkKoulutusValidnessFromOpintopolku(String type, String oid) {
+    private boolean checkKoulutusValidnessFromOpintopolku(String type, String oid) {
         return get("koulutusinformaatio.validoid", type, oid).retryOnError(6, 2500).skipResponseAssertions()
                 .execute(response -> response.getStatusCode() == 200);
     }
 
     @SuppressWarnings("unchecked")
-    public ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> searchOrganisationsEducations(String OrganisationOid) throws Exception {
-        if (OrganisationOid.equals("")) {
-            return (ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>) getWithRetries(
-                    v1KoulutusResource.path("search").queryParam("tila", "JULKAISTU").queryParam("meta", "true").queryParam("img", "false"),
-                    new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>() {
-                    });
-        } else {
-            return (ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>) getWithRetries(
-                    v1KoulutusResource.path("search").queryParam("organisationOid", OrganisationOid).queryParam("tila", "JULKAISTU")
-                            .queryParam("meta", "true").queryParam("img", "false"),
-                    new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>() {
-                    });
-        }
+    private ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>> searchOrganisationsEducations() throws Exception {
+        return (ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>) getWithRetries(
+                v1KoulutusResource.path("search").queryParam("tila", "JULKAISTU").queryParam("meta", "true").queryParam("img", "false"),
+                new GenericType<ResultV1RDTO<HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO>>>() {
+                });
     }
 
     @SuppressWarnings("unchecked")
@@ -527,7 +501,7 @@ public class KoulutusController {
         }
     }
 
-    private void addKoulutusToArray(KoulutusHakutulosV1RDTO koulutusData, int count, int current) {
+    private void addKoulutusToArray(KoulutusHakutulosV1RDTO koulutusData) {
         log.debug("Adding : " + koulutusData.getOid());
         haetutKoulutukset.add(koulutusData);
     }
