@@ -185,14 +185,10 @@ public class KoulutusWrapper {
         addMandatoryEnglishNonEmpty(lo.getNonPreferredTerm());
         addMandatoryEnglishNonEmpty(lo.getProviderName());
         addMandatoryEnglishNonEmpty(lo.getTitle());
-        
-        
 //TODO
-//        List<CourseLocation> courseLocation;
-//        List<I18NUrl> url;
 //        List<Qualifications> qualifications;
-//        List<SpecialTargetGroupType> specialTargetGroup;
-//        List<ThematicAreas> thematicAreas;
+//        List<SpecialTargetGroupType> specialTargetGroup; <- Ei ole xml:ssä ollenkaan
+//        List<ThematicAreas> thematicAreas; <- Ei kielimäärittelyä
 
     }
 
