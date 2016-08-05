@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Component
 public class KoulutusWrapper {
@@ -39,12 +40,9 @@ public class KoulutusWrapper {
     private static final String URL_PREFIX_SV = "https://studieinfo.fi/app/#!/";
 
     private static final Logger log = LoggerFactory.getLogger(KoulutusWrapper.class);
-
-    private LearningOpportunities learningOpportunities;
-
     private final ObjectFactory of;
     private final fi.vm.sade.parser.JAXBParser JAXBParser;
-
+    private LearningOpportunities learningOpportunities;
     private String tagString;
 
     @Autowired
@@ -160,7 +158,66 @@ public class KoulutusWrapper {
             setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
 
+        addMandatoryEnglish(lo);
+
         return lo;
+    }
+
+    private void addMandatoryEnglish(LearningOpportunity lo) {
+
+        addMandatoryEnglish(lo.getAccessRequirements());
+        addMandatoryEnglish(lo.getAdmissionProcedure());
+        addMandatoryEnglish(lo.getCosts());
+        addMandatoryEnglish(lo.getCredits());
+        addMandatoryEnglish(lo.getDurationInformation());
+        addMandatoryEnglish(lo.getGrants());
+        addMandatoryEnglish(lo.getProviderContactInfo());
+        addMandatoryEnglish(lo.getProviderType());
+        addMandatoryEnglish(lo.getStartDate());
+
+        addMandatoryEnglishNonEmpty(lo.getDescription());
+        addMandatoryEnglishNonEmpty(lo.getMoreInfo());
+        addMandatoryEnglishNonEmpty(lo.getNonPreferredTerm());
+        addMandatoryEnglishNonEmpty(lo.getProviderName());
+        addMandatoryEnglishNonEmpty(lo.getTitle());
+
+//TODO
+//        List<CourseLocation> courseLocation;
+//        List<I18NUrl> url;
+//        List<Qualifications> qualifications;
+//        List<SpecialTargetGroupType> specialTargetGroup;
+//        List<ThematicAreas> thematicAreas;
+
+    }
+
+    private void addMandatoryEnglishNonEmpty(List<I18NNonEmptyString> list) {
+        if (list == null || list.isEmpty()) return;
+
+        Map<LanguageCode, I18NNonEmptyString> map = list.stream().collect(Collectors.toMap(I18NNonEmptyString::getLanguage, s -> s));
+        if (!map.containsKey(LanguageCode.EN)) {
+            if (!map.containsKey(LanguageCode.FI)) {
+                list.add(createI18NonEmptyString(map.get(LanguageCode.FI).getValue(), LanguageCode.EN));
+            } else if (!map.containsKey(LanguageCode.SV)) {
+                list.add(createI18NonEmptyString(map.get(LanguageCode.SV).getValue(), LanguageCode.EN));
+            } else {
+                list.add(createI18NonEmptyString(map.values().iterator().next().getValue(), LanguageCode.EN));
+            }
+        }
+    }
+
+    private void addMandatoryEnglish(List<I18NString> list) {
+        if (list == null || list.isEmpty()) return;
+
+        Map<LanguageCode, I18NNonEmptyString> map = list.stream().collect(Collectors.toMap(I18NNonEmptyString::getLanguage, s -> s));
+        if (!map.containsKey(LanguageCode.EN)) {
+            if (!map.containsKey(LanguageCode.FI)) {
+                list.add(createI18NString(map.get(LanguageCode.FI).getValue(), LanguageCode.EN));
+            } else if (!map.containsKey(LanguageCode.SV)) {
+                list.add(createI18NString(map.get(LanguageCode.SV).getValue(), LanguageCode.EN));
+            } else {
+                list.add(createI18NString(map.values().iterator().next().getValue(), LanguageCode.EN));
+            }
+        }
     }
 
 
@@ -305,16 +362,24 @@ public class KoulutusWrapper {
     }
 
     private I18NNonEmptyString createI18NonEmptyString(String string, String lang) {
+        return createI18NonEmptyString(string, LanguageCode.fromValue(lang));
+    }
+
+    private I18NNonEmptyString createI18NonEmptyString(String string, LanguageCode lang) {
         final I18NNonEmptyString i18Non = of.createI18NNonEmptyString();
         i18Non.setValue(string);
-        i18Non.setLanguage(LanguageCode.fromValue(lang));
+        i18Non.setLanguage(lang);
         return i18Non;
     }
 
     private I18NString createI18NString(String string, String lang) {
+        return createI18NString(string, LanguageCode.fromValue(lang));
+    }
+
+    private I18NString createI18NString(String string, LanguageCode lang) {
         I18NString temp = of.createI18NString();
         temp.setValue(string);
-        temp.setLanguage(LanguageCode.fromValue(lang));
+        temp.setLanguage(lang);
         return temp;
     }
 
