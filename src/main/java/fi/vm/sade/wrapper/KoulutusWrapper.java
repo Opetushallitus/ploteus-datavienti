@@ -73,6 +73,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), haetutKoodit, desc);
         setQualificationsWithTutkintonimikes(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
@@ -81,6 +82,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
@@ -89,6 +91,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
@@ -97,6 +100,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "korkeakoulu", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualificationsWithTutkintonimikes(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
@@ -105,6 +109,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchLukioInfo(KoulutusLukioV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
@@ -113,6 +118,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchAPNayttotutkintonaInfo(KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO k,
@@ -121,6 +127,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     private LearningOpportunity initLearningOpportunity(KoulutusV1RDTO k, String koulutustypeForURL, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, String koulutusohjelma, Map<String, Koodi> haetutKoodit, NimiV1RDTO desc) {
@@ -157,8 +164,6 @@ public class KoulutusWrapper {
         if (k.getSuunniteltuKestoTyyppi() != null)
             setDurationInformation(k.getSuunniteltuKestoArvo(), k.getSuunniteltuKestoTyyppi().getNimi(), lo);
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
-
-        addMandatoryEnglish(lo);
 
         return lo;
     }
