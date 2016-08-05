@@ -76,6 +76,11 @@ public class KoulutusController {
         koodistoClient = new CachingKoodistoClient(urlConfiguration.url("koodisto-service.base"));
         tarjontaURI = urlProperties.require("tarjonta-service.koulutus", "");
         organisaatioURI = urlProperties.require("organisaatio-service.byOid", "");
+
+        log.info("Using koodisto: " + urlConfiguration.url("koodisto-service.base"));
+        log.info("Using tarjonta: " + urlProperties.require("tarjonta-service.koulutus", ""));
+        log.info("Using organisaatio: " + urlProperties.require("organisaatio-service.byOid", ""));
+
         kw = koulutusWrapper;
         kw.forwardStatusObject(statusObject);
     }
@@ -135,7 +140,8 @@ public class KoulutusController {
                 for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
                     count += organisaatioData.getTulokset().size();
                 }
-                fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset, count);
+                log.info("Found {} JULKAISTU koulutus", count);
+                fetchOrganisaatiotAndKoulutuksetAndKoodit(hakutulokset.getTulokset(), count);
                 // noin 1200 koulutusta minuutissa
                 statusObject.setDurationEstimate(haetutKoulutukset.size() / 1200);
                 statusObject.addFrontendOutput("Alustava Koulutus ja Koodistodata haettu");
@@ -219,7 +225,7 @@ public class KoulutusController {
                 kw.fetchLukioInfo(lukioKoulutus, organisaatioMap, kh, haetutKoodit);
                 break;
             default:
-                log.info("Skipping on data parsing Koulutus: " + kh.getKomoOid() + ", Type: " + kh.getKoulutusasteTyyppi() + " : "
+                log.warn("Skipping on data parsing Koulutus: " + kh.getKomoOid() + ", Type: " + kh.getKoulutusasteTyyppi() + " : "
                         + kh.getKoulutusmoduuliTyyppi().name() + " : " + kh.getToteutustyyppiEnum().name());
                 skip++;
             }
@@ -233,9 +239,9 @@ public class KoulutusController {
         return skip;
     }
 
-    private void fetchOrganisaatiotAndKoulutuksetAndKoodit(HakutuloksetV1RDTO<KoulutusHakutulosV1RDTO> hakutulokset, int count) throws Exception {
+    private void fetchOrganisaatiotAndKoulutuksetAndKoodit(List<TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO>> hakutulokset, int count) throws Exception {
         int current = 0;
-        for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset.getTulokset()) {
+        for (TarjoajaHakutulosV1RDTO<KoulutusHakutulosV1RDTO> organisaatioData : hakutulokset) {
             OrganisaatioRDTO organisaatio = searchOrganisation(organisaatioData.getOid());
             haetutOrganisaatiot.add(organisaatio);
             for (KoulutusHakutulosV1RDTO koulutusData : organisaatioData.getTulokset()) {
@@ -260,15 +266,20 @@ public class KoulutusController {
                             }
                         }
                         break;
-                    case KoulutusAsteTyyppi.KORKEAKOULUTUS:
+                        case KoulutusAsteTyyppi.KORKEAKOULUTUS:
                         if (checkKoulutusValidnessFromOpintopolku("highered", koulutusData.getOid())) {
                             if (fetchKoodi(koulutusData)) {
                                 addKoulutusToArray(koulutusData);
                             }
                         }
                         break;
+                    case KoulutusAsteTyyppi.VALMENTAVA_JA_KUNTOUTTAVA_OPETUS:
+                    case KoulutusAsteTyyppi.TUNTEMATON:
+                        //FIXME
+                        log.warn("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() + ", Type: " + koulutusData.getKoulutusasteTyyppi());
+                        break;
                     default:
-                        log.info("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() + ", Type: " + koulutusData.getKoulutusasteTyyppi());
+                        log.warn("Skipping on data fetch Koulutus: " + koulutusData.getKomoOid() + ", Type: " + koulutusData.getKoulutusasteTyyppi());
                         break;
                     }
                 }
