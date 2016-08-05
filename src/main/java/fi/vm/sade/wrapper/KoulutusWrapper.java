@@ -213,7 +213,7 @@ public class KoulutusWrapper {
     private void addMandatoryEnglish(List<I18NString> list) {
         if (list == null || list.isEmpty()) return;
 
-        Map<LanguageCode, I18NNonEmptyString> map = list.stream().collect(Collectors.toMap(I18NNonEmptyString::getLanguage, s -> s));
+        Map<LanguageCode, I18NString> map = list.stream().collect(Collectors.toMap(I18NString::getLanguage, s -> s));
         if (!map.containsKey(LanguageCode.EN)) {
             if (!map.containsKey(LanguageCode.FI)) {
                 list.add(createI18NString(map.get(LanguageCode.FI).getValue(), LanguageCode.EN));
