@@ -185,7 +185,8 @@ public class KoulutusWrapper {
         addMandatoryEnglishNonEmpty(lo.getNonPreferredTerm());
         addMandatoryEnglishNonEmpty(lo.getProviderName());
         addMandatoryEnglishNonEmpty(lo.getTitle());
-
+        
+        
 //TODO
 //        List<CourseLocation> courseLocation;
 //        List<I18NUrl> url;
@@ -558,10 +559,10 @@ public class KoulutusWrapper {
                         }
                     }
                     if (!address.isEmpty()) {
-                        I18NString addressInfo = createI18NString(address, "fi");
+                        I18NString addressInfo = createI18NString(address, "en");
                         if (!co.getCourseAddress().stream().filter(o -> o.getValue().equals(addressInfo.getValue())).findFirst().isPresent()) {
                             if (co.getCourseAddress().isEmpty()) {
-                                co.getCourseAddress().add(createI18NString(address, "fi"));
+                                co.getCourseAddress().add(createI18NString(address, "en"));
                             } else {
                                 String addressTemp = co.getCourseAddress().get(0).getValue();
                                 addressTemp += co.getCourseAddress().get(0).getValue().concat("<br>" + address);
