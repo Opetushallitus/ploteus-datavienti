@@ -58,7 +58,7 @@ public class KoulutusController {
     private List<KoulutusHakutulosV1RDTO> haetutKoulutukset;
     private List<OrganisaatioRDTO> haetutOrganisaatiot;
     private Map<String, Koodi> haetutKoodit;
-    private KoodistoClient koodistoClient;
+    private final KoodistoClient koodistoClient;
 
     private final StatusObject statusObject = new StatusObject();
 
@@ -67,7 +67,7 @@ public class KoulutusController {
     private WebResource v1KoulutusResource;
     private WebResource v1OrganisaatioResource;
 
-    private KoulutusWrapper kw;
+    private final KoulutusWrapper kw;
 
     @Autowired
     public KoulutusController(HttpClient httpclient, UrlConfiguration urlConfiguration, OphProperties urlProperties,
@@ -111,7 +111,7 @@ public class KoulutusController {
     }
 
     @RequestMapping("/koulutus/")
-    public String getKoulutukset() throws Exception {
+    public void getKoulutukset() throws Exception {
         if (statusObject.getStatus() == 0.00 || statusObject.getStatus() == 1.00) {
             int skipCount = 0;
             try {
@@ -173,8 +173,6 @@ public class KoulutusController {
             statusObject.setFrontendOutput("Yhdenaikaiset ajot eivät ole mahdollisia, ole hyvä ja odota vuoroa.");
             log.error("Coincident run");
         }
-        return "";
-
     }
 
     private int fetchKoulutukset(KoulutusWrapper kw, Map<String, OrganisaatioRDTO> organisaatioMap) throws Exception {
@@ -328,11 +326,10 @@ public class KoulutusController {
             }
         }
         if(code.getIsced2011koulutusaste() == null){
-            for (KoodiType k : kt) {
-                if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusastetaso1")){ //FIXME: voidaanko kayttaa
-                    code.setIsced2011koulutusaste(k.getKoodiArvo());
-                }
-            }
+            //FIXME: voidaanko kayttaa
+            kt.stream()
+                    .filter(k -> k.getKoodisto().getKoodistoUri().equals("isced2011koulutusastetaso1"))
+                    .forEach(k -> code.setIsced2011koulutusaste(k.getKoodiArvo()));
         }
         if (code.getIsced2011koulutusalataso3() == null || code.getIsced2011koulutusalataso3().equals("9999")) {
             return false;
@@ -413,8 +410,8 @@ public class KoulutusController {
         return koodiArvo;
     }
 
-    private OphHttpRequest get(String key, String... params) {
-        return httpclient.get(key, (Object[]) params);
+    private OphHttpRequest getValidOid(String... params) {
+        return httpclient.get("koulutusinformaatio.validoid", (Object[]) params);
     }
 
     @SuppressWarnings("unchecked")
@@ -474,7 +471,7 @@ public class KoulutusController {
     }
 
     private boolean checkKoulutusValidnessFromOpintopolku(String type, String oid) {
-        return get("koulutusinformaatio.validoid", type, oid).retryOnError(6, 2500).skipResponseAssertions()
+        return getValidOid(type, oid).retryOnError(6, 2500).skipResponseAssertions()
                 .execute(response -> response.getStatusCode() == 200);
     }
 
@@ -487,7 +484,7 @@ public class KoulutusController {
     }
 
     @SuppressWarnings("unchecked")
-    private Object getWithRetries(WebResource resource, GenericType type) throws Exception {
+    private Object getWithRetries(WebResource resource, GenericType type) {
         int retries = 5;
         log.debug("getWithRetries: " + resource.getURI().toString());
         while (--retries > 0) {
