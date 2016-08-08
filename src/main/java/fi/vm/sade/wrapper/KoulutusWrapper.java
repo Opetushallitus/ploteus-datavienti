@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Component
 public class KoulutusWrapper {
@@ -39,12 +40,9 @@ public class KoulutusWrapper {
     private static final String URL_PREFIX_SV = "https://studieinfo.fi/app/#!/";
 
     private static final Logger log = LoggerFactory.getLogger(KoulutusWrapper.class);
-
-    private LearningOpportunities learningOpportunities;
-
     private final ObjectFactory of;
     private final fi.vm.sade.parser.JAXBParser JAXBParser;
-
+    private LearningOpportunities learningOpportunities;
     private String tagString;
 
     @Autowired
@@ -75,6 +73,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), haetutKoodit, desc);
         setQualificationsWithTutkintonimikes(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchAmmattiInfo(AmmattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
@@ -83,6 +82,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchErikoisInfo(ErikoisammattitutkintoV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
@@ -91,6 +91,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchKorkeaInfo(KoulutusKorkeakouluV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
@@ -99,6 +100,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "korkeakoulu", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualificationsWithTutkintonimikes(k.getTutkintonimikes(), k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchValmistavaInfo(ValmistavaKoulutusV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
@@ -107,6 +109,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchLukioInfo(KoulutusLukioV1RDTO k, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, KoulutusHakutulosV1RDTO kh,
@@ -115,6 +118,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "koulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     public void fetchAPNayttotutkintonaInfo(KoulutusAmmatillinenPerustutkintoNayttotutkintonaV1RDTO k,
@@ -123,6 +127,7 @@ public class KoulutusWrapper {
         LearningOpportunity lo = initLearningOpportunity(k, "ammatillinenaikuiskoulutus", haetutOrganisaatiot, kh.getKoulutuskoodi(), koodisto, desc);
         setQualifications(k.getKuvausKomo(), k.getOpetusJarjestajat(), lo, haetutOrganisaatiot);
         learningOpportunities.getLearningOpportunity().add(lo);
+        addMandatoryEnglish(lo);
     }
 
     private LearningOpportunity initLearningOpportunity(KoulutusV1RDTO k, String koulutustypeForURL, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, String koulutusohjelma, Map<String, Koodi> haetutKoodit, NimiV1RDTO desc) {
@@ -161,6 +166,73 @@ public class KoulutusWrapper {
         setCredits(k.getOpintojenLaajuusarvo(), k.getOpintojenLaajuusyksikko(), lo);
 
         return lo;
+    }
+
+    private void addMandatoryEnglish(LearningOpportunity lo) {
+
+        addMandatoryEnglish(lo.getAccessRequirements());
+        addMandatoryEnglish(lo.getAdmissionProcedure());
+        addMandatoryEnglish(lo.getCosts());
+        addMandatoryEnglish(lo.getCredits());
+        addMandatoryEnglish(lo.getDurationInformation());
+        addMandatoryEnglish(lo.getGrants());
+        addMandatoryEnglish(lo.getProviderContactInfo());
+        addMandatoryEnglish(lo.getProviderType());
+        addMandatoryEnglish(lo.getStartDate());
+
+        addMandatoryEnglishNonEmpty(lo.getDescription());
+        addMandatoryEnglishNonEmpty(lo.getMoreInfo());
+        addMandatoryEnglishNonEmpty(lo.getNonPreferredTerm());
+        addMandatoryEnglishNonEmpty(lo.getProviderName());
+        addMandatoryEnglishNonEmpty(lo.getTitle());
+
+        addMandatoryEnglishQualifications(lo.getQualifications());
+
+//        List<SpecialTargetGroupType> specialTargetGroup; <- Ei ole xml:ssä ollenkaan
+//        List<ThematicAreas> thematicAreas; <- Ei kielimäärittelyä
+
+    }
+
+    private void addMandatoryEnglishQualifications(List<Qualifications> qualifications) {
+        if(qualifications == null) return;
+
+        for (Qualifications q : qualifications) {
+            addMandatoryEnglish(q.getAwardingBody());
+            addMandatoryEnglish(q.getAwardingBodyContactInfo());
+            addMandatoryEnglish(q.getOtherQualificationAwardedTerm());
+            addMandatoryEnglish(q.getQualificationAwarded());
+            addMandatoryEnglish(q.getQualificationAwardedDescription());
+        }
+    }
+
+    private void addMandatoryEnglishNonEmpty(List<I18NNonEmptyString> list) {
+        if (list == null || list.isEmpty()) return;
+
+        Map<LanguageCode, I18NNonEmptyString> map = list.stream().collect(Collectors.toMap(I18NNonEmptyString::getLanguage, s -> s));
+        if (!map.containsKey(LanguageCode.EN)) {
+            if (map.containsKey(LanguageCode.FI)) {
+                list.add(createI18NonEmptyString(map.get(LanguageCode.FI).getValue(), LanguageCode.EN));
+            } else if (map.containsKey(LanguageCode.SV)) {
+                list.add(createI18NonEmptyString(map.get(LanguageCode.SV).getValue(), LanguageCode.EN));
+            } else {
+                list.add(createI18NonEmptyString(map.values().iterator().next().getValue(), LanguageCode.EN));
+            }
+        }
+    }
+
+    private void addMandatoryEnglish(List<I18NString> list) {
+        if (list == null || list.isEmpty()) return;
+
+        Map<LanguageCode, I18NString> map = list.stream().collect(Collectors.toMap(I18NString::getLanguage, s -> s));
+        if (!map.containsKey(LanguageCode.EN)) {
+            if (map.containsKey(LanguageCode.FI)) {
+                list.add(createI18NString(map.get(LanguageCode.FI).getValue(), LanguageCode.EN));
+            } else if (map.containsKey(LanguageCode.SV)) {
+                list.add(createI18NString(map.get(LanguageCode.SV).getValue(), LanguageCode.EN));
+            } else {
+                list.add(createI18NString(map.values().iterator().next().getValue(), LanguageCode.EN));
+            }
+        }
     }
 
 
@@ -305,16 +377,24 @@ public class KoulutusWrapper {
     }
 
     private I18NNonEmptyString createI18NonEmptyString(String string, String lang) {
+        return createI18NonEmptyString(string, LanguageCode.fromValue(lang));
+    }
+
+    private I18NNonEmptyString createI18NonEmptyString(String string, LanguageCode lang) {
         final I18NNonEmptyString i18Non = of.createI18NNonEmptyString();
         i18Non.setValue(string);
-        i18Non.setLanguage(LanguageCode.fromValue(lang));
+        i18Non.setLanguage(lang);
         return i18Non;
     }
 
     private I18NString createI18NString(String string, String lang) {
+        return createI18NString(string, LanguageCode.fromValue(lang));
+    }
+
+    private I18NString createI18NString(String string, LanguageCode lang) {
         I18NString temp = of.createI18NString();
         temp.setValue(string);
-        temp.setLanguage(LanguageCode.fromValue(lang));
+        temp.setLanguage(lang);
         return temp;
     }
 
@@ -488,10 +568,10 @@ public class KoulutusWrapper {
                         }
                     }
                     if (!address.isEmpty()) {
-                        I18NString addressInfo = createI18NString(address, "fi");
+                        I18NString addressInfo = createI18NString(address, "en");
                         if (!co.getCourseAddress().stream().filter(o -> o.getValue().equals(addressInfo.getValue())).findFirst().isPresent()) {
                             if (co.getCourseAddress().isEmpty()) {
-                                co.getCourseAddress().add(createI18NString(address, "fi"));
+                                co.getCourseAddress().add(createI18NString(address, "en"));
                             } else {
                                 String addressTemp = co.getCourseAddress().get(0).getValue();
                                 addressTemp += co.getCourseAddress().get(0).getValue().concat("<br>" + address);
