@@ -194,6 +194,8 @@ public class KoulutusWrapper {
     }
 
     private void addMandatoryEnglishQualifications(List<Qualifications> qualifications) {
+        if(qualifications == null) return;
+        
         for (Qualifications q : qualifications) {
             addMandatoryEnglish(q.getAwardingBody());
             addMandatoryEnglish(q.getAwardingBodyContactInfo());
