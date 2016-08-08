@@ -185,11 +185,22 @@ public class KoulutusWrapper {
         addMandatoryEnglishNonEmpty(lo.getNonPreferredTerm());
         addMandatoryEnglishNonEmpty(lo.getProviderName());
         addMandatoryEnglishNonEmpty(lo.getTitle());
-//TODO
-//        List<Qualifications> qualifications;
+
+        addMandatoryEnglishQualifications(lo.getQualifications());
+
 //        List<SpecialTargetGroupType> specialTargetGroup; <- Ei ole xml:ssä ollenkaan
 //        List<ThematicAreas> thematicAreas; <- Ei kielimäärittelyä
 
+    }
+
+    private void addMandatoryEnglishQualifications(List<Qualifications> qualifications) {
+        for (Qualifications q : qualifications) {
+            addMandatoryEnglish(q.getAwardingBody());
+            addMandatoryEnglish(q.getAwardingBodyContactInfo());
+            addMandatoryEnglish(q.getOtherQualificationAwardedTerm());
+            addMandatoryEnglish(q.getQualificationAwarded());
+            addMandatoryEnglish(q.getQualificationAwardedDescription());
+        }
     }
 
     private void addMandatoryEnglishNonEmpty(List<I18NNonEmptyString> list) {
