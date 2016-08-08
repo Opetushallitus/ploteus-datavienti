@@ -195,7 +195,7 @@ public class KoulutusWrapper {
 
     private void addMandatoryEnglishQualifications(List<Qualifications> qualifications) {
         if(qualifications == null) return;
-        
+
         for (Qualifications q : qualifications) {
             addMandatoryEnglish(q.getAwardingBody());
             addMandatoryEnglish(q.getAwardingBodyContactInfo());
@@ -210,9 +210,9 @@ public class KoulutusWrapper {
 
         Map<LanguageCode, I18NNonEmptyString> map = list.stream().collect(Collectors.toMap(I18NNonEmptyString::getLanguage, s -> s));
         if (!map.containsKey(LanguageCode.EN)) {
-            if (!map.containsKey(LanguageCode.FI)) {
+            if (map.containsKey(LanguageCode.FI)) {
                 list.add(createI18NonEmptyString(map.get(LanguageCode.FI).getValue(), LanguageCode.EN));
-            } else if (!map.containsKey(LanguageCode.SV)) {
+            } else if (map.containsKey(LanguageCode.SV)) {
                 list.add(createI18NonEmptyString(map.get(LanguageCode.SV).getValue(), LanguageCode.EN));
             } else {
                 list.add(createI18NonEmptyString(map.values().iterator().next().getValue(), LanguageCode.EN));
@@ -225,9 +225,9 @@ public class KoulutusWrapper {
 
         Map<LanguageCode, I18NString> map = list.stream().collect(Collectors.toMap(I18NString::getLanguage, s -> s));
         if (!map.containsKey(LanguageCode.EN)) {
-            if (!map.containsKey(LanguageCode.FI)) {
+            if (map.containsKey(LanguageCode.FI)) {
                 list.add(createI18NString(map.get(LanguageCode.FI).getValue(), LanguageCode.EN));
-            } else if (!map.containsKey(LanguageCode.SV)) {
+            } else if (map.containsKey(LanguageCode.SV)) {
                 list.add(createI18NString(map.get(LanguageCode.SV).getValue(), LanguageCode.EN));
             } else {
                 list.add(createI18NString(map.values().iterator().next().getValue(), LanguageCode.EN));
