@@ -9,6 +9,8 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.KoulutusHakutulosV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.koulutus.*;
 import fi.vm.sade.tarjonta.shared.types.KomoTeksti;
 import fi.vm.sade.tarjonta.shared.types.KomotoTeksti;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,15 +224,16 @@ public class KoulutusWrapper {
 
     private void addMandatoryEnglish(List<I18NString> list) {
         if (list == null || list.isEmpty()) return;
-
-        Map<LanguageCode, I18NString> map = list.stream().collect(Collectors.toMap(I18NString::getLanguage, s -> s));
+        
+        Map<LanguageCode, I18NString> map = list.stream().filter(s -> s != null).collect(Collectors.toMap(I18NString::getLanguage, s -> s));
         if (!map.containsKey(LanguageCode.EN)) {
             if (map.containsKey(LanguageCode.FI)) {
                 list.add(createI18NString(map.get(LanguageCode.FI).getValue(), LanguageCode.EN));
             } else if (map.containsKey(LanguageCode.SV)) {
                 list.add(createI18NString(map.get(LanguageCode.SV).getValue(), LanguageCode.EN));
             } else {
-                list.add(createI18NString(map.values().iterator().next().getValue(), LanguageCode.EN));
+                if(map != null && !map.isEmpty() && !map.values().isEmpty() && map.values().iterator().next().getValue() != null)
+                    list.add(createI18NString(map.values().iterator().next().getValue(), LanguageCode.EN));
             }
         }
     }
@@ -381,6 +384,10 @@ public class KoulutusWrapper {
     }
 
     private I18NNonEmptyString createI18NonEmptyString(String string, LanguageCode lang) {
+        if(StringUtils.isBlank(string)){
+            return null;
+        }
+        
         final I18NNonEmptyString i18Non = of.createI18NNonEmptyString();
         i18Non.setValue(string);
         i18Non.setLanguage(lang);
@@ -392,6 +399,10 @@ public class KoulutusWrapper {
     }
 
     private I18NString createI18NString(String string, LanguageCode lang) {
+        if(StringUtils.isBlank(string)){
+            return null;
+        }
+        
         I18NString temp = of.createI18NString();
         temp.setValue(string);
         temp.setLanguage(lang);
@@ -399,6 +410,10 @@ public class KoulutusWrapper {
     }
 
     private I18NString createI18NString(String string) {
+        if(StringUtils.isBlank(string)){
+            return null;
+        }
+        
         I18NString temp = of.createI18NString();
         temp.setValue(string);
         return temp;
@@ -452,7 +467,7 @@ public class KoulutusWrapper {
     }
 
     private void setQualificationDescription(Map<String, String> list, Qualifications qualifications) {
-        list.keySet().forEach(e -> qualifications.getQualificationAwardedDescription().add(createI18NString(removeUnwantedHTMLTags(list.get(e)), e.replace("kieli_", ""))));
+        list.keySet().stream().filter(e -> e != null && !e.isEmpty()).forEach(e -> qualifications.getQualificationAwardedDescription().add(createI18NString(removeUnwantedHTMLTags(list.get(e)), e.replace("kieli_", ""))));
     }
 
     private void setDurationInformation(String suunniteltuKestoArvo, String suunniteltuNimi, LearningOpportunity lo) {
