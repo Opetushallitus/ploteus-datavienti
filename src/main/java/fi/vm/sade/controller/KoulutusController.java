@@ -316,14 +316,7 @@ public class KoulutusController {
                 code.setIsced2011koulutusalataso3(changeCodeToIsced2013Value(k.getKoodiArvo()));
             }
         }
-        if(code.getIsced2011koulutusaste() == null){
-            for (KoodiType k : kt) {
-                if(k.getKoodisto().getKoodistoUri().equals("isced2011koulutusastetaso1")){ //FIXME: voidaanko kayttaa
-                    code.setIsced2011koulutusaste(k.getKoodiArvo());
-                }
-            }
-        }
-        if (code.getIsced2011koulutusalataso3() == null || code.getIsced2011koulutusalataso3().equals("9999")) {
+        if (code.getIsced2011koulutusalataso3() == null || code.getIsced2011koulutusalataso3().equals("9999") || code.getIsced2011koulutusaste() == null) {
             return false;
         } else {
             haetutKoodit.put(koulutusData.getKoulutuskoodi(), code);
