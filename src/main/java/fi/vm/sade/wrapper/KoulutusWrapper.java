@@ -140,7 +140,7 @@ public class KoulutusWrapper {
         setDate(k.getKoulutuksenAlkamisPvms(), lo);
         setCost(k.getHintaString(), lo);
         if (kuvausKomo.get(KomoTeksti.TAVOITTEET) != null) {
-            setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo); //FIXME: voidaanko kayttaa
+            setInformationLanguage(kuvausKomo.get(KomoTeksti.TAVOITTEET).getTekstis(), lo);
         } else if (opetuskielis != null) {
             Map<String, String> newMap = new HashMap<>();
             for (String key : opetuskielis.keySet()) {
@@ -244,7 +244,7 @@ public class KoulutusWrapper {
         NimiV1RDTO kuvauskomoSisalto = getKuvausKomoSisalto(k);
         NimiV1RDTO valmistavaKoututusKuvaus = getValmistavaKoututusKuvaus(k);
         NimiV1RDTO kuvauskomoTavoitteet = getKuvausKomoTavoitteet(k);
-        return findDescription(kuvauskomoSisalto, valmistavaKoututusKuvaus, kuvauskomoTavoitteet);
+        return findDescription(kuvauskomoSisalto, kuvauskomoTavoitteet, valmistavaKoututusKuvaus );
     }
 
     private NimiV1RDTO getKoulutusDesc(KoulutusV1RDTO k) {
@@ -275,7 +275,7 @@ public class KoulutusWrapper {
         return null;
     }
 
-    private NimiV1RDTO findDescription(NimiV1RDTO... nimiV1RDTOs) { //FIXME: voidaanko kayttaa
+    private NimiV1RDTO findDescription(NimiV1RDTO... nimiV1RDTOs) {
         for (NimiV1RDTO n : nimiV1RDTOs) {
             if (isNotEmpty(n, LANG_CODE_KIELI_EN)) {
                 return n;
@@ -483,8 +483,6 @@ public class KoulutusWrapper {
             lo.setInformationLanguage(LanguageCode.FI);
         } else if (map.get("kieli_sv") != null) {
             lo.setInformationLanguage(LanguageCode.SV);
-        } else if (map.get("kieli_la") != null) {
-            lo.setInformationLanguage(LanguageCode.FI); // TODO: Latina? //FIXME: voidaanko kayttaa
         } else {
             for (LanguageCode l : LanguageCode.values()) {
                 if (map.get("kieli_" + l.value().toLowerCase()) != null) {
