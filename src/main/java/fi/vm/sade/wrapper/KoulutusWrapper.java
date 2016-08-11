@@ -570,7 +570,7 @@ public class KoulutusWrapper {
             if (haetutOrganisaatiot.get(s) != null) {
                 haetutOrganisaatiot.get(s).getYhteystiedot().forEach(p -> {
                     String address = "";
-                    if (p.get("osoite") != null && !p.get("osoite").trim().isEmpty() && !p.get("osoite").startsWith("PL")) {
+                    if (p.get("osoiteTyyppi") != null && p.get("osoiteTyyppi").equals("kaynti") && p.get("osoite") != null && !p.get("osoite").trim().isEmpty() && !p.get("osoite").startsWith("PL")) {
                         address = address.concat(p.get("osoite"));
                         if (p.get("postinumeroUri") != null && !p.get("postinumeroUri").trim().isEmpty()
                                 && !p.get("postinumeroUri").contains("00000")) {
@@ -579,16 +579,15 @@ public class KoulutusWrapper {
                                 address = address.concat(", " + p.get("postitoimipaikka"));
                             }
                         }
-                    }
-                    if (!address.isEmpty()) {
-                        I18NString addressInfo = createI18NString(address, "en");
-                        if (!co.getCourseAddress().stream().filter(o -> o.getValue().equals(addressInfo.getValue())).findFirst().isPresent()) {
-                            if (co.getCourseAddress().isEmpty()) {
-                                co.getCourseAddress().add(createI18NString(address, "en"));
-                            } else {
-                                String addressTemp = co.getCourseAddress().get(0).getValue();
-                                addressTemp += co.getCourseAddress().get(0).getValue().concat("<br>" + address);
-                                co.getCourseAddress().get(0).setValue(addressTemp);
+                        if (!address.isEmpty()) {
+                            I18NString addressInfo = createI18NString(address, "en");
+                            if (!co.getCourseAddress().stream().filter(o -> o.getValue().equals(addressInfo.getValue())).findFirst().isPresent()) {
+                                if (co.getCourseAddress().isEmpty()) {
+                                    co.getCourseAddress().add(createI18NString(address, "en"));
+                                } else {
+                                    String addressTemp = co.getCourseAddress().get(0).getValue().concat("<br>" + address);
+                                    co.getCourseAddress().get(0).setValue(addressTemp);
+                                }
                             }
                         }
                     }
