@@ -1,7 +1,7 @@
 ### Ploteus
 
 #### XSD-generointi
-Valitsemassasi IDE:ssä generoit JAXB luokat schemasta.
+Valitsemassasi IDE:ssä generoi JAXB luokat schemasta.
 
 #### Getting Started
 Luo ploteus_generated kansio kotihakemistoosi tai projektia ajavan käyttäjän kotikansioon.
