@@ -531,10 +531,14 @@ public class KoulutusWrapper {
                         }
                     }
                     if (p.get("numero") != null) {
-                        list.add(createI18NString(p.get("numero"), "fi"));
+                        if (!list.stream().filter(o -> o.getValue().equals(p.get("numero"))).findFirst().isPresent()) {
+                            list.add(createI18NString(p.get("numero"), "fi"));
+                        }
                     }
                     if (haetutOrganisaatiot.get(s).getNimi().get("en") != null) {
-                        list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en"), "en"));
+                        if (!list.stream().filter(o -> o.getValue().equals(haetutOrganisaatiot.get(s).getNimi().get("en"))).findFirst().isPresent()) {
+                            list.add(createI18NString(haetutOrganisaatiot.get(s).getNimi().get("en"), "en"));
+                        }
                     }
                     if (haetutOrganisaatiot.get(s).getMetadata() != null) {
                         haetutOrganisaatiot.get(s).getMetadata().getYhteystiedot().forEach(m -> {
