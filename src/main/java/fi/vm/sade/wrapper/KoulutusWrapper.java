@@ -65,6 +65,7 @@ public class KoulutusWrapper {
     public void createNewLearningOpportunities() {
         learningOpportunities = of.createLearningOpportunities();
         learningOpportunities.setKey(LEARNING_OPPORTUNITY_KEY);
+        learningOpportunities.setIncremental("false");
         learningOpportunities.setXsdType(XsdTypeType.fromValue(XSD_TYPE));
         learningOpportunities.setXsdVersion(XSD_VERSION);
     }
