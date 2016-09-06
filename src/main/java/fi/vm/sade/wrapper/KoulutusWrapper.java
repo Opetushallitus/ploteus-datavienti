@@ -630,6 +630,7 @@ public class KoulutusWrapper {
                 .values()
                 .stream()
                 .filter(e -> !e.getArvo().toLowerCase().equals("la"))
+                .filter(e -> !e.getArvo().toLowerCase().equals("vk"))
                 .forEach(e ->
                         lo.getTeachingLanguage().add(LanguageCode.fromValue(e.getArvo().toLowerCase())));
     }
