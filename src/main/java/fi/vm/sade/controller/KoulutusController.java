@@ -317,6 +317,8 @@ public class KoulutusController {
             }
         }
         if (code.getIsced2011koulutusalataso3() == null || code.getIsced2011koulutusalataso3().equals("9999") || code.getIsced2011koulutusaste() == null) {
+            log.error("Koulutuskoodi {} did not match to ISCED codes. Isced2011koulutusalataso3: {}, Isced2011koulutusaste: {}",
+                    koulutusData.getKoulutuskoodi(), code.getIsced2011koulutusalataso3(), code.getIsced2011koulutusaste());
             return false;
         } else {
             haetutKoodit.put(koulutusData.getKoulutuskoodi(), code);
