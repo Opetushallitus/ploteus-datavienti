@@ -458,7 +458,7 @@ public class KoulutusController {
     }
 
     private boolean checkKoulutusValidnessFromOpintopolku(String type, String oid) {
-        return get("koulutusinformaatio.validoid", type, oid).retryOnError(6, 2500).skipResponseAssertions()
+        return get("koulutusinformaatio-app.validoid", type, oid).retryOnError(6, 2500).skipResponseAssertions()
                 .execute(response -> response.getStatusCode() == 200);
     }
 
