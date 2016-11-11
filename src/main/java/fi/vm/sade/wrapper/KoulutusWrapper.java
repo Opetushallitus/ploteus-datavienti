@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class KoulutusWrapper {
+
     private static final String COUNTRY_CODE = "FI";
     private static final String TITLE_LANG_CODE_EN = "en";
     private static final String TITLE_LANG_CODE_FI = "fi";
@@ -134,6 +135,7 @@ public class KoulutusWrapper {
     }
 
     private LearningOpportunity initLearningOpportunity(KoulutusV1RDTO k, String koulutustypeForURL, Map<String, OrganisaatioRDTO> haetutOrganisaatiot, String koulutusohjelma, Map<String, Koodi> haetutKoodit, NimiV1RDTO desc) {
+        this.log.debug("Creating LOP for komotoid:" + k.getKomotoOid());
         Set<String> opetusTarjoajat = k.getOpetusTarjoajat();
         KuvausV1RDTO<KomoTeksti> kuvausKomo = k.getKuvausKomo();
         Map<String, KoodiV1RDTO> opetuskielis = k.getOpetuskielis().getMeta();
