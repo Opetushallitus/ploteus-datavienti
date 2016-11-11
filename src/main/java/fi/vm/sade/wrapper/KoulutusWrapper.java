@@ -349,7 +349,7 @@ public class KoulutusWrapper {
         lo.getDescription().clear();
         List<String> descs = new ArrayList<>();
         descriptions.keySet().stream().filter(e -> e.equals("kieli_en")).forEach(e -> {
-            if (!descriptions.get(e).trim().equals("")) {
+            if (descriptions.get(e) != null && !descriptions.get(e).trim().equals("")) {
                 descs.add(descriptions.get(e));
             }
         });
@@ -357,14 +357,14 @@ public class KoulutusWrapper {
         if (descs.isEmpty()) {
             lang = "fi";
             descriptions.keySet().stream().filter(e -> e.equals("kieli_fi")).forEach(e -> {
-                if (!descriptions.get(e).trim().equals("")) {
+                if (descriptions.get(e) != null && !descriptions.get(e).trim().equals("")) {
                     descs.add(descriptions.get(e));
                 }
             });
             if (descs.isEmpty()) {
                 lang = "sv";
                 descriptions.keySet().stream().filter(e -> e.equals("kieli_sv")).forEach(e -> {
-                    if (!descriptions.get(e).trim().equals("")) {
+                    if (descriptions.get(e) != null && !descriptions.get(e).trim().equals("")) {
                         descs.add(descriptions.get(e));
                     }
                 });
