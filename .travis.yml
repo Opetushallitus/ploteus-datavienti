@@ -1,0 +1,40 @@
+sudo: required
+
+language: java
+
+jdk:
+- oraclejdk8
+
+services:
+- docker
+
+cache:
+  directories:
+  - $HOME/.m2
+
+env:
+  global:
+  # AWS_ACCESS_KEY_ID
+  - secure: "WIl/XO3H30g5GfaPliPVFquCxoF/nhdfqGKNLiyyLILQEaztqXRuQF4MAhZ0IBmjnCiVMfko2NLZO6g/E4JTheP9T1IhZc1RQntE73kqjoXyAWJDKUmmOSx7AMOCuSL3T98uWilX6UdMxrdPRqX8DyKpQBMOE+mhSXrROFaea+DWETa9Pu5MzuJT6DV4B++fJ/QRXadT/EHpQIQkQPFaZmae5V3nvDTSgkpaJbJ81s4He8Qu/xF9R9uN3pYw3GpHIORmkoN3ugk5OezoCkM6pDpo2w4vD/0yFbZW/2KlvpydHxsqRxkqE+GqNI680fAEMBJPeE2z6mkp4eDq/oejwTOiI/rDSw3E2HsYbPdXf2JhebM1ClV/fjAbTb41U3w7V92JM1yMR61adx6bhlHIy4d3UWtWzwy0NWDCxZ5FKufBu5VhrVzWJa8Zl0A8StT0FbMW4jCaOjSxGItJfWKm0/bi1HEgoDRkmiWYqAGqO/Bwc2wUHfXWttxv11w1A1B9YmVtEuRh7asEL7RS2UVxWOeUzWAt9vaacXMm9IRfOoeOAqo2P5HAv4DEGliikRZUFhRzIyYU7EjWkjkko/fxIW3dEewRvtpRCIAnCzfUdbkXNta93Wt/NnK23CQpxXQ2iY9l+eRZwIRTi7JJo6oKivMUn6ItEECGC8XHpWnTiIo="
+  # AWS_SECRET_ACCESS_KEY
+  - secure: "o6IG8Mu2ExkQWqvBOkxOtXBhQ33CPG9mYRcM3YAv51dpITIqlsHqw0VAw24Yh2CQtnBXIFvuF7BqZmckAc31Mt6twyk0MPNlzXf6J941d/cvDjlbmrMgakvBUB+qX2VrTjqCuzkQnYtbG5ds3l0NX09ktFbmtYHHPaYu4wG1j0w1H45DZsQYteC1TmmopQt9VX+WKVoa4hWTkWyA0u62SDrqpdwUQnikoAWuLQ8BPuDc9+BUx73+zu7D8iskvYYK1HXnJ77IIlac08GTtPXFJLVBBbFdECbmj0TfTW5PqBZ+cXBN4kuqps1aEdjox+320dx8uULgyw4tLt2De3YP6YT6DIyfiEv0jRnZD0GobXkm5Yo5f+4sAU+9eyH0vaR6dg7vnSbL7SzO4jYtDmUqJQFHDQ+dqNqQq1dAhqyPlyclF78lDiRf/TURUBnNVqkgn76+VXZr+5cnF0BXgAiQRL6Q1+Fk59KfNs9a7sz83sw9B+L/TMB+ZIRLOdhuokNfqzEJAvZloT0qf1Vp0WL1zwM4AZtUR1nn7g9sKg9ZZUogrkqEiQ148+GboxWaLe0t7gd4VoO1IfkAmhvVEEHXPBLPCdiUoWl70g+DL0HqCyvOhP+QMDuDjxOPqmwzHD7LFg0V0ofrAsPw6Ro4SxuiCSFCbTMGPw0maPtosTmCo48="
+
+install:
+- git clone https://github.com/Opetushallitus/ci-tools.git
+- source ci-tools/common/setup-tools.sh
+
+script:
+- mvn clean package -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER} -Dbuild=${TRAVIS_BUILD_NUMBER}
+
+- mv -v target/ploteus*.jar $DOCKER_BUILD_DIR/artifact/ploteus.jar
+- cp -vr deployment/oph-configuration $DOCKER_BUILD_DIR/config/
+
+- export BASE_IMAGE="base-legacy:0.1"
+- ./ci-tools/common/pull-image.sh
+- ./ci-tools/build/build-fatjar.sh ploteus
+
+#deploy:
+#- provider: script
+#  script: ./ci-tools/build/upload-image.sh ploteus
+#  on:
+#    all_branches: true
