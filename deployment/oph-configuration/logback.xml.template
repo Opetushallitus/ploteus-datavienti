@@ -19,6 +19,7 @@
     </triggeringPolicy>
   </appender>
 {% endraw %}
+  <logger name="org.apache.http.client.protocol" level="ERROR" />
   <root level="{{env_loglevel}}">
     <appender-ref ref="FILE"/>
   </root>
