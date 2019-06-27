@@ -21,7 +21,7 @@
 		<tarjonta.version>2017-06</tarjonta.version>
 		<organisaatio.version>2015-13</organisaatio.version>
 		<koodisto.version>2016-04-SNAPSHOT</koodisto.version>
-		<buildversion_prefix />
+		<buildversion_prefix/>
 	</properties>
 
     <repositories>
@@ -150,13 +150,13 @@
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient</artifactId>
-		    <version>4.5.2</version>
+		    <version>4.5.3</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient-osgi -->
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient-osgi</artifactId>
-		    <version>4.5.2</version>
+		    <version>4.5.3</version>
 		</dependency>
 
         
