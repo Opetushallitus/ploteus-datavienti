@@ -21,7 +21,7 @@
 		<tarjonta.version>2017-06</tarjonta.version>
 		<organisaatio.version>2015-13</organisaatio.version>
 		<koodisto.version>2016-04-SNAPSHOT</koodisto.version>
-		<buildversion_prefix />
+		<buildversion_prefix/>
 	</properties>
 
     <repositories>
@@ -84,7 +84,7 @@
 		<dependency>
 		  <groupId>org.apache.cxf</groupId>
 		  <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-		  <version>3.1.6</version>
+		  <version>3.3.6</version>
 		</dependency>
 		
         <!-- Tarjonta -->
