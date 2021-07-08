@@ -18,9 +18,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<tarjonta.version>2017-06</tarjonta.version>
-		<organisaatio.version>2015-13</organisaatio.version>
-		<koodisto.version>2016-04-SNAPSHOT</koodisto.version>
+		<tarjonta.version>2017-40-SNAPSHOT</tarjonta.version>
+		<organisaatio.version>2018-6-SNAPSHOT</organisaatio.version>
+		<koodisto.version>2017-12-SNAPSHOT</koodisto.version>
 		<buildversion_prefix />
 	</properties>
 
