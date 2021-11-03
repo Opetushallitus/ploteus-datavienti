@@ -21,7 +21,7 @@
 		<tarjonta.version>2017-06</tarjonta.version>
 		<organisaatio.version>2015-13</organisaatio.version>
 		<koodisto.version>2016-04-SNAPSHOT</koodisto.version>
-		<buildversion_prefix />
+		<buildversion_prefix/>
 	</properties>
 
     <repositories>
@@ -145,7 +145,7 @@
 		<dependency>
 		    <groupId>com.google.code.gson</groupId>
 		    <artifactId>gson</artifactId>
-		    <version>1.7.1</version>
+		    <version>2.8.9</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
