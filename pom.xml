@@ -21,7 +21,7 @@
 		<tarjonta.version>2017-06</tarjonta.version>
 		<organisaatio.version>2015-13</organisaatio.version>
 		<koodisto.version>2016-04-SNAPSHOT</koodisto.version>
-		<buildversion_prefix />
+		<buildversion_prefix/>
 	</properties>
 
     <repositories>
@@ -150,13 +150,13 @@
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient</artifactId>
-		    <version>4.5.2</version>
+		    <version>4.5.13</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient-osgi -->
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient-osgi</artifactId>
-		    <version>4.5.2</version>
+		    <version>4.5.13</version>
 		</dependency>
 
         
@@ -221,12 +221,12 @@
         <dependency>
         	<groupId>org.neo4j</groupId>
         	<artifactId>neo4j-cypher</artifactId>
-        	<version>2.2.5</version>
+        	<version>4.2.8</version>
         </dependency>
         <dependency>
         	<groupId>org.apache.hadoop</groupId>
         	<artifactId>hadoop-core</artifactId>
-        	<version>1.0.0</version>
+        	<version>1.2.1</version>
         </dependency>
 	</dependencies>
     <build>
